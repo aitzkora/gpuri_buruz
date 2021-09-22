@@ -1,0 +1,24 @@
+Cours GPU
+* Prolégomènes
+** Notions de parallèlisme
+*** partagé / distribué
+   - partagé : OpenMP, fils d'execution (Threads), GPU
+   - distribué : MPI (plusieurs nœuds eventuels)
+*** grain fin / gros grain
+   - gros grain : MPI
+   - grain fin : noyau GPU
+*** archi homogène / hétérogéne:
+   - homogène : multicœurs
+   - hétérogene : GPU vs CPU (hôte et accélérateur)
+** Mémoire et Cache
+*** latence des accès mémoire
+*** bande passante (bus)
+*** cache
+    - défaut de cache «cache misses»
+    - exemple double boucle fortran/C
+    - pourquoi BLAS ?
+* Caractéristique des GPUs
+** Historique
+** Comparaison avec les autres formes de parallélisme
+*** architecture
+
