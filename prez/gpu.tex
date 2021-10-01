@@ -1,9 +1,9 @@
 \documentclass[11pt,mathserif]{beamer}
 
-
 %% ====== packages ==
 \usepackage{amsmath,amssymb,amsfonts,amsthm}
 \usepackage{graphicx}
+\usepackage{bbding}
 \newcommand{\tiret}{\rule[0.6ex]{1.3ex}{0.22ex}}
 
 % !! pour le francais
@@ -15,13 +15,35 @@
 \usepackage{color}
 \usepackage{listings}
 
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
 
 \newcommand{\R}{\mathbb{R}}
-
+\lstset{ %
+  language=C,                % the language of the code
+  framerule=1pt,
+  basicstyle=\relsize{-3}\ttfamily,           % the size of the fonts that are used for the code
+                                  % will be numbered
+  %numbersep=5pt,                  % how far the line-numbers are from the code
+  %backgroundcolor=\color{black!10},      % choose the background color. You must add \usepackage{color}
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  %frame=single,                   % adds a frame around the code
+  rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+  %tabsize=2,                      % sets default tabsize to 2 spaces
+  %breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+  lineskip=-1pt,
+  keywordstyle=\color{blue},          % keyword style
+  commentstyle=\color{dkgreen},       % comment style
+  stringstyle=\color{mauve}  
+}
 
 % et la commande Pour les guillemets
 \newcommand{\guill}[1]{«#1»} % attention deja dans mycv
-
+\defbeamertemplate{itemize item}{boldarrow}{\raisebox{0.3ex}{\resizebox{1.2ex}{1ex}{\ArrowBoldRightShort}}}
 
 %% ====== my bearmer ==
 \mode<presentation> {
@@ -45,7 +67,7 @@
 \includegraphics[width=0.5\linewidth]{gpu.jpg}
 \end{center}
 \begin{center}
-{\large Marc Fuentes - INRIA \\ }
+{\large Marc Fuentes - INRIA Pau\\ }
 \end{center}
 \end{frame}
 
@@ -73,8 +95,8 @@ différentes classifications du parallèlisme
 \begin{itemize}[<+->]
   \item partagé / distribué
     \begin{itemize}
-      \item à mémoire partagée : OpenMP, fils d'éxecution, GPU (partiellement)
-      \item à mémoire distribué : MPI
+      \item à mémoire partagée : OpenMP, fils d'éxecution (Threads), GPU 
+      \item à mémoire distribué : MPI, Coarrays Fortran, PGAS
     \end{itemize}
  \item gros grain / grain fin : taille des tâches
    \begin{itemize}
@@ -84,12 +106,12 @@ différentes classifications du parallèlisme
  \item homogène / hétérogène 
    \begin{itemize}
      \item archi homogène : MPI, processeur vectoriels
-     \item hétérogène : GPU(accélérateur) et CPU(hôte) , processeur Cell 
+     \item archi hétérogène : accélérateur vs hôte, Cell 
    \end{itemize}
 \end{itemize}
 \pause
-$\Rightarrow$ La programmation sur GPU est donc un parallèlisme à grain fin à mémoire partagée avec une architecture hétérogène. Elle va
-donc bien convenir à certains types de problèmes
+  $\Rightarrow$ La programmation sur GPU est {\it grosso modo } donc un parallèlisme à {\bf grain fin}, à{\bf mémoire partagée} tournant sur 
+  {\bf une archi hétérogène}.
 \end{frame}
 
 %****************************************************************
@@ -98,55 +120,63 @@ donc bien convenir à certains types de problèmes
 \begin{frame}{Mémoire et Cache}
 \begin{itemize}[<+->]
   \item La rapidité d'execution d'un calcul dépend aussi de la «proximité» avec le CPU de l'élément de mémoire à traiter 
-  \item si $l$ represente la latence - en nombre de cycle d'horloge - de l'emplacement mémoire accèdé
+  \item[$\Rightarrow$] les concepteurs de CPU ont crée des {\bf caches} pour stocker les valeurs mémoires les plus utilisées
+  \begin{center}
+    \includegraphics[width=0.7\linewidth]{cpu_classique.eps}
+  \end{center}
+\end{itemize}
+\end{frame}
+%****************************************************************
+% Prolegomenes III
+%****************************************************************
+\begin{frame}{Mémoire et Cache II}
+\pause
+  \begin{itemize}[<+->]
+  \item ainsi la latence $l$ de l'emplacement mémoire auquel on accède  respecte
   $$l({\mbox{\scriptsize registre}}) \leqslant l(\mbox{\scriptsize cache L1}) \leqslant
-    l(\mbox{\scriptsize cache L2}) \leqslant l(\mbox{\scriptsize mémoire globale})$$
-  \item exemple pour un Core i7 Xeon
+    l(\mbox{\scriptsize cache L2}) \leqslant l(\mbox{\scriptsize mémoire globale}).$$
+  \item ordres de grandeur des latences (core i7 Xeon E5500)
     \begin{tabular}{|l|c|c|}
     \hline
       type & nb cycles & latence (ns)  \\
     \hline
-      cache L1  & $\approx$ 4 & 2.1 - 1.2 \\
-      cache L2  & $\approx$ 10 & 5.3 - 3.0ns \\
-      cache L3 (non partagé)  & $\approx$ 40 & 21.4 - 12ns \\
+      cache L1  &  4 & 2 \\
+      cache L2  &  10 & 5 \\
+      cache L3 (non partagé) & 40 & 20  \\
+      cache L3 (partagé) &  65 & 35  \\
+      mémoire vive local & & 60 \\
+      mémoire vive distante & & 100 \\
     \hline
     \end{tabular}
-
-  \item les architectes de CPU ont crée des caches pour stocker les valeurs mémoires les plus utilisées
-\end{itemize}
-\begin{center}
-\includegraphics[width=0.5\linewidth]{gpu.jpg}
-\end{center}
+  \end{itemize}
 \end{frame}
-%****************************************************************
-%% Epetra Maps 
 %%****************************************************************
-%\begin{frame}{Epetra : Maps I}
-%\begin{itemize}[<+->]
-%\item Comment répartir un objet sur plusieurs processus MPI ?
-%\item Notion de correspondance (\guill{Map}) : on utilise un tableau d'indices qui indique quelles composantes sont situées sur quel proc.
-%\item soit le programme suivant :
-%\fvset{fontsize=\relsize{-3}}
-%\lstinputlisting[language=python]{prog1.py}
-%\item que l'on lance avec la commande suivante : \Verb+mpiexec -n 2 xterm -e ./prog1.py+
-%\end{itemize}
-%\end{frame}
+%% Prolegomenes IV
 %%****************************************************************
-%% Epetra  Maps II
-%%****************************************************************
-%\begin{frame}{Epetra : Maps II}
-%\begin{center}
-%on obtient les sorties suivantes:
-%\end{center}
-%\begin{minipage}[c]{0.49\linewidth}
-%\fvset{fontsize=\relsize{-3}}
-%\VerbatimInput{sortie1}
-%\end{minipage}
-%\begin{minipage}[c]{0.49\linewidth}
-%\fvset{fontsize=\relsize{-3}}
-%\VerbatimInput{sortie2}
-%\end{minipage}
-%\end{frame}
+\begin{frame}{Cache : Succés et défauts}
+\begin{itemize}[<+->]
+ \item succés : accès a un emplacement présent dans la ligne de cache 
+ \item défaut : accès hors de ligne de cache $\rightarrow$ il faut recharger entierement la ligne des cache!
+ \item un code localisant les accés dans le cache, va minimiser les défauts de cache et tourner plus vite
+ \item double boucle en C sur les lignes (resp. colonnes en Fortran)
+\end{itemize}
+\pause
+\begin{minipage}[c]{0.49\linewidth}
+  \lstinputlisting[language=C]{loop_col.c}
+\end{minipage}
+\begin{minipage}[c]{0.49\linewidth}
+    \begin{tabular}{|c|c|}
+    \hline
+     boucle ext. & tps(s)  \\
+    \hline
+      i (lignes) & 2.7s \\
+      j (cols)  & 3.4s \\
+    \hline
+    \end{tabular}
+\end{minipage}
+\pause 
+ $\Rightarrow$ raison d'être des biblios BLAS et LAPACK
+\end{frame}
 %%****************************************************************
 %% Epetra  Maps II
 %%****************************************************************
