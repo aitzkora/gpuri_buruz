@@ -155,8 +155,8 @@ différentes classifications du parallèlisme
 %%****************************************************************
 \begin{frame}{Cache : Succés et défauts}
 \begin{itemize}[<+->]
- \item succés : accès a un emplacement présent dans la ligne de cache 
- \item défaut : accès hors de ligne de cache $\rightarrow$ il faut recharger entierement la ligne des cache!
+ \item succés (hit): accès a un emplacement présent dans la ligne de cache 
+ \item défaut (miss) : accès hors de ligne de cache $\rightarrow$ il faut recharger entierement la ligne des cache!
  \item un code localisant les accés dans le cache, va minimiser les défauts de cache et tourner plus vite
  \item double boucle en C sur les lignes (resp. colonnes en Fortran)
 \end{itemize}
@@ -178,24 +178,20 @@ différentes classifications du parallèlisme
  $\Rightarrow$ raison d'être des biblios BLAS et LAPACK
 \end{frame}
 %%****************************************************************
-%% Epetra  Maps II
+%% Prolegomenes V
 %%****************************************************************
-%\begin{frame}{Epetra : Maps III}
-%\begin{itemize}[<+->]
-%\item chaque processus a donc un ensemble d'indices disponibles
-%\item on a l'isomorphisme 
-%\fvset{fontsize=\relsize{-3}}
-%$$
-%  \{\mbox{indices locaux }\} \begin{array}{c} \buildrel \mbox{\Verb+Map.GID+} \over \longrightarrow \\ \buildrel \mbox{\Verb+Map.LID+} \over \longleftarrow \end{array} \{\mbox{indices globaux}\}
-%$$
-%\item la répartition sur les processeurs peut etre : automatique ou choisie : 
-%      \begin{itemize} 
-%       \item automatique : constructeur \lstinline! __init__(self, int numGlobalElements, int indexBase, Comm comm)! \\ avec \lstinline! numGlobalElements=-1!
-%       \item choisie selon le proc : constructeur \lstinline !__init__(self, int numGlobalElements, PySequence myGlobalElements, int indexBase, Comm comm)!
-%    
-%      \end{itemize}
-%\end{itemize}
-%\end{frame}
+\begin{frame}{Passage à l'echelle}
+\begin{itemize}[<+->]
+  \item Fort (strong scalability)
+    \begin{itemize} 
+       \item loi d'Amdhal (pessimiste)
+    \end{itemize}
+  \item faible (weak scalability)
+    \begin{itemize}
+      \item loi
+    \end{itemize}
+\end{itemize}
+\end{frame}
 %%****************************************************************
 %% Epetra : matrices 
 %%****************************************************************
