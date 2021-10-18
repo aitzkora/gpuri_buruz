@@ -18,28 +18,39 @@
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
+\definecolor{bleuSympa}{rgb}{0.,0.19,0.607}
 
 \newcommand{\R}{\mathbb{R}}
 \lstset{ %
+  numbers=left,
+  numbersep=1pt,
+  numberstyle=\relsize{-5}\ttfamily,
   language=C,                % the language of the code
   framerule=1pt,
   basicstyle=\relsize{-3}\ttfamily,           % the size of the fonts that are used for the code
                                   % will be numbered
   %numbersep=5pt,                  % how far the line-numbers are from the code
-  %backgroundcolor=\color{black!10},      % choose the background color. You must add \usepackage{color}
+  backgroundcolor=\color{black!50},      % choose the background color. You must add \usepackage{color}
   showspaces=false,               % show spaces adding particular underscores
   showstringspaces=false,         % underline spaces within strings
   showtabs=false,                 % show tabs within strings adding particular underscores
   %frame=single,                   % adds a frame around the code
   rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
   %tabsize=2,                      % sets default tabsize to 2 spaces
-  %breaklines=true,                % sets automatic line breaking
+  breaklines=true,                % sets automatic line breaking
   breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
   lineskip=-1pt,
-  keywordstyle=\color{blue},          % keyword style
+  keywordstyle=\color{bleuSympa}\textbf,          % keyword style
   commentstyle=\color{dkgreen},       % comment style
-  stringstyle=\color{mauve}  
+  stringstyle=\color{mauve},
+  emph={ __global__, __shared__, __device__, __host__,
+        __syncthreads, threadIdx},
+  emphstyle=\color{green},
+  moredelim=[s][\color{green}\ttfamily]{<<<}{>>>},
+  morecomment=[s][\color{mauve}]{cudaMemcpyHostToDevice}{\ },
+  morecomment=[s][\color{mauve}]{cudaMemcpyDeviceToHost}{\ }
 }
+
 
 % et la commande Pour les guillemets
 \newcommand{\guill}[1]{«#1»} % attention deja dans mycv
@@ -193,80 +204,29 @@ différentes classifications du parallèlisme
 \end{itemize}
 \end{frame}
 %%****************************************************************
-%% Epetra : matrices 
+%% Exemple introductif I
 %%****************************************************************
-%\begin{frame}{Epetra : matrices}
-%\begin{itemize}[<+->]
-%\item \textcolor{red}{problème} : approche précédente valide seulement pour le 1D ! comment on généralise
-%pour les matrices
-%\item \textcolor{blue}{solution} : Trilinos généralise au cas matriciel, en associant deux  {\bf correspondances} à 
-%une matrice donnée. Ainsi pour une matrice au format CRS (Compressed Row Storage), on a 
-%    \begin{itemize}
-%       \item un découpage en colonnes : \lstinline! CrsMatrix.DomainMap!  
-%       \item un découpage en ligne : \lstinline! CrsMatrix.RangeMap!  
-%    \end{itemize}
-%\item l'utilisateur peut a priori agir sur ces deux correspondances, mais c'est parfois plus simple
-%de laisser PyTrilinos organiser le découpage en fonction des valeurs non-nulles de la matrice
-%\end{itemize}
-%\end{frame}
+\begin{frame}{Exemple d'introduction (I)}
+\pause
+\begin{itemize}[<+->]
+ \item considerons le programme simplifié suivant
+\lstinputlisting{increment.c}
+\item on souhaite paralléliser la boucle en ligne 6 à l'aide de CUDA
+\end{itemize}
+\end{frame}
 %%****************************************************************
-%% Exemple : gradient conjugue
+%% Exemple introductif II
 %%****************************************************************
-%\begin{frame}{Exemple : gradient conjugué}
-%\begin{itemize}[<+->]
-%\item On considère une version naïve de l'algorithme du gradient conjugué : 
-%\end{itemize}
-%\pause
-%\begin{center}
-%\begin{algorithmic}[1]
-%\State $r \gets b - A x_0$
-%\State $p \gets r$
-%\State $\rho \gets \prods{r}{r}$
-%\While{$\sqrt{\rho} \geqslant \varepsilon \|F\|$}
-%   \State $ \alpha \gets \frac{\|r\|}{\prods{p}{A p}}$
-%   \State $ x \gets x + \alpha  p$
-%   \State $ r \gets r - \alpha A p$
-%   \State $ \rho_{+} \gets \prods{r}{r} $ 
-%   \State $p \gets r + \frac{\rho_{+}}{\rho} p$
-%   \State $\rho \gets \rho_{+}$
-%\EndWhile
-%\end{algorithmic}
-%\end{center}
-%\end{frame}
-%%****************************************************************
-%% Exemple : gradient conjugue
-%%****************************************************************
-%\begin{frame}{Exemple : gradient conjugué}
-%\begin{center}
-%On code 2 versions : MALAB vs PyTrilinos   
-%\end{center}
-%\begin{minipage}[c]{0.49\linewidth}
-%\lstinputlisting[language=matlab]{mycg.m}
-%\end{minipage}
-%\begin{minipage}[c]{0.49\linewidth}
-%\lstinputlisting[language=python]{EpetraCG.py}
-%\end{minipage}
-%\end{frame}
-%%****************************************************************
-%% Exemple : Running  
-%%****************************************************************
-%\begin{frame}{Performance du gradient conjugué}
-%\begin{itemize}[<+->]
-% \item On utilise l'algorithme suivant sur une matrice du laplacien-3d ( 
-% $n = 10^{6}$, $nnz = 6940000$) avec $x_0(:) = 1$, $y(:) = 1$, 
-% $\epsilon = 10^{-6}$, on converge en 201 iterations avec un résidu de $9.2 10^{-4}$
-% \item on a code une version malab du cg, et on lance sur dantxaria (plafrim, héhé) le code Python pour différents nombres de procs :  
-% \Verb+mpirun -np n python test\_CG.py+
-% \item on chronométre uniquement l'algo de cg
-%\end{itemize}
-%\pause
-%\begin{tabular}{|l||c|c|c|c|c|c||c|}
-%\hline
-%\#CPUs & 1 & 2 & 4 & 10 & 20 & 40 & MALAB  \\
-%\hline
-%tps(s) & 7.36  & 5.88 &  5.41 & 2.78 & 1.84 & 1.44 & 13.74 \\
-%\hline
-%\end{tabular}
-%\end{frame}
-
+\begin{frame}{Exemple d'introduction II }
+\pause
+\begin{itemize}[<+->]
+ \item on peut écrire le programme suivant
+\lstinputlisting{incrementGPU.cu}
+\item plus de boucle!
+\item nouveaux mot-clef : \texttt{\_\_global\_\_, threadIdx}
+\item appel du noyau \texttt{increment<<<1,N>>>}
+\item gestion de la mémoire : \texttt{cudaMemcpy, cudaMalloc, cudaFree}
+\end{itemize}
+\end{frame}
 \end{document}
+
