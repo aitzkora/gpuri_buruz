@@ -1,26 +1,30 @@
 \documentclass[11pt,mathserif]{beamer}
 \usepackage{svg}
-%% ====== packages ==
+%% paketeak
 \usepackage{amsmath,amssymb,amsfonts,amsthm}
 \usepackage{graphicx}
 \usepackage{bbding}
-\newcommand{\tiret}{\rule[0.6ex]{1.3ex}{0.22ex}}
-
-% !! pour le francais
+\usepackage{fontawesome}
 \usepackage[utf8]{inputenc}
 \usepackage[french]{babel}
 \usepackage{fancyvrb}
-%\usepackage{verbatim}
 \usepackage{relsize}
 \usepackage{color}
 \usepackage{listings}
 
+% kolore batzuk definitu
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 \definecolor{bleuSympa}{rgb}{0.,0.19,0.607}
 
-\newcommand{\R}{\mathbb{R}}
+% bidexka erabilgarriak
+\newcommand{\gezi}{\faHandORight\ }
+\newcommand{\argi}{\faLightbulbO\ }
+\newcommand{\tiret}{\rule[0.6ex]{1.3ex}{0.22ex}}
+\newcommand{\guill}[1]{«#1»} 
+
+% listings kudeatzeko
 \lstset{ %
   numbers=left,
   numbersep=1pt,
@@ -52,23 +56,19 @@
 }
 
 
-% et la commande Pour les guillemets
-\newcommand{\guill}[1]{«#1»} % attention deja dans mycv
 \defbeamertemplate{itemize item}{boldarrow}{\raisebox{0.3ex}{\resizebox{1.2ex}{1ex}{\ArrowBoldRightShort}}}
 
-%% ====== my bearmer ==
+%% ====== nire beamer estiloa
 \mode<presentation> {
-\usetheme{default}    % sobre
-
-% options
-\useinnertheme[shadow]{rounded}  % les numeros
+\usetheme{default}    % urri
+\useinnertheme[shadow]{rounded}  % zenbakiak biribiltzeko
 }
 \usefonttheme{structurebold}
 
 \begin{document}
 
 %****************************************************************
-% Page de presentation 
+% Aurkezpen orria
 %**************************************************************
 \begin{frame}
 \begin{center}
@@ -83,12 +83,10 @@
 \end{frame}
 
 %****************************************************************
-% Plan
+% Xedea
 %**************************************************************
 
-\begin{frame}
-\frametitle{Plan}
-
+\begin{frame}{Plan}
 \begin{itemize}[<+->]
 \item Prolégomenes (parallèlisme, mémoire, cache et Cie)
 \item exemple d'introduction
@@ -122,7 +120,7 @@ différentes classifications du parallèlisme
    \end{itemize}
 \end{itemize}
 \pause
-  $\Rightarrow$ La programmation sur GPU est {\it grosso modo } donc un parallèlisme à {\bf grain fin}, à mémoire {\bf partagée} tournant sur
+  \gezi La programmation sur GPU est {\it grosso modo } donc un parallèlisme à {\bf grain fin}, à mémoire {\bf partagée} tournant sur
   une architecture {\bf hétérogène}.
 \end{frame}
 
@@ -132,7 +130,7 @@ différentes classifications du parallèlisme
 \begin{frame}{Mémoire et Cache}
 \begin{itemize}[<+->]
   \item La rapidité d'execution d'un calcul dépend aussi de la «proximité» avec le CPU de l'élément de mémoire à traiter 
-  \item[$\Rightarrow$] les concepteurs de CPU ont crée des {\bf caches} pour stocker les valeurs mémoires les plus utilisées
+  \item[\gezi] les concepteurs de CPU ont crée des {\bf caches} pour stocker les valeurs mémoires les plus utilisées
   \begin{center}
     \includegraphics[width=0.7\linewidth]{fig/cpu_classique.eps}
   \end{center}
@@ -369,13 +367,12 @@ différentes classifications du parallèlisme
     \item GPU = ensemble de multiprocesseurs de flux (SM) partageant une mémoire global (DRAM)
     \item Tesla K40M : 
       \begin{itemize}
-        \item 15 SM
-        \item 192 x 15 = 2880 SP
-        \item 2048 threads max par SM = 30720 threads
+        \item 15 SM, 192 SP / SM $\Rightarrow$ 2880 SP
+        \item 2048 threads max / SM $\Rightarrow$ 30.720 threads
       \end{itemize}
-    \item ...pas au sens classique
+    \item threads «speciaux»
       \begin{itemize}
-        \item parallelisme de données respectant des motifs d'accès réguliers
+        \item parallélisme de données respectant des motifs d'accès réguliers
       \end{itemize}
   \end{itemize}
 \end{minipage}
@@ -384,5 +381,42 @@ différentes classifications du parallèlisme
   \rotatebox{90}{\includegraphics[width=0.9\linewidth]{fig/kepler.jpg}}
 \end{center}
 \end{minipage}
+\end{frame}
+%****************************************************************
+% Organisation des threads
+%****************************************************************
+\begin{frame}{modèle d'exécution du GPU}
+ \pause
+ \begin{minipage}[c]{0.49\linewidth}
+  \begin{itemize}[<+->]
+    \item un K40M a $\approx$ 30K threads $\Rightarrow$ Que faire si $N \geq 30K$ ?
+    \item Découpage des données en {\em blocs } et en {\em grille}
+    \item organisation 1D, 2D ou 3D
+      \begin{itemize}
+        \item 15 SM, 192 SP / SM $\Rightarrow$ 2880 SP
+        \item 2048 threads max / SM $\Rightarrow$ 30,720 threads
+      \end{itemize}
+    \item threads «speciaux»
+      \begin{itemize}
+        \item parallélisme de données respectant des motifs d'accès réguliers
+      \end{itemize}
+  \end{itemize}
+\end{minipage}
+\begin{minipage}[c]{0.49\linewidth}
+\begin{center}
+  \rotatebox{90}{\includegraphics[width=0.9\linewidth]{fig/kepler.jpg}}
+\end{center}
+\end{minipage}
+\end{frame}
+%****************************************************************
+% References
+%****************************************************************
+\begin{frame}{Références}
+\begin{itemize}[<+->]
+  \item Programming GPU Accelerators with OpenCL, R. Namyst, P.-A. Wacrenier \href{https://raymond-namyst.emi.u-bordeaux.fr/ens/pap/PAP-GPU.pdf}{\beamergotobutton{Pdf}}
+  \item Cuda Fortran for Scientists and Engineers, G. Ruetsch, M. Fatica
+  \item Understanding Latency Hiding on GPUs, V. Volkov
+  \item CUDA Basics, S. Vialle \href{http://www.metz.supelec.fr/metz/personnel/vialle/course/PPS-5A-GPGPU/notes-de-cours-specifiques/PPS-GPU-02-CUDA-Basics-2spp.pdf}{\beamergotobutton{pdf}}
+\end{itemize}
 \end{frame}
 \end{document}
