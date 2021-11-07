@@ -21,6 +21,7 @@
 % bidexka erabilgarriak
 \newcommand{\gezi}{\faHandORight\ }
 \newcommand{\argi}{\faLightbulbO\ }
+\newcommand{\kontuz}{\faExclamationTriangle\ }
 \newcommand{\tiret}{\rule[0.6ex]{1.3ex}{0.22ex}}
 \newcommand{\guill}[1]{«#1»} 
 
@@ -205,7 +206,7 @@ différentes classifications du parallèlisme
 %%****************************************************************
 %% Exemple introductif I
 %%****************************************************************
-\begin{frame}{Exemple d'introduction (I)}
+\begin{frame}{Exemple d'introduction}{version séquentielle}
 \pause
 \begin{itemize}[<+->]
  \item soit un programme calculant \texttt{tab[:]} $\leftarrow$ \texttt{tab[:] + 3}
@@ -216,7 +217,7 @@ différentes classifications du parallèlisme
 %%****************************************************************
 %% Exemple introductif II
 %%****************************************************************
-\begin{frame}{Exemple d'introduction (II) }
+\begin{frame}{Exemple d'introduction}{version CUDA}
 \pause
 \begin{itemize}[<+->]
  \item on peut écrire le programme suivant
@@ -230,14 +231,14 @@ différentes classifications du parallèlisme
 %****************************************************************
 % Principe du //isme GPU
 %****************************************************************
-\begin{frame}{Exemple d'introduction (III)}
+\begin{frame}{Exemple d'introduction}{explication}
 \pause
 \begin{itemize}[<+->]
-  \item boucle \textbf{for} $\rightarrow$ appel d'un {\bf thread}...
- \item executant le noyau \textbf{increment}
- \item pour chaque indice de boucle : \textbf{threadIdx.x }
- \item sur le tableau \textbf{tab\_d} alloué sur le GPU
- \item il faut copier \textbf{tab} sur le GPU et le rapatrier après calcul
+ \item boucle \alert{for} $\rightarrow$ appel d'un {\bf thread}
+ \item qui exécute le noyau \alert{increment}
+ \item pour chaque indice de boucle : \lstinline!threadIdx.x!
+ \item sur le tableau \alert{tab\_d} alloué sur le GPU
+ \item il faut copier \alert{tab} sur le GPU et le rapatrier après calcul
 \end{itemize}
 \pause
 \begin{center}
@@ -248,14 +249,16 @@ différentes classifications du parallèlisme
 % Déroulé classique d'un calcul
 %****************************************************************
 \begin{frame}{Déroulé typique d'un calcul}
+  \lstset{basicstyle=\ttfamily}
 \pause
   \begin{itemize}[<+->]
   \item un programme CUDA suit généralement les étapes suivantes 
 \begin{enumerate}[<+->]
- \item allouer la mémoire sur le GPU : \texttt{cudaMalloc, cudaMallocPitch, cudaMalloc3D}
- \item copier depuis la mémoire globale vers le GPU : \texttt{cudaMemCpy($\cdots$,cudaMemcpyHostToDevice)}
- \item exécuter le noyau sur l'accélerateur : \texttt{myKernel<<<...,...>>>(...)}
- \item rapatrier les résultats en mémoire globale \texttt{cudaMemCpy($\cdots$,cudaMemcpyDeviceToHost)}
+ \item allouer la mémoire sur le GPU : \lstinline!cudaMalloc!
+ \item copier depuis la mémoire globale vers le GPU : \lstinline!cudaMemCpy( ... ,cudaMemcpyHostToDevice)!
+ \item exécuter le noyau sur l'accélerateur : \lstinline!myKernel<<<...,...>>>(...)!
+ \item rapatrier les résultats en mémoire globale \lstinline!cudaMemCpy(...,cudaMemcpyDeviceToHost)!
+ \item libérer la mémoire sur le GPU \lstinline!cudaFree!
  \item visualiser les résultats
 \end{enumerate}
 \item Avant de poursuivre, nous avons besoin de comprendre le modèle d'exécution sur GPU
@@ -264,10 +267,7 @@ différentes classifications du parallèlisme
 %****************************************************************
 % Modèle d'execution GPU I
 %****************************************************************
-\begin{frame}{modèle d'exécution du GPU}
-  \begin{flushright}
-    illustration sur un vieux Tesla
-  \end{flushright}
+\begin{frame}{modèle d'exécution du GPU}{exemple sur un Tesla C1060}
 \begin{minipage}[c]{0.49\linewidth}
 \begin{itemize}
   \item multiprocesseur de flux (SM)
@@ -298,10 +298,7 @@ différentes classifications du parallèlisme
 %****************************************************************
 % Modèle d'execution GPU II
 %****************************************************************
-\begin{frame}{modèle d'exécution du GPU}
-  \begin{flushright}
-    illustration sur un vieux Tesla
-  \end{flushright}
+\begin{frame}{modèle d'exécution du GPU}{exemple sur un Tesla C1060 (II)}
 \begin{minipage}[c]{0.49\linewidth}
 \begin{itemize}
   \item 1 seule unité d'envoi d'instruction par multiprocesseur de flux
@@ -328,11 +325,8 @@ différentes classifications du parallèlisme
 %****************************************************************
 % Modèle d'execution GPU III
 %****************************************************************
-\begin{frame}{modèle d'exécution du GPU}
-  \begin{flushright}
-    {\bf warps } et {\bf demi-warps}
-  \end{flushright}
-\begin{minipage}[c]{0.49\linewidth}
+\begin{frame}{modèle d'exécution du GPU}{warps et demi-warps}
+\begin{minipage}[c]{0.59\linewidth}
 \begin{itemize}
   \item les {\bf threads} sont implicitement groupés en {\bf warps}
     \begin{itemize}
@@ -349,22 +343,19 @@ différentes classifications du parallèlisme
     \end{itemize}
 \end{itemize}
 \end{minipage}
-\begin{minipage}[c]{0.49\linewidth}
+\begin{minipage}[c]{0.39\linewidth}
 \begin{center}
-  \includegraphics[width=0.9\linewidth]{fig/GPUArchi8ThreadDiv.eps}
+  \includegraphics[width=0.95\linewidth]{fig/GPUArchi8ThreadDiv.eps}
 \end{center}
 \end{minipage}
 \end{frame}
 %****************************************************************
 % Modèle d'execution GPU IV
 %****************************************************************
-\begin{frame}{modèle d'exécution du GPU}
-  \begin{flushright}
-   illustration avec un K40M
-  \end{flushright}
-\begin{minipage}[c]{0.49\linewidth}
+\begin{frame}{modèle d'exécution du GPU}{exemple avec un K40M}
+\begin{minipage}[c]{0.59\linewidth}
   \begin{itemize}[<+->]
-    \item GPU = ensemble de multiprocesseurs de flux (SM) partageant une mémoire global (DRAM)
+    \item GPU = ensemble de multiprocesseurs de flux (SM) partageant une mémoire globale (DRAM)
     \item Tesla K40M : 
       \begin{itemize}
         \item 15 SM, 192 SP / SM $\Rightarrow$ 2880 SP
@@ -376,7 +367,7 @@ différentes classifications du parallèlisme
       \end{itemize}
   \end{itemize}
 \end{minipage}
-\begin{minipage}[c]{0.49\linewidth}
+\begin{minipage}[c]{0.39\linewidth}
 \begin{center}
   \rotatebox{90}{\includegraphics[width=0.9\linewidth]{fig/kepler.jpg}}
 \end{center}
@@ -385,26 +376,39 @@ différentes classifications du parallèlisme
 %****************************************************************
 % Organisation des threads
 %****************************************************************
-\begin{frame}{modèle d'exécution du GPU}
+\begin{frame}{Organisation des threads}{découpage des données}
  \pause
- \begin{minipage}[c]{0.49\linewidth}
+ \begin{minipage}[c]{0.59\linewidth}
   \begin{itemize}[<+->]
-    \item un K40M a $\approx$ 30K threads $\Rightarrow$ Que faire si $N \geq 30K$ ?
-    \item Découpage des données en {\em blocs } et en {\em grille}
-    \item organisation 1D, 2D ou 3D
-      \begin{itemize}
-        \item 15 SM, 192 SP / SM $\Rightarrow$ 2880 SP
-        \item 2048 threads max / SM $\Rightarrow$ 30,720 threads
-      \end{itemize}
-    \item threads «speciaux»
-      \begin{itemize}
-        \item parallélisme de données respectant des motifs d'accès réguliers
-      \end{itemize}
+    \item K40M $\approx$ 30K threads 
+    \item Que faire si $N \geq 30K$ ?
+    \item on découpe les données en blocs
+    \item threads organisés en \alert{blocs} qui tournent chacun sur 1 SM
+    \item une \alert{grille} répartie les blocs sur tous les SMs
+    \item on paramètre l'appel du noyau \lstinline!myKernel<<<grille,blocs>>>(...)! avec la taille des blocs et de la grille
   \end{itemize}
 \end{minipage}
-\begin{minipage}[c]{0.49\linewidth}
+\begin{minipage}[c]{0.39\linewidth}
 \begin{center}
-  \rotatebox{90}{\includegraphics[width=0.9\linewidth]{fig/kepler.jpg}}
+  \includegraphics[width=0.8\linewidth]{fig/grille_et_blocs.eps}
+\end{center}
+\end{minipage}
+\end{frame}
+%****************************************************************
+% Organisation des threads II
+%****************************************************************
+\begin{frame}{Organisation des threads}{ordonnancement}
+ \pause
+ \begin{minipage}[c]{0.59\linewidth}
+   {\bf Le programme sur l'hôte demande l'exécution d'une grille de blocs de threads}
+  \begin{itemize}[<+->]
+    \item l'ordonnanceur de bloc distribue les blocs sur les SMs
+    \item \kontuz des GPUs différents peuvent exécuter différemment la même grille de blocs
+  \end{itemize}
+\end{minipage}
+\begin{minipage}[c]{0.39\linewidth}
+\begin{center}
+  \includegraphics[width=0.95\linewidth]{fig/bloc_ordonanceur.eps}
 \end{center}
 \end{minipage}
 \end{frame}
