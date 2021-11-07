@@ -26,4 +26,5 @@ clean_aux:
 	@rm -f core *.nav *.vrb *.loa *.bbl gpu.out  
 	@rm -f *.aux *.toc *.lof *.log *.snm 
 	@rm -f a.out ex_stack ex_thread ex_watch ex_pid ex_core 
+	@rm fig/*eps-converted-to.pdf 
 	@rm -f dll.so ex_dll ex_struct

@@ -90,8 +90,10 @@
 \frametitle{Plan}
 
 \begin{itemize}[<+->]
-\item Prolégomenes( parallèlisme, mémoire, cache)
-\item introduction et principe
+\item Prolégomenes (parallèlisme, mémoire, cache et Cie)
+\item exemple d'introduction
+\item modèle d'execution d'un GPU
+\item accès mémoire et coalescence
 \end{itemize}
 \end{frame}
 
@@ -103,25 +105,25 @@
 \pause
 différentes classifications du parallèlisme
 \begin{itemize}[<+->]
-  \item partagé / distribué
+  \item mémoire partagée / distribuée
     \begin{itemize}
       \item à mémoire partagée : OpenMP, fils d'éxecution (Threads), GPU 
-      \item à mémoire distribué : MPI, Coarrays Fortran, PGAS
+      \item à mémoire distribuée : MPI, Coarrays Fortran, PGAS
     \end{itemize}
  \item gros grain / grain fin : taille des tâches
    \begin{itemize}
      \item gros grain : MPI, certains tâches en mémoire partagée
-     \item grain fin : noyau GPU s'executant sur beaucoup de cœurs
+     \item grain fin : noyaux GPU s'executant sur beaucoup de cœurs
    \end{itemize}
- \item homogène / hétérogène 
+ \item archi homogène / hétérogène 
    \begin{itemize}
-     \item archi homogène : MPI, processeur vectoriels
-     \item archi hétérogène : accélérateur vs hôte, Cell 
+     \item homogène : MPI, processeurs vectoriels
+     \item hétérogène : accélérateur/hôte, processeur Cell (PS3)
    \end{itemize}
 \end{itemize}
 \pause
-  $\Rightarrow$ La programmation sur GPU est {\it grosso modo } donc un parallèlisme à {\bf grain fin}, à{\bf mémoire partagée} tournant sur 
-  {\bf une archi hétérogène}.
+  $\Rightarrow$ La programmation sur GPU est {\it grosso modo } donc un parallèlisme à {\bf grain fin}, à mémoire {\bf partagée} tournant sur
+  une architecture {\bf hétérogène}.
 \end{frame}
 
 %****************************************************************
@@ -163,12 +165,12 @@ différentes classifications du parallèlisme
 %%****************************************************************
 %% Prolegomenes IV
 %%****************************************************************
-\begin{frame}{Cache : Succés et défauts}
+\begin{frame}{Cache : Succès et défauts}
 \begin{itemize}[<+->]
- \item succés (hit): accès a un emplacement présent dans la ligne de cache 
- \item défaut (miss) : accès hors de ligne de cache $\rightarrow$ il faut recharger entierement la ligne des cache!
- \item un code localisant les accés dans le cache, va minimiser les défauts de cache et tourner plus vite
- \item double boucle en C sur les lignes (resp. colonnes en Fortran)
+ \item succès (hit): accès à un emplacement présent dans la ligne de cache 
+ \item défaut (miss) : accès hors de la ligne de cache $\rightarrow$ il faut recharger entierement la ligne de cache!
+ \item un code localisant ses accés dans le cache minimise les défauts de cache et tourne plus vite
+ \item ex. double boucle en C sur les lignes (resp. colonnes en Fortran)
 \end{itemize}
 \pause
 \begin{minipage}[c]{0.49\linewidth}
@@ -222,7 +224,7 @@ différentes classifications du parallèlisme
  \item on peut écrire le programme suivant
 \lstinputlisting{code/incrementGPU.cu}
 \item plus de boucle!
-\item nouveaux mot-clef : \texttt{\_\_global\_\_, threadIdx}
+\item nouveaux mot-clefs : \texttt{\_\_global\_\_, threadIdx}
 \item appel du noyau \texttt{increment<<<1,N>>>}
 \item gestion de la mémoire : \texttt{cudaMemcpy, cudaMalloc, cudaFree}
 \end{itemize}
@@ -262,11 +264,11 @@ différentes classifications du parallèlisme
 \end{itemize}
 \end{frame}
 %****************************************************************
-% Modèle d'execution GPU
+% Modèle d'execution GPU I
 %****************************************************************
 \begin{frame}{modèle d'exécution du GPU}
   \begin{flushright}
-    illustration sur un vieux GPU Nvidia
+    illustration sur un vieux Tesla
   \end{flushright}
 \begin{minipage}[c]{0.49\linewidth}
 \begin{itemize}
@@ -291,7 +293,95 @@ différentes classifications du parallèlisme
 \end{minipage}
 \begin{minipage}[c]{0.49\linewidth}
 \begin{center}
-  \includegraphics[width=0.6\linewidth]{fig/GPU_archi.eps}
+  \includegraphics[width=0.6\linewidth]{fig/GPUArchiThread.eps}
+\end{center}
+\end{minipage}
+\end{frame}
+%****************************************************************
+% Modèle d'execution GPU II
+%****************************************************************
+\begin{frame}{modèle d'exécution du GPU}
+  \begin{flushright}
+    illustration sur un vieux Tesla
+  \end{flushright}
+\begin{minipage}[c]{0.49\linewidth}
+\begin{itemize}
+  \item 1 seule unité d'envoi d'instruction par multiprocesseur de flux
+    \begin{itemize}
+      \item tous les SP executent la même instruction au même cycle d'horloge
+        \begin{itemize}
+          \item sur des données différentes (SIMD)
+        \end{itemize}
+    \end{itemize}
+  \item l'unité d'envoi prend 4 cycles pour récupérer et décoder les instructions
+    \begin{itemize}
+      \item 4 groupes de 8 {\bf threads} planifiés / ligne
+    executant la même instruction
+      \item changement de contexte gratuit !
+    \end{itemize}
+\end{itemize}
+\end{minipage}
+\begin{minipage}[c]{0.49\linewidth}
+\begin{center}
+  \includegraphics[width=0.9\linewidth]{fig/GPUArchi8Thread.eps}
+\end{center}
+\end{minipage}
+\end{frame}
+%****************************************************************
+% Modèle d'execution GPU III
+%****************************************************************
+\begin{frame}{modèle d'exécution du GPU}
+  \begin{flushright}
+    {\bf warps } et {\bf demi-warps}
+  \end{flushright}
+\begin{minipage}[c]{0.49\linewidth}
+\begin{itemize}
+  \item les {\bf threads} sont implicitement groupés en {\bf warps}
+    \begin{itemize}
+      \item un {\bf warp} (chaîne) = 32 threads 
+      \item tous les threads d'une même chaîne executent la même instruction au même cycle logique
+        \begin{itemize}
+          \item pas de divergence
+        \end{itemize}
+    \end{itemize}
+  \item charger des données depuis la mémoire globale est coûteux
+    \begin{itemize}
+      \item plus de 4 threads nécessaire par SP
+      \item 128 permettent de recouvrir la latence mémoire
+    \end{itemize}
+\end{itemize}
+\end{minipage}
+\begin{minipage}[c]{0.49\linewidth}
+\begin{center}
+  \includegraphics[width=0.9\linewidth]{fig/GPUArchi8ThreadDiv.eps}
+\end{center}
+\end{minipage}
+\end{frame}
+%****************************************************************
+% Modèle d'execution GPU IV
+%****************************************************************
+\begin{frame}{modèle d'exécution du GPU}
+  \begin{flushright}
+   illustration avec un K40M
+  \end{flushright}
+\begin{minipage}[c]{0.49\linewidth}
+  \begin{itemize}[<+->]
+    \item GPU = ensemble de multiprocesseurs de flux (SM) partageant une mémoire global (DRAM)
+    \item Tesla K40M : 
+      \begin{itemize}
+        \item 15 SM
+        \item 192 x 15 = 2880 SP
+        \item 2048 threads max par SM = 30720 threads
+      \end{itemize}
+    \item ...pas au sens classique
+      \begin{itemize}
+        \item parallelisme de données respectant des motifs d'accès réguliers
+      \end{itemize}
+  \end{itemize}
+\end{minipage}
+\begin{minipage}[c]{0.49\linewidth}
+\begin{center}
+  \rotatebox{90}{\includegraphics[width=0.9\linewidth]{fig/kepler.jpg}}
 \end{center}
 \end{minipage}
 \end{frame}
