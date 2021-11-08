@@ -17,6 +17,7 @@
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 \definecolor{bleuSympa}{rgb}{0.,0.19,0.607}
+\definecolor{arrosa}{rgb}{0.7,0.15,0.15}
 
 % bidexka erabilgarriak
 \newcommand{\scout}{\faAngellist}
@@ -26,7 +27,8 @@
 \newcommand{\hand}{\faHandORight}
 \newcommand{\argi}{\faLightbulbO}
 \newcommand{\liburu}{\faBook}
-\newcommand{\kontuz}{\faExclamationTriangle\ }
+\newcommand{\kontuz}{\faExclamationTriangle}
+\newcommand{\egia}{\faCheckCircle}
 \newcommand{\tiret}{\rule[0.6ex]{1.3ex}{0.22ex}}
 \newcommand{\guill}[1]{«#1»} 
 
@@ -54,9 +56,9 @@
   commentstyle=\color{bleuSympa},       % comment style
   stringstyle=\color{mauve},
   emph={ __global__, __shared__, __device__, __host__,
-        __syncthreads, threadIdx},
-  emphstyle=\color{bleuSympa},
-  moredelim=[s][\color{bleuSympa}\ttfamily]{<<<}{>>>},
+        __syncthreads, threadIdx, blockIdx, blockDim},
+  emphstyle=\color{arrosa},
+  moredelim=[s][\color{arrosa}\ttfamily]{<<<}{>>>},
   morecomment=[s][\color{mauve}]{cudaMemcpyHostToDevice}{\ },
   morecomment=[s][\color{mauve}]{cudaMemcpyDeviceToHost}{\ }
 }
@@ -338,7 +340,7 @@ différentes classifications du parallèlisme
       \item un {\bf warp} (chaîne) = 32 threads 
       \item tous les threads d'une même chaîne exécutent la même instruction au même cycle logique
         \begin{itemize}
-          \item \kontuz \alert{pas de divergence!}
+          \item[\kontuz] \alert{pas de divergence!}
         \end{itemize}
     \end{itemize}
   \item charger des données depuis la mémoire globale est coûteux
@@ -408,7 +410,7 @@ différentes classifications du parallèlisme
    {\bf Le programme sur l'hôte demande l'exécution d'une grille de blocs de threads}
   \begin{itemize}[<+->]
     \item l'ordonnanceur de bloc distribue les blocs sur les SMs
-    \item \kontuz des GPUs différents peuvent exécuter différemment la même grille de blocs
+    \item[\kontuz] des GPUs différents peuvent exécuter différemment la même grille de blocs
   \end{itemize}
 \end{minipage}
 \begin{minipage}[c]{0.39\linewidth}
@@ -431,15 +433,15 @@ différentes classifications du parallèlisme
    \begin{itemize}
      \item \texttt{db.x} $\leqslant 1024$, \texttt{db.y} $\leqslant 1024$, \texttt{db.z} $\leqslant 64$ 
      \item nb total de threads par bloc $\leqslant 1024$
-     \item problèmes 2D \gezi \texttt{db.z} = 1 
-     \item problèmes 1D \gezi \texttt{db.z} = \texttt{db.y} = 1
+     \item problèmes 2D \gezi\  \texttt{db.z} = 1 
+     \item problèmes 1D \gezi\  \texttt{db.z} = \texttt{db.y} = 1
    \end{itemize}
  \item limites de la grille 3D
    \begin{itemize}
      \item \texttt{dg.x} $\leqslant 2^{31}-1$, \texttt{dg.y} $\leqslant 2^{16} - 1 $, \texttt{dg.z} $\leqslant 2^{16}-1$
      \item nb total de threads par bloc $\leqslant 1024$
-     \item problèmes 2D \gezi \texttt{dg.z} = 1 
-     \item problèmes 1D \gezi \texttt{dg.z} = \texttt{dg.y} = 1
+     \item problèmes 2D \gezi\  \texttt{dg.z} = 1 
+     \item problèmes 1D \gezi\  \texttt{dg.z} = \texttt{dg.y} = 1
   \end{itemize}
  \item exemple avec données 2D mais une grille 1D
   \lstinputlisting[language=C]{code/grille.c}
@@ -453,12 +455,25 @@ différentes classifications du parallèlisme
     \item[\scout] Pour des raisons d'alignement on choisit toujours des blocs de taille multiple de 32 (ou 16 pour les archi $\leqslant$ 1.x)
     \item[\galde] comment faire si les données ne sont pas multiples de la taille du bloc ?
     \item[\argi] on alloue en faisant un dépassement systématique et on fait une vérification dans le noyau
+    \item exemple : pour une grille 1D
+  \begin{itemize}
+    \item[\egia] on choisit \texttt{GRID\_SIZE} = (N-1) / \texttt{BLOCK\_SIZE} + 1
 \begin{center}
-\includegraphics[width=0.6\linewidth]{fig/grille_1D.eps}
+\includegraphics[width=0.7\linewidth]{fig/grille_1D.eps}
 \end{center}
-    \item exemple : grille 1D
-  \lstinputlisting[language=C]{code/overflow.c}
+   \item[\egia] \texttt{\small currentIndex = blockDim.x * blockIdx.x + threadIdx.x}
+   \item[\kontuz] penser à vérifier que \texttt{currentIndex} $\leq$ N !
  \end{itemize}
+  \end{itemize}
+\end{frame}
+%****************************************************************
+% Tailles des grilles/blocs
+%****************************************************************
+\begin{frame}{Taille de blocs}{Exemple XOR}
+\begin{flushright}
+\includegraphics[width=0.1\linewidth]{fig/xor.jpg}
+\end{flushright}
+  \lstinputlisting[language=C]{code/overflow.cu}
 \end{frame}
 %****************************************************************
 % Coalescence
