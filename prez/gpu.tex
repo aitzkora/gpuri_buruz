@@ -20,11 +20,12 @@
 
 % bidexka erabilgarriak
 \newcommand{\scout}{\faAngellist}
-\newcommand{\gezi}{\faLongArrowLeft}
+\newcommand{\gezi}{\faLongArrowRight}
 \newcommand{\galde}{\faQuestion}
 \newcommand{\bof}{\faMehRollingEyes[regular]}
 \newcommand{\hand}{\faHandORight}
 \newcommand{\argi}{\faLightbulbO}
+\newcommand{\liburu}{\faBook}
 \newcommand{\kontuz}{\faExclamationTriangle\ }
 \newcommand{\tiret}{\rule[0.6ex]{1.3ex}{0.22ex}}
 \newcommand{\guill}[1]{«#1»} 
@@ -453,21 +454,35 @@ différentes classifications du parallèlisme
     \item[\galde] comment faire si les données ne sont pas multiples de la taille du bloc ?
     \item[\argi] on alloue en faisant un dépassement systématique et on fait une vérification dans le noyau
 \begin{center}
-\includegraphics[width=0.5\linewidth]{fig/grille_1D.eps}
+\includegraphics[width=0.6\linewidth]{fig/grille_1D.eps}
 \end{center}
     \item exemple : grille 1D
   \lstinputlisting[language=C]{code/overflow.c}
  \end{itemize}
 \end{frame}
-
+%****************************************************************
+% Coalescence
+%****************************************************************
+\begin{frame}{Coalescence}
+  \begin{itemize}
+    \item grâce à une chaîne (warp), on a jusqu'à 32 acces mémoire concurrents
+    \item un accés mémoire typique $\thicksim$ 4 octets
+    \item la granularité grossière du système mémoire va de 32 à 128 octets (une transaction mémorielle)
+    \item[\argi] la {\em coalescence} est l'agrégation de plusieurs accès mémoire en un seul lorsqu'il se font dans le même bloc
+   \item exemples avec 4 threads par chaîne et 4 mots par transaction
+\begin{center}
+\includegraphics[width=0.6\linewidth]{fig/coalescence.eps}
+\end{center}
+  \end{itemize}
+\end{frame}
 %****************************************************************
 % References
 %****************************************************************
 \begin{frame}{Références}
 \begin{itemize}[<+->]
   \item Programming GPU Accelerators with OpenCL, R. Namyst, P.-A. Wacrenier \href{https://raymond-namyst.emi.u-bordeaux.fr/ens/pap/PAP-GPU.pdf}{\beamergotobutton{Pdf}}
-  \item Cuda Fortran for Scientists and Engineers, G. Ruetsch, M. Fatica
-  \item Understanding Latency Hiding on GPUs, V. Volkov
+  \item[\liburu] Cuda Fortran for Scientists and Engineers, G. Ruetsch, M. Fatica
+  \item Understanding Latency Hiding on GPUs, V. Volkov \href{http://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-143.pdf}{\beamergotobutton{pdf}}
   \item CUDA Basics, S. Vialle \href{http://www.metz.supelec.fr/metz/personnel/vialle/course/PPS-5A-GPGPU/notes-de-cours-specifiques/PPS-GPU-02-CUDA-Basics-2spp.pdf}{\beamergotobutton{pdf}}
 \end{itemize}
 \end{frame}
