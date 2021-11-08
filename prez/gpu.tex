@@ -26,6 +26,7 @@
 \newcommand{\bof}{\faMehRollingEyes[regular]}
 \newcommand{\hand}{\faHandORight}
 \newcommand{\argi}{\faLightbulbO}
+\newcommand{\Pdf}{\faFilePdfO}
 \newcommand{\liburu}{\faBook}
 \newcommand{\kontuz}{\faExclamationTriangle}
 \newcommand{\egia}{\faCheckCircle}
@@ -98,7 +99,7 @@
 \begin{itemize}[<+->]
 \item Prolégomenes (parallèlisme, mémoire, cache et Cie)
 \item Exemple d'introduction
-\item Modèle d'execution d'un GPU
+\item Modèle d'exécution d'un GPU
 \item Accès mémoire et coalescence
 \end{itemize}
 \end{frame}
@@ -128,7 +129,7 @@ différentes classifications du parallèlisme
    \end{itemize}
 \end{itemize}
 \pause
-  \gezi La programmation sur GPU est {\it grosso modo } donc un parallèlisme à {\bf grain fin}, à mémoire {\bf partagée} tournant sur
+  \gezi\  La programmation sur GPU est {\it grosso modo } donc un parallèlisme à {\bf grain fin}, à mémoire {\bf partagée} tournant sur
   une architecture {\bf hétérogène}.
 \end{frame}
 
@@ -162,7 +163,7 @@ différentes classifications du parallèlisme
       cache L2  &  10 & 5 \\
       cache L3 (non partagé) & 40 & 20  \\
       cache L3 (partagé) &  65 & 35  \\
-      mémoire vive local & & 60 \\
+      mémoire vive locale & & 60 \\
       mémoire vive distante & & 100 \\
     \hline
     \end{tabular}
@@ -175,7 +176,7 @@ différentes classifications du parallèlisme
 \begin{itemize}[<+->]
  \item succès (hit): accès à un emplacement présent dans la ligne de cache 
  \item défaut (miss) : accès hors de la ligne de cache $\rightarrow$ il faut recharger entierement la ligne de cache!
- \item un code localisant ses accés dans le cache minimise les défauts de cache et tourne plus vite
+ \item un code localisant ses accès dans le cache minimise les défauts de cache et tourne plus vite
  \item ex. double boucle en C sur les lignes (resp. colonnes en Fortran)
 \end{itemize}
 \pause
@@ -310,7 +311,7 @@ différentes classifications du parallèlisme
 \begin{itemize}
   \item 1 seule unité d'envoi d'instruction par multiprocesseur de flux
     \begin{itemize}
-      \item tous les SP executent la même instruction au même cycle d'horloge
+      \item tous les SP exécutent la même instruction au même cycle d'horloge
         \begin{itemize}
           \item sur des données différentes (SIMD)
         \end{itemize}
@@ -318,7 +319,7 @@ différentes classifications du parallèlisme
   \item l'unité d'envoi prend 4 cycles pour récupérer et décoder les instructions
     \begin{itemize}
       \item 4 groupes de 8 {\bf threads} planifiés / ligne
-    executant la même instruction
+    exécutant la même instruction
       \item changement de contexte gratuit !
     \end{itemize}
 \end{itemize}
@@ -480,8 +481,8 @@ différentes classifications du parallèlisme
 %****************************************************************
 \begin{frame}{Coalescence}
   \begin{itemize}
-    \item grâce à une chaîne (warp), on a jusqu'à 32 acces mémoire concurrents
-    \item un accés mémoire typique $\thicksim$ 4 octets
+    \item grâce à une chaîne (warp), on a jusqu'à 32 accès mémoire concurrents
+    \item un accès mémoire typique $\thicksim$ 4 octets
     \item la granularité grossière du système mémoire va de 32 à 128 octets (une transaction mémorielle)
     \item[\argi] la {\em coalescence} est l'agrégation de plusieurs accès mémoire en un seul lorsqu'il se font dans le même bloc
    \item exemples avec 4 threads par chaîne et 4 mots par transaction
@@ -495,10 +496,10 @@ différentes classifications du parallèlisme
 %****************************************************************
 \begin{frame}{Références}
 \begin{itemize}[<+->]
-  \item Programming GPU Accelerators with OpenCL, R. Namyst, P.-A. Wacrenier \href{https://raymond-namyst.emi.u-bordeaux.fr/ens/pap/PAP-GPU.pdf}{\beamergotobutton{Pdf}}
+  \item[\Pdf] Programming GPU Accelerators with OpenCL, R. Namyst, P.-A. Wacrenier \href{https://raymond-namyst.emi.u-bordeaux.fr/ens/pap/PAP-GPU.pdf}{\beamergotobutton{pdf}}
   \item[\liburu] Cuda Fortran for Scientists and Engineers, G. Ruetsch, M. Fatica
-  \item Understanding Latency Hiding on GPUs, V. Volkov \href{http://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-143.pdf}{\beamergotobutton{pdf}}
-  \item CUDA Basics, S. Vialle \href{http://www.metz.supelec.fr/metz/personnel/vialle/course/PPS-5A-GPGPU/notes-de-cours-specifiques/PPS-GPU-02-CUDA-Basics-2spp.pdf}{\beamergotobutton{pdf}}
+  \item[\Pdf] Understanding Latency Hiding on GPUs, V. Volkov \href{http://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-143.pdf}{\beamergotobutton{pdf}}
+  \item[\faFilePowerpointO] CUDA Basics, S. Vialle \href{http://www.metz.supelec.fr/metz/personnel/vialle/course/PPS-5A-GPGPU/notes-de-cours-specifiques/PPS-GPU-02-CUDA-Basics-2spp.pdf}{\beamergotobutton{pdf}}
 \end{itemize}
 \end{frame}
 \end{document}
