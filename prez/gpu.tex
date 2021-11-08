@@ -19,8 +19,12 @@
 \definecolor{bleuSympa}{rgb}{0.,0.19,0.607}
 
 % bidexka erabilgarriak
-\newcommand{\gezi}{\faHandORight\ }
-\newcommand{\argi}{\faLightbulbO\ }
+\newcommand{\scout}{\faAngellist}
+\newcommand{\gezi}{\faLongArrowLeft}
+\newcommand{\galde}{\faQuestion}
+\newcommand{\bof}{\faMehRollingEyes[regular]}
+\newcommand{\hand}{\faHandORight}
+\newcommand{\argi}{\faLightbulbO}
 \newcommand{\kontuz}{\faExclamationTriangle\ }
 \newcommand{\tiret}{\rule[0.6ex]{1.3ex}{0.22ex}}
 \newcommand{\guill}[1]{«#1»} 
@@ -35,7 +39,7 @@
   basicstyle=\relsize{-3}\ttfamily,           % the size of the fonts that are used for the code
                                   % will be numbered
   %numbersep=5pt,                  % how far the line-numbers are from the code
-  backgroundcolor=\color{black!50},      % choose the background color. You must add \usepackage{color}
+  backgroundcolor=\color{black!20},      % choose the background color. You must add \usepackage{color}
   showspaces=false,               % show spaces adding particular underscores
   showstringspaces=false,         % underline spaces within strings
   showtabs=false,                 % show tabs within strings adding particular underscores
@@ -46,12 +50,12 @@
   breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
   lineskip=-1pt,
   keywordstyle=\color{bleuSympa}\textbf,          % keyword style
-  commentstyle=\color{dkgreen},       % comment style
+  commentstyle=\color{bleuSympa},       % comment style
   stringstyle=\color{mauve},
   emph={ __global__, __shared__, __device__, __host__,
         __syncthreads, threadIdx},
-  emphstyle=\color{green},
-  moredelim=[s][\color{green}\ttfamily]{<<<}{>>>},
+  emphstyle=\color{bleuSympa},
+  moredelim=[s][\color{bleuSympa}\ttfamily]{<<<}{>>>},
   morecomment=[s][\color{mauve}]{cudaMemcpyHostToDevice}{\ },
   morecomment=[s][\color{mauve}]{cudaMemcpyDeviceToHost}{\ }
 }
@@ -385,7 +389,7 @@ différentes classifications du parallèlisme
     \item on découpe les données en blocs
     \item threads organisés en \alert{blocs} qui tournent chacun sur 1 SM
     \item une \alert{grille} répartie les blocs sur tous les SMs
-    \item on paramètre l'appel du noyau \lstinline!myKernel<<<grille,blocs>>>(...)! avec la taille des blocs et de la grille
+    \item on paramètre l'appel du noyau \lstinline!myKernel<<<grille,blocs>>>(...)! avec la taille des blocs et de la grille (int ou dim3)
   \end{itemize}
 \end{minipage}
 \begin{minipage}[c]{0.39\linewidth}
@@ -413,34 +417,49 @@ différentes classifications du parallèlisme
 \end{minipage}
 \end{frame}
 %****************************************************************
-% Organisation des threads II
+% Tailles des grilles/blocs 
 %****************************************************************
 \begin{frame}{Tailles de grille et de blocs}
-\begin{minipage}[c]{0.59\linewidth}
- type CUDA pour gérer les dimensions 
+  \begin{itemize}[<+->]
+    \item type CUDA pour gérer les dimensions de grille et de bloc
     \begin{itemize}
       \item \alert{dim3} est une structure avec 3 champs entiers \texttt{\_.x,\_.y et \_.z}
-      \item descripteur de grille (dg) et de bloc (db)
+      \item soit \texttt{dg} un descripteur de grille et \texttt{db} un descripteur de bloc
     \end{itemize}
- Limites de bloc 3D
+  \item Limites de bloc 3D
    \begin{itemize}
-     \item \texttt{db.x}, \texttt{db.y} $\leqslant 1024$, \texttt{db.z} $\leqslant 64$ 
-     \item nb total de threads / bloc $\leqslant 1024$
-     \item \texttt{db.z} = 1 $\mapsto$ 2D
-     \item \texttt{db.z} = \texttt{db.y} = 1 $\mapsto$ 1D
+     \item \texttt{db.x} $\leqslant 1024$, \texttt{db.y} $\leqslant 1024$, \texttt{db.z} $\leqslant 64$ 
+     \item nb total de threads par bloc $\leqslant 1024$
+     \item problèmes 2D \gezi \texttt{db.z} = 1 
+     \item problèmes 1D \gezi \texttt{db.z} = \texttt{db.y} = 1
    \end{itemize}
- limites de la grille 3D
+ \item limites de la grille 3D
    \begin{itemize}
-     \item \texttt{dg.x} $\leqslant 2^{31}-1$, \texttt{dg.y}, \texttt{dg.z} $\leqslant 2^{16}-1$
-     \item nb total de threads / bloc $\leqslant 1024$
-     \item \texttt{dg.z} = 1 $\mapsto$ 2D
-     \item \texttt{dg.z} = \texttt{dg.y} = 1 $\mapsto$ 1D
-   \end{itemize}
-\end{minipage}
-\begin{minipage}[c]{0.39\linewidth}
+     \item \texttt{dg.x} $\leqslant 2^{31}-1$, \texttt{dg.y} $\leqslant 2^{16} - 1 $, \texttt{dg.z} $\leqslant 2^{16}-1$
+     \item nb total de threads par bloc $\leqslant 1024$
+     \item problèmes 2D \gezi \texttt{dg.z} = 1 
+     \item problèmes 1D \gezi \texttt{dg.z} = \texttt{dg.y} = 1
+  \end{itemize}
+ \item exemple avec données 2D mais une grille 1D
   \lstinputlisting[language=C]{code/grille.c}
-\end{minipage}
+ \end{itemize}
 \end{frame}
+%****************************************************************
+% Tailles des grilles/blocs
+%****************************************************************
+\begin{frame}{Taille de blocs}
+  \begin{itemize}[<+->]
+    \item[\scout] Pour des raisons d'alignement on choisit toujours des blocs de taille multiple de 32 (ou 16 pour les archi $\leqslant$ 1.x)
+    \item[\galde] comment faire si les données ne sont pas multiples de la taille du bloc ?
+    \item[\argi] on alloue en faisant un dépassement systématique et on fait une vérification dans le noyau
+\begin{center}
+\includegraphics[width=0.5\linewidth]{fig/grille_1D.eps}
+\end{center}
+    \item exemple : grille 1D
+  \lstinputlisting[language=C]{code/overflow.c}
+ \end{itemize}
+\end{frame}
+
 %****************************************************************
 % References
 %****************************************************************
