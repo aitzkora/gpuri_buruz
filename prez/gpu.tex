@@ -33,7 +33,9 @@
 \newcommand{\pozik}{\faSmileO}
 \newcommand{\triste}{\faFrownO}
 \newcommand{\egia}{\faCheckCircle}
-
+\newcommand{\adibi}{\faCommentO}
+\newcommand{\harritu}{\faExclamation}
+\newcommand{\geldi}{\faHandPaperO}
 \captionsetup[figure]{labelformat=empty}
 
 % listings kudeatzeko
@@ -115,7 +117,7 @@
 \begin{frame}{Utilisation des GPU}
 \pause
   \begin{itemize}[<+->]
-    \item 
+    \item[\adibi]
       \begin{minipage}[c]{0.49\linewidth}
         calcul haute performance (HPC) : simulation numérique de grande taille
       \end{minipage}
@@ -125,7 +127,7 @@
           \caption{\tiny Supercalculateur Titan : $\thicksim$ 18000 GPU }
         \end{figure}
       \end{minipage}
-    \item  \begin{minipage}[l]{0.49\linewidth}
+    \item[\adibi]  \begin{minipage}[l]{0.49\linewidth}
      traitement d'image, jeux vidéos 
       \end{minipage}
       \begin{minipage}[r]{0.49\linewidth}
@@ -134,7 +136,7 @@
           \caption{\tiny Minetest (clone libre) }
         \end{figure}
       \end{minipage}
-    \item  \begin{minipage}[l]{0.49\linewidth}
+    \item[\adibi]  \begin{minipage}[l]{0.49\linewidth}
      apprentissage automatique
       \end{minipage}
       \begin{minipage}[r]{0.49\linewidth}
@@ -172,16 +174,18 @@ La mémoire utilisée peut être distribuée ou partagée.
 %****************************************************************
 \begin{frame}{Parallèlisme}{Grain}
 \begin{itemize}[<+->]
-  \item gros grain : un processeur parallèle (tâche, threads, processus MPI) traite beaucoup d'éléments 
+  \item[\faTruck] gros grain : un processeur parallèle (tâche, threads, processus MPI) traite beaucoup d'éléments 
    \begin{itemize}
      \item décomposition de domaine (maillage, matrice) :  ex. MUMPS
-     \item parallèlisme par tâches avec support d'execution (ex : STARPU)
-     \item chaque processeur doit avoir suffisament de mémoire pour traiter une grosse tâche
+     \item parallèlisme par tâches (ex : STARPU)
+     \item[\hand] chaque processeur doit avoir suffisament de mémoire pour traiter une grosse tâche
+     \item[\argi] nombre raisonable de tâches
    \end{itemize}
-   \item grain fin : chaque processeur traite une «donnée élémentaire»
+ \item[\faBicycle] grain fin : chaque processeur traite une «donnée élémentaire»
    \begin{itemize}
-     \item[\kontuz] nécessite un grand nombre de threads
-     \item[\kontuz] le changement de contexte doit être négligeable
+     \item[\hand] nécessite un grand nombre de threads
+     \item[\hand] le changement de contexte doit être négligeable
+     \item[\argi] trés grand nombre de tâches $\geqslant 10000$
    \end{itemize}
 \end{itemize}
 \end{frame}
@@ -190,20 +194,25 @@ La mémoire utilisée peut être distribuée ou partagée.
 %****************************************************************
 \begin{frame}{Parallèlisme}{Architecture}
 \begin{itemize}[<+->]
-  \item homogène : processeurs quasi-identiques ou de caractéristiques semblables(latence, mémoire, etc)
+  \item homogène : caractéristiques semblables(latence, mémoire, etc)
    \begin{itemize}
      \item processeurs vectoriels (Cray, DEC)
-     \item modèle SIMD : Single Instruction Multiple Data (MMX, SSE, AVX)
+     \item modèle SIMD : MMX, SSE, AVX, Altivec
      \item grappe de calcul MPI avec des nœuds identiques
    \end{itemize}
-  \item hétérogène : on observe des disparités entre les différents processeurs
+  \item hétérogène : disparités entre les processeurs
    \begin{itemize}
      \item Calcul sur GPU : hôte vs accélérateur
-     \item Processeur Cell dans les PS3
-   \end{itemize}
+     \item \begin{minipage}[r]{0.49\linewidth} 
+         Processeur Cell dans les PS3 
+      \end{minipage}
+      \begin{minipage}[r]{0.49\linewidth}
+        \includegraphics[width=0.6\linewidth]{fig/ps3_lauso.jpg}
+      \end{minipage}
+\end{itemize}
 \end{itemize}
 \pause
-  \hand La programmation sur GPU est {\it grosso modo}\  donc un parallèlisme à {\bf grain fin}, à mémoire {\bf partagée} tournant sur
+  \hand\  La programmation sur GPU est {\it grosso modo}\  donc un parallèlisme à {\bf grain fin}, à mémoire {\bf partagée} tournant sur
   une architecture {\bf hétérogène}.
 \end{frame}
 
@@ -246,18 +255,16 @@ La mémoire utilisée peut être distribuée ou partagée.
 %%****************************************************************
 %% Prolegomenes IV
 %%****************************************************************
-\begin{frame}{Cache : Succès et défauts}
+\begin{frame}{Cache}{Succès et défauts}
 \begin{itemize}[<+->]
- \item succès (hit): accès à un emplacement présent dans la ligne de cache 
- \item défaut (miss) : accès hors de la ligne de cache $\rightarrow$ il faut recharger entierement la ligne de cache!
- \item un code localisant ses accès dans le cache minimise les défauts de cache et tourne plus vite
- \item ex. double boucle en C sur les lignes (resp. colonnes en Fortran)
-\end{itemize}
-\pause
+  \item[\pozik] succès (hit) : accès déjà dans la ligne de cache 
+  \item[\triste] défaut (miss) : accès hors de la ligne de cache \gezi\ il faut recharger entièrement la ligne de cache!
+  \item[\argi] un code localisant ses accès dans le cache minimise les défauts de cache et tourne plus vite
+  \item[\adibi] double boucle en C sur les lignes (resp. colonnes en Fortran)
 \begin{minipage}[c]{0.49\linewidth}
   \lstinputlisting[language=C]{code/loop_col.c}
 \end{minipage}
-\begin{minipage}[c]{0.49\linewidth}
+\begin{minipage}[r]{0.49\linewidth}
     \begin{tabular}{|c|c|}
     \hline
      boucle ext. & tps(s)  \\
@@ -267,8 +274,8 @@ La mémoire utilisée peut être distribuée ou partagée.
     \hline
     \end{tabular}
 \end{minipage}
-\pause 
- $\Rightarrow$ raison d'être des biblios BLAS et LAPACK
+\item[\hand] raison d'être des biblios BLAS et LAPACK
+\end{itemize}
 \end{frame}
 %%****************************************************************
 %% Prolegomenes V
@@ -291,9 +298,9 @@ La mémoire utilisée peut être distribuée ou partagée.
 \begin{frame}{Exemple d'introduction}{version séquentielle}
 \pause
 \begin{itemize}[<+->]
- \item soit un programme calculant \texttt{tab[:]} $\leftarrow$ \texttt{tab[:] + 3}
+  \item[\adibi] soit un programme calculant \texttt{tab[:]} $\leftarrow$ \texttt{tab[:] + 3}
 \lstinputlisting{code/increment.c}
-\item on souhaite paralléliser la boucle en ligne 6 à l'aide de CUDA
+\item[\galde] on souhaite paralléliser la boucle en ligne 6 à l'aide de CUDA
 \end{itemize}
 \end{frame}
 %%****************************************************************
@@ -302,12 +309,12 @@ La mémoire utilisée peut être distribuée ou partagée.
 \begin{frame}{Exemple d'introduction}{version CUDA}
 \pause
 \begin{itemize}[<+->]
- \item on peut écrire le programme suivant
+  \item[\adibi] on peut écrire le programme suivant
 \lstinputlisting{code/incrementGPU.cu}
-\item plus de boucle!
-\item nouveaux mot-clefs : \texttt{\_\_global\_\_, threadIdx}
-\item appel du noyau \texttt{increment<<<1,N>>>}
-\item gestion de la mémoire : \texttt{cudaMemcpy, cudaMalloc, cudaFree}
+\item[\pozik] plus de boucle
+\item[\argi] nouveaux mot-clefs : \texttt{\_\_global\_\_, threadIdx}
+\item[\argi] appel du noyau \texttt{increment<<<1,N>>>}
+\item[\argi] gestion de la mémoire : \texttt{\small cudaMemcpy, cudaMalloc, cudaFree}
 \end{itemize}
 \end{frame}
 %****************************************************************
@@ -316,11 +323,11 @@ La mémoire utilisée peut être distribuée ou partagée.
 \begin{frame}{Exemple d'introduction}{explication}
 \pause
 \begin{itemize}[<+->]
- \item boucle \alert{for} $\rightarrow$ appel d'un {\bf thread}
- \item qui exécute le noyau \alert{increment}
- \item pour chaque indice de boucle : \lstinline!threadIdx.x!
- \item sur le tableau \alert{tab\_d} alloué sur le GPU
- \item il faut copier \alert{tab} sur le GPU et le rapatrier après calcul
+ \item[\argi] boucle \texttt{for} \gezi\ appel d'un {\bf thread}
+ \item[\argi] exécutant le noyau \texttt{increment}
+ \item[\argi] pour chaque indice de boucle indexé par \texttt{threadIdx.x}
+ \item[\argi] sur le tableau \texttt{tab\_d} alloué sur le GPU
+ \item[\kontuz] il faut copier \texttt{tab} sur le GPU et le rapatrier après calcul
 \end{itemize}
 \pause
 \begin{center}
@@ -334,7 +341,7 @@ La mémoire utilisée peut être distribuée ou partagée.
   \lstset{basicstyle=\ttfamily}
 \pause
   \begin{itemize}[<+->]
-  \item un programme CUDA suit généralement les étapes suivantes 
+    \item[\argi] un programme CUDA suit généralement les étapes suivantes 
 \begin{enumerate}[<+->]
  \item allouer la mémoire sur le GPU : \lstinline!cudaMalloc!
  \item copier depuis la mémoire globale vers le GPU : \lstinline!cudaMemCpy( ... ,cudaMemcpyHostToDevice)!
@@ -343,7 +350,7 @@ La mémoire utilisée peut être distribuée ou partagée.
  \item libérer la mémoire sur le GPU \lstinline!cudaFree!
  \item visualiser les résultats
 \end{enumerate}
-\item Avant de poursuivre, nous avons besoin de comprendre le modèle d'exécution sur GPU
+\item[\geldi] Avant de poursuivre, nous avons besoin de comprendre le modèle d'exécution sur GPU
 \end{itemize}
 \end{frame}
 %****************************************************************
@@ -385,7 +392,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \begin{itemize}
   \item 1 seule unité d'envoi d'instruction par multiprocesseur de flux
     \begin{itemize}
-      \item tous les SP exécutent la même instruction au même cycle d'horloge
+      \item tous les SPs exécutent la même instruction au même cycle d'horloge
         \begin{itemize}
           \item sur des données différentes (SIMD)
         \end{itemize}
@@ -462,12 +469,16 @@ La mémoire utilisée peut être distribuée ou partagée.
  \pause
  \begin{minipage}[c]{0.59\linewidth}
   \begin{itemize}[<+->]
-    \item K40M $\approx$ 30K threads 
-    \item Que faire si $N \geq 30K$ ?
-    \item on découpe les données en blocs
-    \item threads organisés en \alert{blocs} qui tournent chacun sur 1 SM
-    \item une \alert{grille} répartie les blocs sur tous les SMs
-    \item on paramètre l'appel du noyau \lstinline!myKernel<<<grille,blocs>>>(...)! avec la taille des blocs et de la grille (int ou dim3)
+    \item[\argi] K40M $\approx$ 30K threads 
+    \item[\galde] Que faire si $N \geq 30K$ ?
+    \item[\scout] on découpe les données en blocs
+    \item[\argi] threads organisés en {\em blocs} qui tournent chacun sur 1 SM
+    \item[\argi] une {\bf grille} répartie les blocs sur tous les SMs
+    \item[\argi] on paramètre l'appel du noyau \texttt{myKernel<<<dg,db>>>} 
+      \begin{itemize}
+        \item dg : taille grille (\texttt{int} ou \texttt{dim3})
+        \item db : taille bloc (\texttt{int} ou \texttt{dim3})
+      \end{itemize}
   \end{itemize}
 \end{minipage}
 \begin{minipage}[c]{0.39\linewidth}
@@ -499,26 +510,26 @@ La mémoire utilisée peut être distribuée ou partagée.
 %****************************************************************
 \begin{frame}{Tailles de grille et de blocs}
   \begin{itemize}[<+->]
-    \item type CUDA pour gérer les dimensions de grille et de bloc
+    \item[\argi] type CUDA pour gérer les dimensions de grille et de bloc
     \begin{itemize}
       \item \alert{dim3} est une structure avec 3 champs entiers \texttt{\_.x,\_.y et \_.z}
       \item soit \texttt{dg} un descripteur de grille et \texttt{db} un descripteur de bloc
     \end{itemize}
-  \item Limites de bloc 3D
+  \item[\argi] Limites de bloc 3D
    \begin{itemize}
      \item \texttt{db.x} $\leqslant 1024$, \texttt{db.y} $\leqslant 1024$, \texttt{db.z} $\leqslant 64$ 
      \item nb total de threads par bloc $\leqslant 1024$
      \item problèmes 2D \gezi\  \texttt{db.z} = 1 
      \item problèmes 1D \gezi\  \texttt{db.z} = \texttt{db.y} = 1
    \end{itemize}
- \item limites de la grille 3D
+ \item[\argi] limites de la grille 3D
    \begin{itemize}
      \item \texttt{dg.x} $\leqslant 2^{31}-1$, \texttt{dg.y} $\leqslant 2^{16} - 1 $, \texttt{dg.z} $\leqslant 2^{16}-1$
      \item nb total de threads par bloc $\leqslant 1024$
      \item problèmes 2D \gezi\  \texttt{dg.z} = 1 
      \item problèmes 1D \gezi\  \texttt{dg.z} = \texttt{dg.y} = 1
   \end{itemize}
- \item exemple avec données 2D mais une grille 1D
+\item[\adibi] exemple avec données 2D mais une grille 1D
   \lstinputlisting[language=C]{code/grille.c}
  \end{itemize}
 \end{frame}
@@ -555,11 +566,11 @@ La mémoire utilisée peut être distribuée ou partagée.
 %****************************************************************
 \begin{frame}{Coalescence}
   \begin{itemize}[<+->]
-    \item chaîne (warp) permet jusqu'à 32 accès mémoire concurrents
-    \item un accès mémoire typique $\thicksim$ 4 octets
-    \item granularité mémorielle : de 32 à 128 octets 
-    \item[\argi] {\em coalescence} : agrégation de plusieurs accès mémoire en un seul lorsqu'il se font dans le même bloc
-   \item exemples avec 4 threads par chaîne et 4 mots par transaction
+    \item[\argi] chaîne (warp) permet jusqu'à 32 accès mémoire concurrents
+    \item[\argi] un accès mémoire typique $\thicksim$ 4 octets
+    \item[\argi] granularité mémorielle : de 32 à 128 octets 
+    \item[\harritu] {\em coalescence} : agrégation de plusieurs accès mémoire en un seul lorsqu'il se font dans le même bloc
+    \item[\adibi] exemples avec 4 threads par chaîne et 4 mots par transaction
 \begin{center}
 \includegraphics[width=0.6\linewidth]{fig/coalescence.eps}
 \end{center}

@@ -15,9 +15,9 @@ int main()
   std::vector<int> tab(N, 1);
   int * tabGPU;
   cudaMalloc(&tabGPU, N * sizeof(int));
-  cudaMemcpy(tabGPU, tab.data(), N * sizeof(int), cudaMemcpyHostToDevice);
+  cudaMemcpy(tabGPU, tab.data(), N * sizeof(int), cudaMemcpyHostToDevice );
   kernelXOR<<<(N-1)/BLOCK_SIZE + 1, BLOCK_SIZE>>>(tabGPU);
-  cudaMemcpy(tab.data(), tabGPU, N * sizeof(int), cudaMemcpyDeviceToHost);
+  cudaMemcpy(tab.data(), tabGPU, N * sizeof(int), cudaMemcpyDeviceToHost );
   cudaFree(tabGPU);
   for(int i=0; i < N; ++i) 
     assert (tab[i] == 0xFE) ;
