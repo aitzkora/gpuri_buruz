@@ -11,6 +11,7 @@
 \usepackage{relsize}
 \usepackage{color}
 \usepackage{listings}
+\usepackage{caption}
 
 % kolore batzuk definitu
 \definecolor{dkgreen}{rgb}{0,0.6,0}
@@ -19,7 +20,7 @@
 \definecolor{bleuSympa}{rgb}{0.,0.19,0.607}
 \definecolor{arrosa}{rgb}{0.7,0.15,0.15}
 
-% bidexka erabilgarriak
+% bidexka erabilgarriak fontawesome erabiltzen
 \newcommand{\scout}{\faAngellist}
 \newcommand{\gezi}{\faLongArrowRight}
 \newcommand{\galde}{\faQuestion}
@@ -29,9 +30,11 @@
 \newcommand{\Pdf}{\faFilePdfO}
 \newcommand{\liburu}{\faBook}
 \newcommand{\kontuz}{\faExclamationTriangle}
+\newcommand{\pozik}{\faSmileO}
+\newcommand{\triste}{\faFrownO}
 \newcommand{\egia}{\faCheckCircle}
-\newcommand{\tiret}{\rule[0.6ex]{1.3ex}{0.22ex}}
-\newcommand{\guill}[1]{«#1»} 
+
+\captionsetup[figure]{labelformat=empty}
 
 % listings kudeatzeko
 \lstset{ %
@@ -81,7 +84,7 @@
 %**************************************************************
 \begin{frame}
 \begin{center}
-{\Large Une introduction au calcul sur GPU} 
+  {\Large Une introduction au calcul sur GPU (I) } 
 \end{center}
 \begin{center}
 \includegraphics[width=0.5\linewidth]{fig/gpu.jpg}
@@ -97,39 +100,110 @@
 
 \begin{frame}{Plan}
 \begin{itemize}[<+->]
-\item Prolégomenes (parallèlisme, mémoire, cache et Cie)
+\item Exemple d'applications 
+\item Prolégomènes (parallèlisme, mémoire, cache)
 \item Exemple d'introduction
 \item Modèle d'exécution d'un GPU
-\item Accès mémoire et coalescence
+\item Accès mémoires et coalescence
+\item Outils (déverminage, profilage)
 \end{itemize}
+\end{frame}
+%****************************************************************
+% Applications
+%**************************************************************
+
+\begin{frame}{Utilisation des GPU}
+\pause
+  \begin{itemize}[<+->]
+    \item 
+      \begin{minipage}[c]{0.49\linewidth}
+        calcul haute performance (HPC) : simulation numérique de grande taille
+      \end{minipage}
+      \begin{minipage}[c]{0.49\linewidth}
+        \begin{figure}
+        \includegraphics[width=0.6\linewidth]{fig/titan.jpg}
+          \caption{\tiny Supercalculateur Titan : $\thicksim$ 18000 GPU }
+        \end{figure}
+      \end{minipage}
+    \item  \begin{minipage}[l]{0.49\linewidth}
+     traitement d'image, jeux vidéos 
+      \end{minipage}
+      \begin{minipage}[r]{0.49\linewidth}
+        \begin{figure}
+        \includegraphics[width=0.6\linewidth]{fig/minetest.jpg}
+          \caption{\tiny Minetest (clone libre) }
+        \end{figure}
+      \end{minipage}
+    \item  \begin{minipage}[l]{0.49\linewidth}
+     apprentissage automatique
+      \end{minipage}
+      \begin{minipage}[r]{0.49\linewidth}
+        \begin{figure}
+        \includegraphics[width=0.6\linewidth]{fig/neural.png}
+          \caption{\tiny véhicule autonome(projet inutile \faMehO)}
+        \end{figure}
+      \end{minipage}
+  \end{itemize}
 \end{frame}
 
 %****************************************************************
-% Prolegomènes I
+% Parallèlisme Distribue/partagé
 %****************************************************************
-\begin{frame}
-\frametitle{Parallèlisme}
+\begin{frame}{Parallèlisme}{partagé/distribué}
 \pause
-différentes classifications du parallèlisme
+La mémoire utilisée peut être distribuée ou partagée.
+  \begin{itemize}[<+->]
+    \item mémoire partagée : on a des threads (fils d'exécution) ou tâches qui accèdent à une mémoire commune. 
+      \begin{itemize}
+        \item[\pozik] rapidité d'accés en lecture/écriture
+        \item[\kontuz] accés concurrents : utilisation de verrous ou d'opérations atomiques
+        \item[\argi] cibles : Threads Posix, OpenMP, CUDA
+      \end{itemize}
+    \item mémoire distribuée : chaque processus a une mémoire privée et communique avec les autres par des messages
+      \begin{itemize}
+        \item[\argi] nécéssaire sur de trés grand problème (limite mémoire/nœud  moins gênante)
+        \item[\triste] envoie de messages peut être couteux
+        \item[\argi] cibles : MPI, Multi-GPU
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+%****************************************************************
+% Parallèlisme : Grain
+%****************************************************************
+\begin{frame}{Parallèlisme}{Grain}
 \begin{itemize}[<+->]
-  \item mémoire partagée / distribuée
-    \begin{itemize}
-      \item à mémoire partagée : OpenMP, fils d'éxecution (Threads), GPU 
-      \item à mémoire distribuée : MPI, Coarrays Fortran, PGAS
-    \end{itemize}
- \item gros grain / grain fin : taille des tâches
+  \item gros grain : un processeur parallèle (tâche, threads, processus MPI) traite beaucoup d'éléments 
    \begin{itemize}
-     \item gros grain : MPI, certains tâches en mémoire partagée
-     \item grain fin : noyaux GPU s'executant sur beaucoup de cœurs
+     \item décomposition de domaine (maillage, matrice) :  ex. MUMPS
+     \item parallèlisme par tâches avec support d'execution (ex : STARPU)
+     \item chaque processeur doit avoir suffisament de mémoire pour traiter une grosse tâche
    \end{itemize}
- \item archi homogène / hétérogène 
+   \item grain fin : chaque processeur traite une «donnée élémentaire»
    \begin{itemize}
-     \item homogène : MPI, processeurs vectoriels
-     \item hétérogène : accélérateur/hôte, processeur Cell (PS3)
+     \item[\kontuz] nécessite un grand nombre de threads
+     \item[\kontuz] le changement de contexte doit être négligeable
+   \end{itemize}
+\end{itemize}
+\end{frame}
+%****************************************************************
+% Parallèlisme : architecture
+%****************************************************************
+\begin{frame}{Parallèlisme}{Architecture}
+\begin{itemize}[<+->]
+  \item homogène : processeurs quasi-identiques ou de caractéristiques semblables(latence, mémoire, etc)
+   \begin{itemize}
+     \item processeurs vectoriels (Cray, DEC)
+     \item modèle SIMD : Single Instruction Multiple Data (MMX, SSE, AVX)
+     \item grappe de calcul MPI avec des nœuds identiques
+   \end{itemize}
+  \item hétérogène : on observe des disparités entre les différents processeurs
+   \begin{itemize}
+     \item Calcul sur GPU : hôte vs accélérateur
+     \item Processeur Cell dans les PS3
    \end{itemize}
 \end{itemize}
 \pause
-  \gezi\  La programmation sur GPU est {\it grosso modo } donc un parallèlisme à {\bf grain fin}, à mémoire {\bf partagée} tournant sur
+  \hand La programmation sur GPU est {\it grosso modo}\  donc un parallèlisme à {\bf grain fin}, à mémoire {\bf partagée} tournant sur
   une architecture {\bf hétérogène}.
 \end{frame}
 
@@ -199,18 +273,18 @@ différentes classifications du parallèlisme
 %%****************************************************************
 %% Prolegomenes V
 %%****************************************************************
-\begin{frame}{Passage à l'échelle}
-\begin{itemize}[<+->]
-  \item fort (strong scalability)
-    \begin{itemize} 
-       \item loi d'Amdhal (pessimiste)
-    \end{itemize}
-  \item faible (weak scalability)
-    \begin{itemize}
-      \item loi
-    \end{itemize}
-\end{itemize}
-\end{frame}
+%%%\begin{frame}{Passage à l'échelle}
+%%%\begin{itemize}[<+->]
+%%%  \item fort (strong scalability)
+%%%    \begin{itemize} 
+%%%       \item loi d'Amdhal (pessimiste)
+%%%    \end{itemize}
+%%%  \item faible (weak scalability)
+%%%    \begin{itemize}
+%%%      \item loi
+%%%    \end{itemize}
+%%%\end{itemize}
+%%%\end{frame}
 %%****************************************************************
 %% Exemple introductif (séquentielle)
 %%****************************************************************
@@ -480,11 +554,11 @@ différentes classifications du parallèlisme
 % Coalescence
 %****************************************************************
 \begin{frame}{Coalescence}
-  \begin{itemize}
-    \item grâce à une chaîne (warp), on a jusqu'à 32 accès mémoire concurrents
+  \begin{itemize}[<+->]
+    \item chaîne (warp) permet jusqu'à 32 accès mémoire concurrents
     \item un accès mémoire typique $\thicksim$ 4 octets
-    \item la granularité grossière du système mémoire va de 32 à 128 octets (une transaction mémorielle)
-    \item[\argi] la {\em coalescence} est l'agrégation de plusieurs accès mémoire en un seul lorsqu'il se font dans le même bloc
+    \item granularité mémorielle : de 32 à 128 octets 
+    \item[\argi] {\em coalescence} : agrégation de plusieurs accès mémoire en un seul lorsqu'il se font dans le même bloc
    \item exemples avec 4 threads par chaîne et 4 mots par transaction
 \begin{center}
 \includegraphics[width=0.6\linewidth]{fig/coalescence.eps}
