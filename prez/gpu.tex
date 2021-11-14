@@ -163,7 +163,7 @@ La mémoire utilisée peut être distribuée ou partagée.
       \end{itemize}
     \item mémoire distribuée : chaque processus a une mémoire privée et communique avec les autres par des messages
       \begin{itemize}
-        \item[\argi] nécéssaire sur de trés grand problème (limite mémoire/nœud  moins gênante)
+        \item[\argi] nécéssaire sur de très grands problèmes (limite mémoire/nœud moins gênante)
         \item[\triste] envoie de messages peut être couteux
         \item[\argi] cibles : MPI, Multi-GPU
       \end{itemize}
@@ -179,7 +179,7 @@ La mémoire utilisée peut être distribuée ou partagée.
      \item décomposition de domaine (maillage, matrice) :  ex. MUMPS
      \item parallèlisme par tâches (ex : STARPU)
      \item[\hand] chaque processeur doit avoir suffisament de mémoire pour traiter une grosse tâche
-     \item[\argi] nombre raisonable de tâches
+     \item[\argi] nombre raisonnable de tâches
    \end{itemize}
  \item[\faBicycle] grain fin : chaque processeur traite une «donnée élémentaire»
    \begin{itemize}
@@ -450,7 +450,7 @@ La mémoire utilisée peut être distribuée ou partagée.
         \item 15 SM, 192 SP / SM $\Rightarrow$ 2880 SP
         \item 2048 threads max / SM $\Rightarrow$ 30.720 threads
       \end{itemize}
-    \item threads «speciaux»
+    \item threads «spéciaux»
       \begin{itemize}
         \item parallélisme de données respectant des motifs d'accès réguliers
       \end{itemize}
@@ -577,7 +577,137 @@ La mémoire utilisée peut être distribuée ou partagée.
   \end{itemize}
 \end{frame}
 %****************************************************************
-% References
+% Coalescence
+%****************************************************************
+\begin{frame}{Coalescence}{Accès mémoires contigus}
+  \begin{itemize}[<+->]
+    \item[\adibi] soit le code d'homothétie d'un vecteur
+\begin{center}
+\lstinputlisting[language=C]{code/scale.c}
+\end{center}
+    \item[\argi] on a des accès {\em contigus}, ce qui autorise la coalescence
+\begin{center}
+  \vspace{0.5cm}
+\includegraphics[width=0.8\linewidth]{fig/coalScale.eps}
+\end{center}
+  \end{itemize}
+\end{frame}
+%****************************************************************
+% Coalescence
+%****************************************************************
+\begin{frame}{Coalescence}{Accès mémoires non contigus}
+  \begin{itemize}[<+->]
+    \item[\adibi] on peut y accéder différement, par exemple avec un pas de 2
+\begin{center}
+  \lstinputlisting[language=C]{code/scaleFlipAndHalf.c}
+\end{center}
+    \item[\kontuz] mais les tranferts mémoires sont non-coalescents !
+\begin{minipage}[c]{0.49\linewidth}
+  \includegraphics[width=0.9\linewidth]{fig/coalScaleHalf.eps}
+\end{minipage}
+\begin{minipage}[r]{0.49\linewidth}
+  \vspace{1cm}
+  \begin{figure}[h]
+    \begin{tabular}{|c|c|}
+      \hline
+      noyau & tps($\mu$s)  \\
+      \hline
+      contigu & 100 \\
+      non-contigu  & 170 \\
+      \hline
+    \end{tabular}
+    \caption{K40M: $N = 2^{20}$}
+  \end{figure}
+\end{minipage}
+  \end{itemize}
+\end{frame}
+%****************************************************************
+% Coalescence
+%****************************************************************
+\begin{frame}{Quizz}{Tableau de Structures ou Structure de Tableaux}
+  \begin{itemize}[<+->]
+    \item[\adibi] On veut écrire un noyau qui translate des particules, vaut il mieux utiliser : 
+    \item[\galde] un «tableau de structures»
+\begin{center}
+  \lstinputlisting[language=C]{code/AOS.c}
+\end{center}
+    \item[\galde] ou une «structure de tableaux»
+\begin{center}
+  \lstinputlisting[language=C]{code/SOA.c}
+\end{center}
+  \item[\hand] réponse en TP \pozik
+  \end{itemize}
+\end{frame}
+%****************************************************************
+% Déverminage
+%****************************************************************
+\begin{frame}{Déverminage}{fonctions de l'API}
+  \begin{itemize}[<+->]
+    \item[\adibi] en C, on {\bf doit} vérifier les retours de fonction 
+\begin{center}
+  \lstinputlisting[language=C]{code/retour.c}
+\end{center}
+    \item[\argi] tous les fonctions de l'API CUDA renvoient une \texttt{cudaError\_t}
+    \item[\scout] on instrumente le code en mode «DEBUG» grâce à une macro
+\begin{center}
+  \lstinputlisting[language=C]{code/exErr.c}
+\end{center}
+  \end{itemize}
+\end{frame}
+%****************************************************************
+% Déverminage
+%****************************************************************
+\begin{frame}{Déverminage}{fonctions de l'API}
+\begin{center}
+  \lstinputlisting[language=C]{code/common.h}
+\end{center}
+\end{frame}
+%****************************************************************
+% Déverminage : outils I
+%****************************************************************
+\begin{frame}{Déverminage}{cuda-gdb}
+  \begin{itemize}[<+->]
+        \item on compile avec les bonnes options \texttt{nvcc -g -G monProg.cu -o myProg}
+   \end{itemize}
+\pause
+  \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/outGDB}
+\end{frame}
+%****************************************************************
+% Déverminage : outils I
+%****************************************************************
+\begin{frame}{Déverminage}{outils}
+  \begin{itemize}[<+->]
+    \item outil de vérification de mémoire à la «valgrind» : \texttt{cuda-memcheck ./myProg}
+    \item[\scout] sinon, pour GPU avec une «capacité de calcul» $\geqslant 2.x$, un bon vieux \texttt{printf} des familles fonctionne aussi
+    à l'intérieur d'un noyau \harritu
+  \end{itemize} 
+\end{frame}
+%****************************************************************
+% Profilage : 
+%****************************************************************
+\begin{frame}{Profilage}{API}
+  \begin{itemize}[<+->]
+    \item[\argi] les évenements CUDA fournissent un moyen simple de mesurer le temps d'execution des noyaux
+\begin{center}
+  \lstinputlisting[language=C]{code/exProfile.c}
+\end{center}
+   \item[\kontuz] \texttt{cudaEventElapsedTime} renvoie un temps en milliseconds
+   \item[\pozik] on peut scripter {\em en C} des experiences de profilage.
+  \end{itemize}
+\end{frame}
+%****************************************************************
+% Profilage : 
+%****************************************************************
+\begin{frame}{Profilage}{nvprof}
+  \begin{itemize}[<+->]
+    \item[\pozik] beaucoup plus de métriques et de compteurs disponibles
+    \item[\triste] extraction automatique de résultats plus compliquée (merci \texttt{grep})
+  \end{itemize}
+\pause\lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/outProfile}
+\end{frame}
+
+%****************************************************************
+% Références
 %****************************************************************
 \begin{frame}{Références}
 \begin{itemize}[<+->]

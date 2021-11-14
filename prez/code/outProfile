@@ -1,0 +1,19 @@
+==1380605== Profiling application: ./scale.x 16777216 1024
+==1380605== Profiling result:
+            Type  Time(%)      Time  Calls       Avg       Min       Max  Name
+ GPU activities:   43.16%  21.005ms      2  10.503ms  10.502ms  10.503ms  [CUDA memcpy HtoD]
+                   42.20%  20.537ms      2  10.269ms  10.267ms  10.270ms  [CUDA memcpy DtoH]
+                    7.57%  3.6859ms      2  1.8430ms  1.8426ms  1.8433ms  scaleFlipAndHalf(float
+                    4.72%  2.2965ms      2  1.1482ms  1.1458ms  1.1506ms  scale(float*, float
+                    2.35%  1.1439ms      1  1.1439ms  1.1439ms  1.1439ms  scaleFlip(float*,
+      API calls:   68.44%  104.92ms      1  104.92ms  104.92ms  104.92ms  cudaMalloc
+                   28.42%  43.562ms      4  10.891ms  10.364ms  12.411ms  cudaMemcpy
+                    2.80%  4.2902ms      1  4.2902ms  4.2902ms  4.2902ms  cudaFree
+                    0.22%  343.56us    101  3.4010us     492ns  134.56us  cuDeviceGetAttribute
+                    0.05%  82.869us      1  82.869us  82.869us  82.869us  cuDeviceGetName
+                    0.05%  73.824us      5  14.764us  3.4520us  32.385us  cudaLaunchKernel
+                    0.01%  17.673us      1  17.673us  17.673us  17.673us  cuDeviceGetPCIBusId
+                    0.00%  5.4230us      3  1.8070us     686ns  3.9860us  cuDeviceGetCount
+                    0.00%  1.9530us      2     976ns     475ns  1.4780us  cuDeviceGet
+                    0.00%  1.1740us      1  1.1740us  1.1740us  1.1740us  cuDeviceTotalMem
+                    0.00%     914ns      1     914ns     914ns     914ns  cuDeviceGetUuid

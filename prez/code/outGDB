@@ -1,0 +1,23 @@
+cuda-gdb --args ./scale.x 32  8
+...
+(cuda-gdb) b scaleFlipAndHalf(float*, float, int) 
+Breakpoint 1 at 0xbca2: file /home/fux/iturriak/cuda_expe/C/1D/scale.cu, line 22.
+(cuda-gdb) run
+Starting program: /home/fux/iturriak/cuda_expe/C/1D/scale.x 32 8
+...
+[Switching focus to CUDA kernel 0, grid 2, block (0,0,0), thread (0,0,0), device 0, sm 0, warp 1, lane 0]
+
+Thread 1 "scale.x" hit Breakpoint 1, scaleFlipAndHalf<<<(4,1,1),(8,1,1)>>> (vec=0x7fffcfa00000, k=3.14159274, size=32) at scale.cu:23
+23        int i = blockDim.x * blockIdx.x + threadIdx.x;
+(cuda-gdb) info cuda threads
+  BlockIdx ThreadIdx To BlockIdx ThreadIdx Count         Virtual PC Filename  Line 
+Kernel 0
+*  (0,0,0)   (0,0,0)     (3,0,0)   (7,0,0)    32 0x0000555555b52110 scale.cu    23 
+(cuda-gdb) cuda thread block (3,0,0)
+Unrecognized argument(s).
+(cuda-gdb) cuda  block (3,0,0)      
+[Switching focus to CUDA kernel 0, grid 2, block (3,0,0), thread (0,0,0), device 0, sm 6, warp 1, lane 0]
+23        int i = blockDim.x * blockIdx.x + threadIdx.x;
+(cuda-gdb) cuda  thread (1,0,0)
+[Switching focus to CUDA kernel 0, grid 2, block (3,0,0), thread (1,0,0), device 0, sm 6, warp 1, lane 1]
+23        int i = blockDim.x * blockIdx.x + threadIdx.x;
