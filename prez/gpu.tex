@@ -114,7 +114,7 @@
      \end{itemize}
  \item Optimisation 
      \begin{itemize}
-       \item Architectures
+       \item limitation mémoires
        \item Bande passante
        \item Mémoire épinglée
        \item Transferts asynchrones
@@ -732,11 +732,51 @@ La mémoire utilisée peut être distribuée ou partagée.
   \end{center}
 \end{frame}
 %****************************************************************
+% Limites 
+%****************************************************************
+\begin{frame}{Facteur limitants}{Mémoire, instruction, latence}
+  \begin{itemize}[<+->]
+    \item soit le noyau \texttt{base} en 3 versions
+      \lstinputlisting[language=C]{code/pratique.c}
+    \item on chronomètre l'execution (en $\mu$s) avec $N=8Mo$ sur un K40M
+      \begin{center}
+        \begin{tabular}{|l|r|r|r|}
+          \hline
+          modèle    & base    & memory & math  \\ 
+          \hline
+          normal    &  618    &  390   &  473\\ 
+          fastmath  &  546    &  390   &  385 \\ 
+          \hline
+        \end{tabular}
+      \end{center}
+  \end{itemize}
+\end{frame}
+%****************************************************************
+% facteur limitants
+%****************************************************************
+\begin{frame}{Facteur limitants}{Mémoire, instruction, latence}
+  \begin{itemize}[<+->]
+    \item soit le noyau \texttt{base} en 3 versions
+      \lstinputlisting[language=C]{code/pratique.c}
+    \item on chronomètre l'execution (en $\mu$s) avec $N=8Mo$ sur un K40M
+      \begin{center}
+        \begin{tabular}{|l|r|r|r|}
+          \hline
+          modèle         & base   & memory & math  \\ 
+          \hline
+          normal  &  618    &  390   &   473\\ 
+          fastmath  &  546    &  390   &  385 \\ 
+          \hline
+        \end{tabular}
+      \end{center}
+  \end{itemize}
+\end{frame}
+%****************************************************************
 % Architectures
 %****************************************************************
-\begin{frame}{Architectures}
+\begin{frame}{Bande passante}
   \begin{itemize}[<+->]
-    \item la capacité de calcul (CC) dépende de l'architecture
+    \item la capacité de calcul (CC) dépend de l'architecture
     \item Flops = $\frac{Flops}{cycle}\times \mbox{\#cœurs} \times \frac{\mbox{cycle}}{\mbox{seconde}} \approx
          2\footnote{https://en.wikipedia.org/wiki/FLOPS} \times \mbox{\#cœurs} \times \mbox{Freq} $
        \item si (CC)  $\nearrow$ , le nombre de GFlops\; $\nearrow$ aussi \pozik
@@ -744,14 +784,15 @@ La mémoire utilisée peut être distribuée ou partagée.
 \pause
  \begin{tabular}{|l|r|r|r|r|r|r|}
     \hline
-      modèle     & C1060 & C2070 &  K40   &  M40    &  P100  & V100  \\
+      modèle         & C1060   & C2070 &  K40   &  M40    &  P100  & V100  \\
     \hline
-      archi      & Tesla & Fermi & Kepler & Maxwell & Pascal & Volta \\
-      CC         & 1.3   & 2.0   & 3.5    & 5.2     & 6.0    &   7.0 \\
-      Freq(Mhz)  & 1296  & 1150  &  745   &  948    &  1329  &  1380 \\
-      SM         & 30    & 14    &  15    &  24     &   56   &   80  \\
-      SP (32)    & 240   & 448   &  2880  &  3072   &  3584  &  5120 \\
-      Flops (G/s)& 622   & 1030  &  4291  &  5824   & 9526   &  14131\\
+      archi          & Tesla   & Fermi & Kepler & Maxwell & Pascal & Volta \\
+      CC             & 1.3     & 2.0   & 3.5    & 5.2     & 6.0    &   7.0 \\
+      Freq(Mhz)      & 1296    & 1150  &  745   &  1114   &  1329  &  1380 \\
+      SM             & 30      & 14    &  15    &  24     &   56   &   80  \\
+      SP (32)        & 240     & 448   &  2880  &  3072   &  3584  &  5120 \\
+      Flops (G/s)    & 622     & 1030  &  4291  &  6844  & 9526   &  14131\\
+      BP théo (Go/s) & 102     & 150   &  288   &  288    & 732    &  790 \\
     \hline
 \end{tabular}
 \end{frame}
