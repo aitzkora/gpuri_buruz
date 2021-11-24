@@ -1,7 +1,8 @@
 \documentclass[11pt,mathserif]{beamer}
-\usepackage{svg}
+
 %% paketeak
 \usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{svg}
 \usepackage{graphicx}
 \usepackage{bbding}
 \usepackage{fontawesome}
@@ -38,8 +39,9 @@
 \newcommand{\harritu}{\faExclamation}
 \newcommand{\geldi}{\faHandPaperO}
 \captionsetup[figure]{labelformat=empty}
+\newcommand{\geziBikoitz}{\faArrowsH}
 
-% listings kudeatzeko
+% listings CUDA lengoaia kudeatzeko
 \lstset{ %
   numbers=left,
   numbersep=1pt,
@@ -70,10 +72,8 @@
   morecomment=[s][\color{mauve}]{cudaMemcpyDeviceToHost}{\ }
 }
 
-
-\defbeamertemplate{itemize item}{boldarrow}{\raisebox{0.3ex}{\resizebox{1.2ex}{1ex}{\ArrowBoldRightShort}}}
-
 %% ====== nire beamer estiloa
+\defbeamertemplate{itemize item}{boldarrow}{\raisebox{0.3ex}{\resizebox{1.2ex}{1ex}{\ArrowBoldRightShort}}}
 \mode<presentation> {
 \usetheme{default}    % urri
 \useinnertheme[shadow]{rounded}  % zenbakiak biribiltzeko
@@ -100,7 +100,6 @@
 %****************************************************************
 % Xedea
 %**************************************************************
-
 \begin{frame}{Plan}
 \begin{itemize}[<+->]
    \item Découverte
@@ -114,10 +113,9 @@
      \end{itemize}
  \item Optimisation 
      \begin{itemize}
-       \item limitation mémoires
-       \item Bande passante
-       \item Mémoire épinglée
-       \item Transferts asynchrones
+       \item Facteurs limitants (mémoire, instructions)
+       \item Métriques (BP, occupation)
+       \item Transferts hôte \geziBikoitz\ accélérateur
        \item Mémoire partagée
        \item Divergence de threads
      \end{itemize}
@@ -128,10 +126,19 @@
      \end{itemize}
 \end{itemize}
 \end{frame}
-%****************************************************************
-% Applications
-%**************************************************************
 
+%****************************************************************
+% lehen kapitulua
+%****************************************************************
+\begin{frame}
+  \begin{center}
+    {\Huge Première partie : Découverte}
+  \end{center}
+\end{frame}
+
+%****************************************************************
+% erabilpenak
+%**************************************************************
 \begin{frame}{Utilisation des GPU}
 \pause
   \begin{itemize}[<+->]
@@ -167,7 +174,7 @@
 \end{frame}
 
 %****************************************************************
-% Parallèlisme Distribue/partagé
+% Paralelismo : partekatu edo banatu
 %****************************************************************
 \begin{frame}{Parallèlisme}{partagé/distribué}
 \pause
@@ -187,8 +194,9 @@ La mémoire utilisée peut être distribuée ou partagée.
       \end{itemize}
   \end{itemize}
 \end{frame}
+
 %****************************************************************
-% Parallèlisme : Grain
+% Paralelismoa : alea
 %****************************************************************
 \begin{frame}{Parallèlisme}{Grain}
 \begin{itemize}[<+->]
@@ -207,8 +215,9 @@ La mémoire utilisée peut être distribuée ou partagée.
    \end{itemize}
 \end{itemize}
 \end{frame}
+
 %****************************************************************
-% Parallèlisme : architecture
+% Paralelismoa : arkitektura
 %****************************************************************
 \begin{frame}{Parallèlisme}{Architecture}
 \begin{itemize}[<+->]
@@ -235,7 +244,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \end{frame}
 
 %****************************************************************
-% Prolègomène II
+% sarrera : memoria eta cachea (eskema)
 %****************************************************************
 \begin{frame}{Mémoire et Cache}{schéma}
 \begin{itemize}[<+->]
@@ -246,8 +255,9 @@ La mémoire utilisée peut être distribuée ou partagée.
   \end{center}
 \end{itemize}
 \end{frame}
+
 %****************************************************************
-% Prolegomenes III
+% sarrera : latentzia
 %****************************************************************
 \begin{frame}{Mémoire et Cache (II)}{latence}
 \pause
@@ -270,8 +280,9 @@ La mémoire utilisée peut être distribuée ou partagée.
     \end{tabular}
   \end{itemize}
 \end{frame}
+
 %%****************************************************************
-%% Prolegomenes IV
+%% sarrera : arrakasta ta huts
 %%****************************************************************
 \begin{frame}{Cache}{Succès et défauts}
 \begin{itemize}[<+->]
@@ -295,8 +306,9 @@ La mémoire utilisée peut être distribuée ou partagée.
 \item[\hand] raison d'être des biblios BLAS et LAPACK
 \end{itemize}
 \end{frame}
+
 %%****************************************************************
-%% Prolegomenes V
+%% sarrera : 
 %%****************************************************************
 %%%\begin{frame}{Passage à l'échelle}
 %%%\begin{itemize}[<+->]
@@ -310,6 +322,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 %%%    \end{itemize}
 %%%\end{itemize}
 %%%\end{frame}
+
 %%****************************************************************
 %% Exemple introductif (séquentielle)
 %%****************************************************************
@@ -321,6 +334,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \item[\galde] on souhaite paralléliser la boucle en ligne 6 à l'aide de CUDA
 \end{itemize}
 \end{frame}
+
 %%****************************************************************
 %% Exemple introductif (CUDA)
 %%****************************************************************
@@ -335,6 +349,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \item[\argi] gestion de la mémoire : \texttt{\small cudaMemcpy, cudaMalloc, cudaFree}
 \end{itemize}
 \end{frame}
+
 %****************************************************************
 % Exemple introductif principe
 %****************************************************************
@@ -352,6 +367,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \includegraphics[width=0.9\linewidth]{fig/parallel.eps}
 \end{center}
 \end{frame}
+
 %****************************************************************
 % Déroulé classique d'un calcul
 %****************************************************************
@@ -371,6 +387,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \item[\geldi] Avant de poursuivre, nous avons besoin de comprendre le modèle d'exécution sur GPU
 \end{itemize}
 \end{frame}
+
 %****************************************************************
 % Modèle d'execution GPU I
 %****************************************************************
@@ -402,6 +419,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \end{center}
 \end{minipage}
 \end{frame}
+
 %****************************************************************
 % Modèle d'execution GPU II
 %****************************************************************
@@ -429,6 +447,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \end{center}
 \end{minipage}
 \end{frame}
+
 %****************************************************************
 % Modèle d'execution GPU III
 %****************************************************************
@@ -456,6 +475,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \end{center}
 \end{minipage}
 \end{frame}
+
 %****************************************************************
 % Modèle d'execution GPU IV
 %****************************************************************
@@ -480,6 +500,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \end{center}
 \end{minipage}
 \end{frame}
+
 %****************************************************************
 % Organisation des threads
 %****************************************************************
@@ -505,6 +526,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \end{center}
 \end{minipage}
 \end{frame}
+
 %****************************************************************
 % Organisation des threads II
 %****************************************************************
@@ -523,6 +545,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \end{center}
 \end{minipage}
 \end{frame}
+
 %****************************************************************
 % Tailles des grilles/blocs 
 %****************************************************************
@@ -551,6 +574,7 @@ La mémoire utilisée peut être distribuée ou partagée.
   \lstinputlisting[language=C]{code/grille.c}
  \end{itemize}
 \end{frame}
+
 %****************************************************************
 % Tailles des grilles/blocs
 %****************************************************************
@@ -570,6 +594,7 @@ La mémoire utilisée peut être distribuée ou partagée.
  \end{itemize}
   \end{itemize}
 \end{frame}
+
 %****************************************************************
 % Tailles des grilles/blocs
 %****************************************************************
@@ -579,6 +604,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \end{flushright}
   \lstinputlisting[language=C]{code/overflow.cu}
 \end{frame}
+
 %****************************************************************
 % Coalescence
 %****************************************************************
@@ -594,6 +620,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \end{center}
   \end{itemize}
 \end{frame}
+
 %****************************************************************
 % Coalescence
 %****************************************************************
@@ -610,6 +637,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \end{center}
   \end{itemize}
 \end{frame}
+
 %****************************************************************
 % Coalescence
 %****************************************************************
@@ -639,6 +667,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \end{minipage}
   \end{itemize}
 \end{frame}
+
 %****************************************************************
 % Coalescence
 %****************************************************************
@@ -656,6 +685,7 @@ La mémoire utilisée peut être distribuée ou partagée.
   \item[\hand] réponse en TP \pozik
   \end{itemize}
 \end{frame}
+
 %****************************************************************
 % Déverminage
 %****************************************************************
@@ -672,6 +702,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \end{center}
   \end{itemize}
 \end{frame}
+
 %****************************************************************
 % Déverminage
 %****************************************************************
@@ -680,6 +711,7 @@ La mémoire utilisée peut être distribuée ou partagée.
   \lstinputlisting[language=C]{code/common.h}
 \end{center}
 \end{frame}
+
 %****************************************************************
 % Déverminage : outils I
 %****************************************************************
@@ -690,6 +722,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \pause
   \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/outGDB}
 \end{frame}
+
 %****************************************************************
 % Déverminage : outils I
 %****************************************************************
@@ -700,6 +733,7 @@ La mémoire utilisée peut être distribuée ou partagée.
     à l'intérieur d'un noyau \harritu
   \end{itemize} 
 \end{frame}
+
 %****************************************************************
 % Profilage : 
 %****************************************************************
@@ -713,6 +747,7 @@ La mémoire utilisée peut être distribuée ou partagée.
    \item[\pozik] on peut scripter {\em en C} des experiences de profilage.
   \end{itemize}
 \end{frame}
+
 %****************************************************************
 % Profilage : 
 %****************************************************************
@@ -723,6 +758,7 @@ La mémoire utilisée peut être distribuée ou partagée.
   \end{itemize}
 \pause\lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/outProfile}
 \end{frame}
+
 %****************************************************************
 % Optimization
 %****************************************************************
@@ -731,10 +767,11 @@ La mémoire utilisée peut être distribuée ou partagée.
     {\Huge Seconde Partie : Optimization}
   \end{center}
 \end{frame}
+
 %****************************************************************
 % Limites 
 %****************************************************************
-\begin{frame}{Facteur limitants}{Mémoire, instruction, latence}
+\begin{frame}{Facteur limitants}{Petite experience}
   \begin{itemize}[<+->]
     \item soit le noyau \texttt{base} en 3 versions
       \lstinputlisting[language=C]{code/pratique.c}
@@ -752,29 +789,55 @@ La mémoire utilisée peut être distribuée ou partagée.
   \end{itemize}
 \end{frame}
 %****************************************************************
+% mugatzaileak
+%****************************************************************
+\begin{frame}{Facteur limitants}{Mémoire, instruction ou latence}
+  \begin{itemize}[<+->]
+    \item limitation par les {\bf instructions} (compute bound) 
+      \begin{itemize}
+        \item sans {\tt fastmath} : utilisation préponderante du calcul
+      \end{itemize}
+    \item limitation par la {\bf mémoire } (memory bound) : 
+      \begin{itemize}
+        \item avec {\tt fasthmath} facteur mémoire préponderant
+      \end{itemize}
+    \item limitation par la {\bf latence} : utilisation faible de la mémoire et des calculs
+      \begin{itemize}
+        \item possibilité d'une {\bf occupation} faible 
+          $$ \mbox{Occupation} = \frac{\mbox{nb de chaînes(warps) actives par SM}}{\mbox{nb max de chaînes par SM}} $$
+      \begin{itemize}
+        \item théorique : {\tt cudaOccupancyMaxActiveBlocksPerMultiprocessor }
+        \item réelle : {\tt nvprof --metrics achieved\_occupancy }
+      \end{itemize}
+        \item calage des threads (dépendance d'executions, synchronisation, chargement d'instruction)
+      \end{itemize}
+\end{itemize}
+\end{frame}
+
+%****************************************************************
 % facteur limitants
 %****************************************************************
-\begin{frame}{Facteur limitants}{Mémoire, instruction, latence}
+\begin{frame}{Bande Passante(BP)}
   \begin{itemize}[<+->]
-    \item soit le noyau \texttt{base} en 3 versions
-      \lstinputlisting[language=C]{code/pratique.c}
-    \item on chronomètre l'execution (en $\mu$s) avec $N=8Mo$ sur un K40M
-      \begin{center}
-        \begin{tabular}{|l|r|r|r|}
-          \hline
-          modèle         & base   & memory & math  \\ 
-          \hline
-          normal  &  618    &  390   &   473\\ 
-          fastmath  &  546    &  390   &  385 \\ 
-          \hline
-        \end{tabular}
-      \end{center}
+    \item débit de données en Go/s sur le bus mémoire du GPU 
+    \item BP max théorique : $$BW_{\mbox{max}} = 2 \cdot \frac{F_{\mbox{max}} * N_{\mbox{bus}}}{10^6} $$
+      \begin{itemize}
+        \item $F_{max}$ : fréquence mémoire maximale (KHz) : \texttt{memoryClockRate}
+        \item $N_{bus}$ : largeur de bus (octets) : \texttt{memoryBusWidth}/8
+      \end{itemize}
+    \item BP réelle d'un noyau : $$ BW_{\mbox{ker}} = \frac{\# R_{\ker} + \# W_{\ker}}{10^9 t_{\ker}} $$
+      \begin{itemize}
+        \item $\# R_{\ker}$ : nb de lectures du noyau (octets)
+        \item $\# W_{\ker}$ : nb d'ecritures du noyau (octets)
+        \item $t_{\ker}$ : tps moyen d'exécution du noyau
+      \end{itemize}
   \end{itemize}
 \end{frame}
+
 %****************************************************************
-% Architectures
+% Performances 
 %****************************************************************
-\begin{frame}{Bande passante}
+\begin{frame}{Quelques performances}
   \begin{itemize}[<+->]
     \item la capacité de calcul (CC) dépend de l'architecture
     \item Flops = $\frac{Flops}{cycle}\times \mbox{\#cœurs} \times \frac{\mbox{cycle}}{\mbox{seconde}} \approx
@@ -792,29 +855,45 @@ La mémoire utilisée peut être distribuée ou partagée.
       SM             & 30      & 14    &  15    &  24     &   56   &   80  \\
       SP (32)        & 240     & 448   &  2880  &  3072   &  3584  &  5120 \\
       Flops (G/s)    & 622     & 1030  &  4291  &  6844  & 9526   &  14131\\
-      BP théo (Go/s) & 102     & 150   &  288   &  288    & 732    &  790 \\
+      BP$_{max}$ (Go/s) & 102     & 150   &  288   &  288    & 732    &  790 \\
     \hline
 \end{tabular}
 \end{frame}
+
 %****************************************************************
-% Optimization
+% facteur limitants
 %****************************************************************
-\begin{frame}{Bande passante}
+\begin{frame}{Facteur limitants}{bande passante}
   \begin{itemize}[<+->]
-    \item {\em Bande Passante} : taux de transfert des données (Go/s)
-    \item pic théorique  
+    \item en revenant a l'exemple précedents ( tps \gezi\ BP)
+      \begin{center}
+        \begin{tabular}{|l|r|r|r|}
+          \hline
+          modèle  & base   & memory & math  \\ 
+          \hline
+          normal  &  108    &  172   &  141 \\ 
+          fastmath  &  122    &  172   &  174 \\ 
+          \hline
+        \end{tabular}
+      \end{center}
+     \item à comparer avec la valeur max théorique de 288 Go/s!
   \end{itemize}
 \end{frame}
+
+
+
+
 
 %****************************************************************
 % Références
 %****************************************************************
 \begin{frame}{Références}
 \begin{itemize}[<+->]
-  \item[\Pdf] Programming GPU Accelerators with OpenCL, R. Namyst, P.-A. Wacrenier \href{https://raymond-namyst.emi.u-bordeaux.fr/ens/pap/PAP-GPU.pdf}{\beamergotobutton{pdf}}
   \item[\liburu] Cuda Fortran for Scientists and Engineers, G. Ruetsch, M. Fatica
-  \item[\Pdf] Understanding Latency Hiding on GPUs, V. Volkov \href{http://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-143.pdf}{\beamergotobutton{pdf}}
+  \item[\Pdf] Programming GPU Accelerators with OpenCL, R. Namyst, P.-A. Wacrenier \href{https://raymond-namyst.emi.u-bordeaux.fr/ens/pap/PAP-GPU.pdf}{\beamergotobutton{pdf}}
+  \item[\Pdf] Performance Optimization Strategies For GPU-Accelerated Applications D. Goodwin \href{https://on-demand.gputechconf.com/gtc/2013/presentations/S3046-Performance-Optimization-Strategies-for-GPU-Accelerated-Apps.pdf}{\beamergotobutton{pdf}}
   \item[\faFilePowerpointO] CUDA Basics, S. Vialle \href{http://www.metz.supelec.fr/metz/personnel/vialle/course/PPS-5A-GPGPU/notes-de-cours-specifiques/PPS-GPU-02-CUDA-Basics-2spp.pdf}{\beamergotobutton{pdf}}
+  \item[\Pdf] Understanding Latency Hiding on GPUs, V. Volkov \href{http://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-143.pdf}{\beamergotobutton{pdf}}
 \end{itemize}
 \end{frame}
 \end{document}
