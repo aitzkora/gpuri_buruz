@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20, custom)"
+   sodipodi:docname="pinned_memory.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="1.8116734"
+     inkscape:cx="396.87064"
+     inkscape:cy="163.66084"
+     inkscape:window-width="1920"
+     inkscape:window-height="1200"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <marker
+       style="overflow:visible;"
+       id="marker47622"
+       refX="0.0"
+       refY="0.0"
+       orient="auto"
+       inkscape:stockid="Arrow1Lend"
+       inkscape:isstock="true">
+      <path
+         transform="scale(0.8) rotate(180) translate(12.5,0)"
+         style="fill-rule:evenodd;fill:context-stroke;stroke:context-stroke;stroke-width:1.0pt;"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         id="path47620" />
+    </marker>
+    <marker
+       style="overflow:visible;"
+       id="Arrow2Mend"
+       refX="0.0"
+       refY="0.0"
+       orient="auto"
+       inkscape:stockid="Arrow2Mend"
+       inkscape:isstock="true">
+      <path
+         transform="scale(0.6) rotate(180) translate(0,0)"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         style="stroke:context-stroke;fill-rule:evenodd;fill:context-stroke;stroke-width:0.62500000;stroke-linejoin:round;"
+         id="path47336" />
+    </marker>
+    <marker
+       style="overflow:visible;"
+       id="Arrow1Lend"
+       refX="0.0"
+       refY="0.0"
+       orient="auto"
+       inkscape:stockid="Arrow1Lend"
+       inkscape:isstock="true">
+      <path
+         transform="scale(0.8) rotate(180) translate(12.5,0)"
+         style="fill-rule:evenodd;fill:context-stroke;stroke:context-stroke;stroke-width:1.0pt;"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         id="path47312" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Arrow2Mend-2"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow2Mend"
+       inkscape:isstock="true">
+      <path
+         transform="scale(-0.6)"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:0.625;stroke-linejoin:round"
+         id="path47336-9" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="marker47622-3"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow1Lend"
+       inkscape:isstock="true">
+      <path
+         transform="matrix(-0.8,0,0,-0.8,-10,0)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 0,0 5,-5 -12.5,0 5,5 Z"
+         id="path47620-9" />
+    </marker>
+  </defs>
+  <g
+     inkscape:label="Geruza 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="56.19714"
+       y="51.068062"
+       id="text5610"><tspan
+         id="tspan5608"
+         style="stroke-width:0.264583"
+         sodipodi:role="line"
+         x="56.19714"
+         y="51.068062"></tspan></text>
+    <g
+       id="g47832">
+      <g
+         id="g41224">
+        <rect
+           style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#010000;stroke-width:0.465;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="rect846"
+           width="64.641548"
+           height="28.8146"
+           x="21.353521"
+           y="29.734146" />
+        <rect
+           style="fill:none;fill-rule:evenodd;stroke:#020000;stroke-width:0.171505;stroke-opacity:1"
+           id="rect1368"
+           width="24.083876"
+           height="8.1051674"
+           x="56.19714"
+           y="42.962894" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.3165px;line-height:1.25;font-family:'DejaVu Math TeX Gyre';-inkscape-font-specification:'DejaVu Math TeX Gyre, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.132913"
+           x="58.645336"
+           y="48.592838"
+           id="text24896"
+           transform="scale(1.001612,0.99839058)"><tspan
+             sodipodi:role="line"
+             id="tspan24894"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.3165px;font-family:'DejaVu Math TeX Gyre';-inkscape-font-specification:'DejaVu Math TeX Gyre, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.132913"
+             x="58.645336"
+             y="48.592838">DRAM</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-weight:normal;font-size:7.90967px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.197742"
+           x="25.482239"
+           y="39.226498"
+           id="text31662"
+           transform="scale(1.0120105,0.98813202)"><tspan
+             id="tspan31660"
+             style="stroke-width:0.197742"
+             x="25.482239"
+             y="39.226498"
+             sodipodi:role="line">GPU</tspan></text>
+      </g>
+      <rect
+         style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#010000;stroke-width:0.465;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect846-1"
+         width="64.641548"
+         height="28.8146"
+         x="21.412745"
+         y="71.898926" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.90967px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.197742"
+         x="25.540758"
+         y="81.897697"
+         id="text31662-1"
+         transform="scale(1.0120105,0.98813203)"><tspan
+           sodipodi:role="line"
+           id="tspan41472"
+           x="25.540758"
+           y="81.897697">Hôte</tspan></text>
+      <rect
+         style="fill:none;fill-rule:evenodd;stroke:#020000;stroke-width:0.21008;stroke-opacity:1"
+         id="rect1368-7"
+         width="27.218386"
+         height="10.76076"
+         x="55.618073"
+         y="84.864815" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;font-size:4.74108px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.118527"
+         x="59.39048"
+         y="88.397392"
+         id="text44214"
+         transform="scale(0.99253002,1.0075262)"><tspan
+           sodipodi:role="line"
+           id="tspan44212"
+           style="stroke-width:0.118527"
+           x="59.39048"
+           y="88.397392">tampon</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.74108px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.118527"
+         x="57.954098"
+         y="93.299011"
+         id="text44214-7"
+         transform="scale(0.99253002,1.0075262)"
+         inkscape:transform-center-x="-4.8728781"
+         inkscape:transform-center-y="12.984744"><tspan
+           sodipodi:role="line"
+           id="tspan47770"
+           x="57.954098"
+           y="93.299011">verrouillé</tspan></text>
+      <g
+         id="g47227"
+         transform="translate(0.54256264,-0.11994618)">
+        <rect
+           style="fill:none;fill-rule:evenodd;stroke:#020000;stroke-width:0.21008;stroke-opacity:1"
+           id="rect1368-7-6"
+           width="27.218386"
+           height="10.76076"
+           x="23.911888"
+           y="85.110054" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.74108px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.118527"
+           x="26.618687"
+           y="88.933556"
+           id="text44214-3"
+           transform="scale(0.99253002,1.0075262)"><tspan
+             sodipodi:role="line"
+             id="tspan46924"
+             x="26.618687"
+             y="88.933556">mémoire</tspan><tspan
+             sodipodi:role="line"
+             id="tspan46926"
+             x="26.618687"
+             y="94.859909"></tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.74108px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.118527"
+           x="26.009285"
+           y="93.542419"
+           id="text44214-7-4"
+           transform="scale(0.99253002,1.0075262)"
+           inkscape:transform-center-x="-4.8728781"
+           inkscape:transform-center-y="12.984744"><tspan
+             sodipodi:role="line"
+             id="tspan46946"
+             x="26.009285"
+             y="93.542419">paginable</tspan></text>
+      </g>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.265;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow2Mend)"
+         d="m 51.535583,90.516251 4.019452,0.07382"
+         id="path47307" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker47622)"
+         d="M 70.162803,85.128051 69.924019,51.034082"
+         id="path47618" />
+    </g>
+    <g
+       id="g41224-8"
+       transform="translate(82.237095,0.07971102)">
+      <rect
+         style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#010000;stroke-width:0.465;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect846-8"
+         width="64.641548"
+         height="28.8146"
+         x="21.353521"
+         y="29.734146" />
+      <rect
+         style="fill:none;fill-rule:evenodd;stroke:#020000;stroke-width:0.171505;stroke-opacity:1"
+         id="rect1368-5"
+         width="24.083876"
+         height="8.1051674"
+         x="56.19714"
+         y="42.962894" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.3165px;line-height:1.25;font-family:'DejaVu Math TeX Gyre';-inkscape-font-specification:'DejaVu Math TeX Gyre, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.132913"
+         x="58.645336"
+         y="48.592838"
+         id="text24896-0"
+         transform="scale(1.001612,0.99839058)"><tspan
+           sodipodi:role="line"
+           id="tspan24894-9"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.3165px;font-family:'DejaVu Math TeX Gyre';-inkscape-font-specification:'DejaVu Math TeX Gyre, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.132913"
+           x="58.645336"
+           y="48.592838">DRAM</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;font-size:7.90967px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.197742"
+         x="25.482239"
+         y="39.226498"
+         id="text31662-6"
+         transform="scale(1.0120105,0.98813202)"><tspan
+           id="tspan31660-3"
+           style="stroke-width:0.197742"
+           x="25.482239"
+           y="39.226498"
+           sodipodi:role="line">GPU</tspan></text>
+    </g>
+    <rect
+       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#010000;stroke-width:0.465;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect846-1-8"
+       width="64.641548"
+       height="28.8146"
+       x="103.64984"
+       y="71.978638" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.90967px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.197742"
+       x="106.80186"
+       y="81.978363"
+       id="text31662-1-5"
+       transform="scale(1.0120105,0.98813204)"><tspan
+         sodipodi:role="line"
+         id="tspan41472-6"
+         x="106.80186"
+         y="81.978363">Hôte</tspan></text>
+    <rect
+       style="fill:none;fill-rule:evenodd;stroke:#020000;stroke-width:0.21008;stroke-opacity:1"
+       id="rect1368-7-1"
+       width="27.218386"
+       height="10.76076"
+       x="137.85516"
+       y="84.944527" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.74108px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.118527"
+       x="142.24651"
+       y="88.476509"
+       id="text44214-1"
+       transform="scale(0.99253002,1.0075262)"><tspan
+         sodipodi:role="line"
+         id="tspan48046"
+         x="142.24651"
+         y="88.476509">mémoire</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.74108px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.118527"
+       x="140.81012"
+       y="93.378128"
+       id="text44214-7-9"
+       transform="scale(0.99253002,1.0075262)"
+       inkscape:transform-center-x="-4.8728781"
+       inkscape:transform-center-y="12.984744"><tspan
+         sodipodi:role="line"
+         id="tspan48066"
+         x="140.81012"
+         y="93.378128">verrouillée</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker47622-3)"
+       d="M 152.3999,85.207762 152.16111,51.113793"
+       id="path47618-4" />
+  </g>
+</svg>
