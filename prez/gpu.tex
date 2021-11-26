@@ -963,21 +963,55 @@ La mémoire utilisée peut être distribuée ou partagée.
 %****************************************************************
 \begin{frame}{Mémoires sur l'accélérateur}{Vue générale}
   \begin{itemize}[<+->]
-    \item[\argi] un GPU abrite plusieurs catégories de mémoire : 
+    \item[\argi] un GPU abrite plusieurs types de mémoire : 
 \begin{tabular}{|l|l|l|l|l|l|}
   \hline
   mémoire   & local. & Cachée  & accès     & portée   & durée \\ 
   \hline
-  registre  &  puce  &  N/A   & RW & thread & thread \\
-  local     &  DRAM  & CC$\geqslant$2.0 & RW & thread & thread \\
-  partagée  & puce   & N/A    & RW & bloc   & bloc \\
-  globale   & DRAM   & CC$\geqslant$2.0  & RW & GPU et hôte &  appli. \\
-  constante & DRAM   & Oui    & R  & GPU et hôte &  appli. \\
-  texture   & DRAM   & Oui    & R  & GPU et hôte &  appli. \\
+  registre  & puce  &  N/A   & RW & thread & thread \\
+  locale    & DRAM  & CC$\geqslant$2.0 & RW & thread & thread \\
+  partagée  & puce  & N/A    & RW & bloc   & bloc \\
+  globale   & DRAM  & CC$\geqslant$2.0  & RW & GPU et hôte &  appli. \\
+  constante & DRAM  & Oui    & R  & GPU et hôte &  appli. \\
+  texture   & DRAM  & Oui    & R  & GPU et hôte &  appli. \\
   \hline
 \end{tabular}
-  \item[\kontuz] il faut adapter l'accès selon les caractèristiques
+  \item[\kontuz] différentes caractéristiques \gezi\ différents usages
+    \begin{itemize} 
+     \item la mémoire constante permet de «cacher» des données constantes durant l'execution du noyau, mais ses
+       accès doivent être constants par thread 
+     \item la mémoire partagée permet d'avoir un cache local pour un bloc de threads
   \end{itemize}
+  \end{itemize}
+\end{frame}
+
+%****************************************************************
+% mémoire partagée : 
+%****************************************************************
+\begin{frame}{Mémoire partagée}
+  \begin{itemize}[<+->]
+    \item[\argi] mémoire partagée entre tous les threads d'un bloc
+    \item[\kontuz] aux écritures concurrentes \harritu
+    \item[\scout] synchronisation à l'aide de {\tt \_\_syncthreads } 
+    \item[\scout] déclaration à l'aide du mot-clef {\tt \_\_shared\_\_}
+    \item[\scout] allocaton statique...
+  \lstinputlisting[language=C]{code/sharedStatic.c}
+\item[\scout] ou dynamique
+  \lstinputlisting[language=C]{code/shareDynamic.c}
+   \item[\kontuz] taille limitée à 64kB
+   \end{itemize}
+\end{frame}
+
+%****************************************************************
+% mémoire partagée : exemple
+%****************************************************************
+\begin{frame}{Mémoire partagée}{exemple}
+  \begin{itemize}[<+->]
+    \item[\adibi] on considère un noyau qui tranpose une matrice
+  \lstinputlisting[language=C]{code/transposeNaive.c}
+    \item[\triste] écriture ou lecture forcement avec un pas \gezi\ non coalescent
+    \item[\argi] utilisation d'un cache locale pour rendre les accès coalescents
+   \end{itemize}
 \end{frame}
 
 %****************************************************************
