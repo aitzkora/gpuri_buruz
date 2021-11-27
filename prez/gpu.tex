@@ -1005,13 +1005,55 @@ La mémoire utilisée peut être distribuée ou partagée.
 %****************************************************************
 % mémoire partagée : exemple
 %****************************************************************
-\begin{frame}{Mémoire partagée}{exemple}
+\begin{frame}{Mémoire partagée}{Tranposition}
   \begin{itemize}[<+->]
-    \item[\adibi] on considère un noyau qui tranpose une matrice
+    \item[\adibi] on considère un noyau qui transpose une matrice
   \lstinputlisting[language=C]{code/transposeNaive.c}
-    \item[\triste] écriture ou lecture forcement avec un pas \gezi\ non coalescent
-    \item[\argi] utilisation d'un cache locale pour rendre les accès coalescents
+    \item[\triste] écriture avec un saut de longueur {\tt n.x }\gezi\ non coalescent \harritu
+\begin{center}
+  \includegraphics[width=0.7\linewidth]{fig/transpose1.eps}
+\end{center}
    \end{itemize}
+\end{frame}
+
+%****************************************************************
+% mémoire partagée : solution
+%****************************************************************
+\begin{frame}{Mémoire partagée}{solution}
+  \begin{itemize}[<+->]
+    \item[\argi] on utilise un cache local \gezi\ lecture coalescente \pozik
+  \lstinputlisting[language=C]{code/transposeShared1.c}
+\begin{center}
+  \includegraphics[width=0.60\linewidth]{fig/transpose2.eps}
+\end{center}
+   \item[\faMagic] tester {\tt \_\_shared\_\_ float tile[TILE\_DIM][TILE\_DIM+1]} 
+   \end{itemize}
+\end{frame}
+
+%****************************************************************
+% mémoire partagée : synchronisation
+%****************************************************************
+\begin{frame}{Mémoire partagée}{sur l'importance de la synchonisation}
+ \begin{itemize}[<+->]
+   \item on veut transposer l'image suivante
+\begin{center}
+  \includegraphics[width=0.4\linewidth]{fig/cray.png}
+\end{center}
+  \item[\faClockO] image 2976x3808 sur K40M \gezi\ 0.94ms vs 0.75ms 
+\end{itemize}
+\pause
+\begin{columns}[t]
+\column{5cm}
+ Sans synchronisation 
+\begin{center}
+  \includegraphics[width=0.3\linewidth]{fig/crayNoSync.png}
+\end{center}
+\column{5cm}
+ Avec synchronisation
+\begin{center}
+  \includegraphics[width=0.3\linewidth]{fig/crayTrans.png}
+\end{center}
+\end{columns}
 \end{frame}
 
 %****************************************************************

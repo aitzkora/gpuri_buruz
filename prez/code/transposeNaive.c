@@ -1,10 +1,6 @@
-#define getElem(m, ny, i, j)  m[(i)* ny + (j)]
-
-__global__ void transposeNaive(const float * mIn, scalar * mOut, dim3 dims)
+__global__ void transpose(const float * mIn, float * mOut, dim3 n)
 {
-   int x = blockDim.x * blockIdx.x+ threadIdx.x;
-   int y = blockDim.y * blockIdx.y+ threadIdx.y;
-   int nx = dims.x;
-   int ny = dims.y;
-     getElem(mOut, nx, y, x) = getElem(mIn, ny, x, y);
+   int i = blockDim.x * blockIdx.x + threadIdx.x;
+   int j = blockDim.y * blockIdx.y + threadIdx.y;
+   mOut[i * n.x + j]  = mIn[j * n.y + i];
 }
