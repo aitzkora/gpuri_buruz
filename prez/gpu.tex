@@ -1057,6 +1057,24 @@ La mémoire utilisée peut être distribuée ou partagée.
 \end{frame}
 
 %****************************************************************
+% Divergence de thread
+%****************************************************************
+\begin{frame}{Divergence de chaînes}
+ \begin{itemize}[<+->]
+  \item[\kontuz] la divergence de chaîne peut degrader les performances
+  \item[\adibi] soit le noyau suivant
+  \lstinputlisting[language=C]{code/warpDiverge.c}
+  \item[\argi] condition satisfaite par 1 thread d'une chaîne 
+    \begin{itemize}
+      \item[\gezi] {\bf tous} les threads de la chaîne executent cette branche
+      \item[\gezi] les autres branches d'exécution sont serialisées
+      \item[\gezi] masquage des résultats des threads hors branche
+    \end{itemize}
+  \item[\adibi] par contre le noyau suivant ne diverge pas
+  \lstinputlisting[language=C]{code/warpNoDiverge.c}
+  \end{itemize}
+\end{frame}
+%****************************************************************
 % Références
 %****************************************************************
 \begin{frame}{Références}
