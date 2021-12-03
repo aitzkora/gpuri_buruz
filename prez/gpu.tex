@@ -1105,14 +1105,34 @@ La mémoire utilisée peut être distribuée ou partagée.
    \item[\argi] générer en // des couples aléatoires $(x_i,y_i) \in K = [0,1]^2$
    \item[\argi] sommer en // ceux qui sont dans $A = \{ (x,y) \in K \;|\; x^2+y^2 \geqslant 1 \}$
    \item[\galde] comment calculer une somme en parallèle sur un GPU ?
-   \item[\kontuz] il faut faire travailler tous les threads \harritu
-   \item[\scout] utiliser une réduction en arbre, mais non divergente
-\begin{center}
-  \includegraphics[width=0.5\linewidth]{fig/zuhaitz.eps}
-\end{center}
+   \item[\kontuz] il faut faire travailler un max de threads \harritu
+   \item[\scout] par exemple, en utilisant une réduction en arbre 
   \end{itemize}
+\pause
+\begin{center}
+  \includegraphics[width=0.6\linewidth]{fig/zuhaitz.eps}
+\end{center}
 \end{frame}
 
+
+%****************************************************************
+% Redukzio : somme divergente
+%****************************************************************
+\begin{frame}{Réduction}{Première solution}
+ \begin{enumerate}[<+->]
+   \item On peut ajouter 2 cases mémoire contiguës
+   \item multiplier le pas par 2
+   \item et itérer...
+  \end{enumerate}
+\pause
+\begin{center}
+  \includegraphics[width=0.8\linewidth]{fig/divergent.eps}
+\end{center}
+\pause
+\begin{itemize}
+  \item[\triste] problème : le schéma est clairement divergent \harritu
+  \end{itemize}
+\end{frame}
 
 %****************************************************************
 % Références
