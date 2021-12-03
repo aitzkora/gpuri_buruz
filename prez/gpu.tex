@@ -13,7 +13,7 @@
 \usepackage{color}
 \usepackage{listings}
 \usepackage{caption}
-
+\usepackage{bbold}
 % kolore batzuk definitu
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -119,11 +119,11 @@
        \item Mémoires de l'accélérateur
        \item Divergence de threads
      \end{itemize}
-  \item Divers
-     \begin{itemize}
-       \item Une brève histoire des GPUs
-       \item Bibliothèques applicatives (CuBlas, CuFFT)
-     \end{itemize}
+  %\item Divers
+  %   \begin{itemize}
+  %     \item Une brève histoire des GPUs
+  %     \item Bibliothèques applicatives (CuBlas, CuFFT)
+  %   \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -890,7 +890,7 @@ La mémoire utilisée peut être distribuée ou partagée.
     \item[\argi] BP Mémoire Globale \geziBikoitz\ DRAM GPU $\thicksim$ 10-20 (Go/s)
     \item[\scout] il faut donc optimiser les transferts hôte \geziBikoitz\ GPU
       \begin{itemize}
-        \item mémoire verouillée
+        \item mémoire verrouillée
         \item transferts asynchrones
       \end{itemize}
     \item[\kontuz] on a beau avoir le noyau le plus rapide du monde, si le temps de transfert est prohibitif, ça ne sert à rien \harritu
@@ -907,7 +907,7 @@ La mémoire utilisée peut être distribuée ou partagée.
       \begin{itemize}
         \item contrôleur DMA choisit : paginable ou verrouillée
         \item la mémoire verrouillée interdit l'utilisation du «swap»
-        \item l'usage de la mémoire paginable nécessite d'abord l'allocation d'un tampon verouillé, puis une copie vers le GPU
+        \item l'usage de la mémoire paginable nécessite d'abord l'allocation d'un tampon verrouillé, puis une copie vers le GPU
       \end{itemize}
   \end{itemize}
 \pause
@@ -1074,6 +1074,46 @@ La mémoire utilisée peut être distribuée ou partagée.
   \lstinputlisting[language=C]{code/warpNoDiverge.c}
   \end{itemize}
 \end{frame}
+
+%****************************************************************
+% Redukzio : Monte-Carloko metodoa
+%****************************************************************
+\begin{frame}{Réduction}{Calcul de $\pi$ par une méthode de Monte-Carlo}
+ \begin{itemize}[<+->]
+   \item[\argi] On souhaite approcher $\pi$ par le calcul d'aire suivant
+     \begin{columns}
+       \column{6cm}
+\begin{center}
+  \includegraphics[width=0.5\linewidth]{fig/monteCarlo.eps}
+\end{center}
+       \column{4cm}
+  $$A = \int_{A} dx \thicksim \frac{1}{N}\sum_{i=1}^N \mathbb{1}_{A}(x_i)$$
+     \end{columns}
+ où les $x_i$ sont pris au hasard dans le carré $[0,1] \times [0,1]$
+  \item[\faBomb] méthodes dite «de Monte-Carlo» en réference à l'algorithme de Metropolis-Ulam \gezi\ pendant info. de l'aiguille de Buffon
+  \item[\triste] convergence lente en $O(\frac{1}{\sqrt{N}})$
+  \item[\pozik] massivement parallélisable si on a un générateur pseudo-aléatoire parallèle (\texttt{curandGenerateUniform})
+  \end{itemize}
+\end{frame}
+
+
+%****************************************************************
+% Redukzio : Somme
+%****************************************************************
+\begin{frame}{Réduction}{Principe}
+ \begin{itemize}[<+->]
+   \item[\argi] générer en // des couples aléatoires $(x_i,y_i) \in K = [0,1]^2$
+   \item[\argi] sommer en // ceux qui sont dans $A = \{ (x,y) \in K \;|\; x^2+y^2 \geqslant 1 \}$
+   \item[\galde] comment calculer une somme en parallèle sur un GPU ?
+   \item[\kontuz] il faut faire travailler tous les threads \harritu
+   \item[\scout] utiliser une réduction en arbre, mais non divergente
+\begin{center}
+  \includegraphics[width=0.5\linewidth]{fig/zuhaitz.eps}
+\end{center}
+  \end{itemize}
+\end{frame}
+
+
 %****************************************************************
 % Références
 %****************************************************************
@@ -1084,6 +1124,8 @@ La mémoire utilisée peut être distribuée ou partagée.
   \item[\Pdf] Performance Optimization Strategies For GPU-Accelerated Applications D. Goodwin \href{https://on-demand.gputechconf.com/gtc/2013/presentations/S3046-Performance-Optimization-Strategies-for-GPU-Accelerated-Apps.pdf}{\beamergotobutton{pdf}}
   \item[\faFilePowerpointO] CUDA Basics, S. Vialle \href{http://www.metz.supelec.fr/metz/personnel/vialle/course/PPS-5A-GPGPU/notes-de-cours-specifiques/PPS-GPU-02-CUDA-Basics-2spp.pdf}{\beamergotobutton{pdf}}
   \item[\Pdf] Understanding Latency Hiding on GPUs, V. Volkov \href{http://www2.eecs.berkeley.edu/Pubs/TechRpts/2016/EECS-2016-143.pdf}{\beamergotobutton{pdf}}
+  \item[\Pdf] The Monte Carlo Method, N. Metropolis, S. Ulam,  Journal of the American Statistical Association Volume 44, 1949 
+    \href{http://www.tandfonline.com/doi/abs/10.1080/01621459.1949.10483310}{\beamergotobutton{pdf}}
 \end{itemize}
 \end{frame}
 \end{document}
