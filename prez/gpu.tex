@@ -65,7 +65,7 @@
   commentstyle=\color{bleuSympa},       % comment style
   stringstyle=\color{mauve},
   emph={ __global__, __shared__, __device__, __host__,
-        __syncthreads, threadIdx, blockIdx, blockDim},
+        __syncthreads, threadIdx, blockIdx, blockDim, gridDim},
   emphstyle=\color{arrosa},
   moredelim=[s][\color{arrosa}\ttfamily]{<<<}{>>>},
   morecomment=[s][\color{mauve}]{cudaMemcpyHostToDevice}{\ },
@@ -1114,6 +1114,24 @@ La mémoire utilisée peut être distribuée ou partagée.
 \end{center}
 \end{frame}
 
+%****************************************************************
+% Redukzio : Somme
+%****************************************************************
+\begin{frame}{Réduction}{2 niveaux} 
+ \begin{itemize}[<+->]
+   \item On va écrire 2 noyaux
+ \begin{itemize}
+   \item {\tt partialSum} qui dénombre les couples $(x_i,y_i)$ dans $A$ pour chaque bloc. On stocke ce résultat
+      en mémoire globale
+    \item {\tt finalSum} qui calcule la somme totale des résultats précedents
+ \end{itemize}
+   \item[\kontuz] agrégation d'une information commune par bloc \gezi\ mémoire partagée
+  \end{itemize}
+\pause
+\begin{center}
+  \includegraphics[width=0.6\linewidth]{fig/biKernels.eps}
+\end{center}
+\end{frame}
 
 %****************************************************************
 % Redukzio : somme divergente
@@ -1133,6 +1151,40 @@ La mémoire utilisée peut être distribuée ou partagée.
   \item[\triste] problème : le schéma est clairement divergent \harritu
   \end{itemize}
 \end{frame}
+
+%****************************************************************
+% Redukzio : somme convergente
+%****************************************************************
+\begin{frame}{Réduction}{2$^{\mbox{ème}}$ solution}
+ \begin{enumerate}[<+->]
+   \item ou alors additioner avec l'element situé a {\tt blockDim.x}
+   \item et diviser le pas par 2
+   \item puis itérer...
+  \end{enumerate}
+\pause
+\begin{center}
+  \includegraphics[width=0.6\linewidth]{fig/convergent.eps}
+\end{center}
+\pause
+\begin{itemize}
+  \item[\pozik] le schéma ne diverge quasiment plus \harritu
+  \end{itemize}
+\end{frame}
+
+%****************************************************************
+% Divergence de thread
+%****************************************************************
+\begin{frame}{Réduction}{noyau «partialSum»}
+\pause
+  \lstinputlisting[language=C]{code/partialSum.c}
+\pause
+  \begin{itemize}[<+->]
+    \item On découpe les données par paquet de taille {\tt gridDim.x * blockDim.x}
+    \item[ach
+
+  \end{itemize}
+\end{frame}
+
 
 %****************************************************************
 % Références
