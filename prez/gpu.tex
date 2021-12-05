@@ -122,7 +122,7 @@
   \item Divers
      \begin{itemize}
        \item Une brève histoire des GPUs
-       \item Bibliothèques applicatives (CuBlas, Curand, CuFFT, Magma)
+       \item Interfaces de programmation applicatives (IPA)
      \end{itemize}
 \end{itemize}
 \end{frame}
@@ -1303,6 +1303,197 @@ La mémoire utilisée peut être distribuée ou partagée.
   \includegraphics[width=0.8\linewidth]{fig/wolf2.png}
     \end{figure}
   \end{columns}
+\end{frame}
+
+%****************************************************************
+% gpu-ri buruzko historio motz bat
+%****************************************************************
+\begin{frame}{Une brève histoire des GPUs}{ou comment la 3dfx Voodoo change la donne}
+  \begin{columns}[t]
+    \column{7cm}
+    \begin{itemize}[<+->]
+      \item 1995 : IPA Glide publié par 3dfx interactive
+        \begin{itemize}
+         \item sous-ensemble de OpenlGL 1.1
+         \item placage de texture
+         \end{itemize}
+      \item 1995 : Nvidia NV1 : premiere puce integrant
+        \begin{itemize}
+          \item rendu 3D
+          \item accélération vidéo
+         \end{itemize}
+      \item 1996 : 3dfx voodo Graphics
+        \begin{itemize}
+          \item uniquement 3D, IPA Glide
+          \item application phare : Quake (ID software)
+        \end{itemize} 
+    \end{itemize} 
+    \column{5cm}
+\begin{figure}[htbp]
+  \includegraphics[width=0.7\linewidth]{fig/3dfx.jpg}
+ \end{figure}
+\begin{figure}[htbp]
+  \includegraphics[width=0.8\linewidth]{fig/quake_3fx.png}
+    \end{figure}
+  \end{columns}
+\end{frame}
+
+%****************************************************************
+% gpu-ri buruzko historio motz bat
+%****************************************************************
+\begin{frame}{Une brève histoire des GPUs}{ATI contre NVIDIA}
+  \begin{columns}[t]
+    \column{7cm}
+    \begin{itemize}[<+->]
+      \item 1999 : Nvidia GeForce 256
+        \begin{itemize}
+         \item Premier GPU
+         \item technologie materielle {\em Transform and Lighting}\/ (T\&L)
+         \item mémoire 32-64 Mo
+         \item Fréquence GPU : 120 Mhz
+         \item Fréquence Mémoire : 166-300Mhz
+         \end{itemize}
+      \item 2000 : ATI Radeon 7xxx
+        \begin{itemize}
+          \item techno T\&L
+          \item mémoire 32-64Mo
+          \item Fréquence GPU : 180-260Mhz
+          \item Fréquence Mémoire : 360-460Mhz
+          \item plusieurs cœurs de rendus
+         \end{itemize}
+    \end{itemize} 
+    \column{5cm}
+\begin{figure}[htbp]
+  \includegraphics[width=0.7\linewidth]{fig/geforce256.jpg}
+      \caption{\tiny Nvidia  GeForce 256}
+ \end{figure}
+\begin{figure}[htbp]
+  \includegraphics[width=0.8\linewidth]{fig/radeon7500.jpg}
+      \caption{\tiny ATI Radeon 7500}
+    \end{figure}
+  \end{columns}
+\end{frame}
+
+%****************************************************************
+% gpu-ri buruzko historio motz bat
+%****************************************************************
+\begin{frame}{Une brève histoire des GPUs}{l'ère des GPGPUs}
+  \begin{columns}[t]
+    \column{6cm}
+    \begin{itemize}[<+->]
+      \item 2001 : Nvidia GeForce 3 (NV20)
+        \begin{itemize}
+          \item unités programmables (nuanceurs)
+         \end{itemize}
+       \item les GPUs deviennent des accélérateurs de calcul génériques (GPGPU)
+        \begin{itemize}
+          \item les textures peuvent embarquer n'importe quelle donnée
+          \item les {\em nuanceurs}\/ (shaders) peuvent pratiquement faire
+            n'importe quel calcul
+          \item OpenGL peut dorenavant être utiliser pour faire du calcul scientifique
+         \end{itemize}
+    \end{itemize} 
+    \column{6cm}
+\begin{figure}[htbp]
+  \includegraphics[width=0.8\linewidth]{fig/geforce3.jpg}
+      \caption{\tiny Nvidia GeForce 3}
+ \end{figure}
+  \end{columns}
+\end{frame}
+
+%****************************************************************
+% gpu-ri buruzko historio motz bat
+%****************************************************************
+\begin{frame}{Une brève histoire des GPUs}{les accélérateurs GPU}
+  \begin{columns}[t]
+    \column{6cm}
+    \begin{itemize}[<+->]
+      \item 2007 : Nvidia anticipe le marché possible et publie l'IPA CUDA
+         Compute Unified Device Architecture)
+      \item Nvidia lance aussi les accélérateurs Tesla
+        \begin{itemize}
+          \item sans sortie vidéo \harritu
+          \item unités double précision
+          \item code de correction d'erreurs (ECC mode) pour augmenter la robustesse
+         \end{itemize}
+       \item AMD (anciennement ATI) publie
+        \begin{itemize}
+          \item l'IPA «CLose to the Metal»
+          \item le SDK «Stream»
+        \end{itemize}
+    \end{itemize} 
+    \column{5cm}
+\begin{figure}[htbp]
+  \includegraphics[width=0.7\linewidth]{fig/C1060.jpg}
+      \caption{\tiny Tesla C1060}
+ \end{figure}
+\begin{figure}[htbp]
+  \includegraphics[height=4cm, width=0.9\linewidth]{fig/archis.eps}
+ \end{figure}
+  \end{columns}
+\end{frame}
+
+%****************************************************************
+% gpu-ri buruzko historio motz bat
+%****************************************************************
+\begin{frame}{Une brève histoire des GPUs}{les dernières améliorations}
+  \begin{columns}[t]
+    \column{6cm}
+    \begin{itemize}[<+->]
+      \item Pascal :
+        \begin{itemize}
+          \item bus à haute-vitesse NVLink entre GPU et Hôte (jusqu'à 20Go/s)
+          \item prise en charge de la demi-précision (16 bits)
+          \item mémoire unifiée
+         \end{itemize}
+       \item Volta : 
+        \begin{itemize}
+          \item NVlink débit 25 Go/s
+          \item cœurs Tenseurs : 
+        \begin{itemize}
+          \item opération FMA sur des matrices 4x4
+          \item $D = A \times B + C$
+          \item application aux réseaux de neurones
+         \end{itemize}
+        \end{itemize}
+    \end{itemize} 
+    \column{5cm}
+\begin{figure}[htbp]
+  \includegraphics[width=0.7\linewidth]{fig/tensorCore.png}
+ \end{figure}
+\begin{figure}[htbp]
+  \includegraphics[width=0.9\linewidth]{fig/flux2.png}
+ \end{figure}
+  \end{columns}
+\end{frame}
+
+%****************************************************************
+% liburutegiak
+%****************************************************************
+\begin{frame}{Interfaces de programmation applicatives}
+  \begin{itemize}[<+->]
+    \item langages (autre que C/C++) pour interfacer CUDA
+  \begin{itemize}
+    \item Fortran (compilateur PGI)
+    \item Python, Julia et Matlab (avec cadriciels, Pytorch, flux.jl)
+  \end{itemize} 
+    \item bibliothèques optimisées pour CUDA
+  \begin{itemize}
+    \item Cublas et CuLA (algébre linéaire dense)
+    \item Curand (génération de nombres aléatoires)
+    \item CuFFT (transformées de fourier discrètes)
+    \item CuDNN (apprentissage automatique)
+    \item Cusparse (algèbre linéaire creuse)
+    \item Thrust (CUDA à la mode STL)
+    \item Magma (algébre linéaire sur archis hétérogènes)
+  \end{itemize} 
+    \item Standard OpenCL
+  \begin{itemize}
+    \item plus générique que CUDA 
+    \item prise en charge des archi NVidia
+    \item mais aussi d'AMD 
+  \end{itemize} 
+  \end{itemize} 
 \end{frame}
 
 %****************************************************************
