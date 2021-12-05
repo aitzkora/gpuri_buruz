@@ -117,13 +117,13 @@
        \item Métriques (BP, occupation)
        \item Transferts hôte \geziBikoitz\ accélérateur
        \item Mémoires de l'accélérateur
-       \item Divergence de threads
+       \item Divergence de threads \& réductions
      \end{itemize}
-  %\item Divers
-  %   \begin{itemize}
-  %     \item Une brève histoire des GPUs
-  %     \item Bibliothèques applicatives (CuBlas, CuFFT)
-  %   \end{itemize}
+  \item Divers
+     \begin{itemize}
+       \item Une brève histoire des GPUs
+       \item Bibliothèques applicatives (CuBlas, Curand, CuFFT, Magma)
+     \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -749,22 +749,23 @@ La mémoire utilisée peut être distribuée ou partagée.
 \end{frame}
 
 %****************************************************************
-% Profilage : 
+% Profilatzea
 %****************************************************************
 \begin{frame}{Profilage}{nvprof}
   \begin{itemize}[<+->]
     \item[\pozik] beaucoup plus de métriques et de compteurs disponibles
     \item[\triste] extraction automatique de résultats plus compliquée (merci \texttt{grep})
+    \item[\argi] afficher une trace {\tt --print-gpu-trace }
   \end{itemize}
 \pause\lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/outProfile}
 \end{frame}
 
 %****************************************************************
-% Optimization
+% Optimizazio
 %****************************************************************
 \begin{frame}
   \begin{center}
-    {\Huge Seconde Partie : Optimization}
+    {\Huge Seconde partie : Optimization}
   \end{center}
 \end{frame}
 
@@ -1119,19 +1120,21 @@ La mémoire utilisée peut être distribuée ou partagée.
 %****************************************************************
 \begin{frame}{Réduction}{2 niveaux} 
  \begin{itemize}[<+->]
-   \item On va écrire 2 noyaux
- \begin{itemize}
-   \item {\tt partialSum} qui dénombre les couples $(x_i,y_i)$ dans $A$ pour chaque bloc. On stocke ce résultat
-      en mémoire globale
-    \item {\tt finalSum} qui calcule la somme totale des résultats précedents
- \end{itemize}
-   \item[\kontuz] agrégation d'une information commune par bloc \gezi\ mémoire partagée
-  \end{itemize}
-\pause
-\begin{center}
+   \item[\scout] On va écrire 2 noyaux, qu'on appelle en cascade
+ \begin{enumerate}
+   \item {\tt partialSum} qui dénombre les couples $(x_i,y_i)$ dans $A$ pour chaque bloc. 
+   \item stockage du résultat en mémoire globale ({\tt partial})
+   \item {\tt finalSum} calcule la somme des éléments de {\tt partial}
+ \end{enumerate}
+   \item[\kontuz] information commune par bloc \gezi\ mémoire partagée
+   \item[\argi] schéma d'appel
+     \lstinputlisting[language=C]{code/biKernels.c}
+     \begin{center}  
   \includegraphics[width=0.6\linewidth]{fig/biKernels.eps}
-\end{center}
-\end{frame}
+     \end{center}  
+   \item[\argi] écriture possible avec un seul noyau \gezi\ opérations {\em atomiques}
+  \end{itemize}
+ \end{frame}
 
 %****************************************************************
 % Redukzio : somme divergente
@@ -1179,15 +1182,131 @@ La mémoire utilisée peut être distribuée ou partagée.
   \lstinputlisting[language=C]{code/partialSum.c}
 \pause
   \begin{itemize}[<+->]
-    \item On découpe les données par paquet de taille {\tt gridDim.x * blockDim.x}
-    \item[ach
-
+    \item chaque thread traite $\lfloor \frac{N}{\mbox{{\tt gridDim.x * blockDim.x}}}\rfloor $ données
+    \item synchro multiple
+    \item {\tt psum} : tableau partagé de taille {\tt BLOCK\_SIZE }
+    \item {\tt finalSum} a un code trés similaire
   \end{itemize}
+\end{frame}
+
+%****************************************************************
+% hirurgarren partea : denetarik
+%****************************************************************
+\begin{frame}
+  \begin{center}
+    {\Huge $3^{\mbox{ème}}$ partie : Divers }
+  \end{center}
+\end{frame}
+
+%****************************************************************
+% gpu-ri buruzko historio motz bat
+%****************************************************************
+\begin{frame}{Une brève histoire des GPUs}{Les premiers âges}
+  \begin{columns}[t]
+    \column{7cm}
+    \begin{itemize}[<+->]
+      \item bonne synthèse sur \href{https://www.techspot.com/article/650-history-of-the-gpu/}{\beamergotobutton{Techspot}}
+      \item premiers coprocesseurs graphiques évidemment qu'en 2D
+        \begin{itemize}
+          \item 1976 : RCA Pixie (résolution 62x128)
+          \item 1977 : Adaptateur d'interface de Télevision TIA 1A (Atari 2600)
+          \item 1981 : Motorola MC6845 (IBM PC, Apple II)
+        \end{itemize}
+    \end{itemize}
+    \column{5cm}
+    \begin{figure}[htbp]
+  \includegraphics[width=0.8\linewidth]{fig/appleII.jpg}
+    \caption{\tiny Apple IIe : 560x192 en monochrome, 15 couleurs en 140x192 !}
+    \end{figure}
+  \end{columns}
 \end{frame}
 
 
 %****************************************************************
-% Références
+% souvenirs, souvenirs
+%****************************************************************
+\begin{frame}{Souvenirs, souvenirs}{Lode Runner sur Apple IIe}
+  \begin{center}
+  \includegraphics[width=0.8\linewidth]{fig/lode_runner.png}
+  \end{center}
+\end{frame}
+
+%****************************************************************
+% gpu-ri buruzko historio motz bat
+%****************************************************************
+\begin{frame}{Une brève histoire des GPUs}{les premiers âges}
+  \begin{columns}[t]
+    \column{7cm}
+    \begin{itemize}[<+->]
+     \item 1983: Intel iSBX 275 Video Graphics 
+    Controller Multimode Board
+    \begin{itemize}
+      \item 256x256, 8 colors
+  \item 512x512 monochrome
+  \item Lignes, rectangles, cercles...
+  \item zoom \& défilement matériels
+  \item 32KB, 1000\$ \harritu
+  \item simulateurs de vol (Armée)
+    \end{itemize} 
+    \item 1987: ATI EGA
+      \begin{itemize}
+        \item 650x350, 16 couleurs
+        \item 512x512 monochrome
+        \item 256KB de DRAM
+        \item 399\$ \pozik
+        \item EGA Wonder 800
+        \begin{itemize}
+          \item  800x600 VGA
+          \item  449\$
+        \end{itemize} 
+      \end{itemize} 
+   \end{itemize} 
+    \column{5cm}
+    \begin{figure}[htbp]
+  \includegraphics[width=0.8\linewidth]{fig/sbx2.png}
+      \caption{\tiny iSBX 275}
+    \end{figure}
+\begin{figure}[htbp]
+  \includegraphics[width=0.8\linewidth]{fig/ati_ega.png}
+      \caption{\tiny ATI EGA Wonder 800}
+    \end{figure}
+  \end{columns}
+\end{frame}
+
+%****************************************************************
+% gpu-ri buruzko historio motz bat
+%****************************************************************
+\begin{frame}{Une brève histoire des GPUs}{les premiers âges}
+  \begin{columns}[t]
+    \column{7cm}
+    \begin{itemize}[<+->]
+      \item 1992 : SGI publie OpenGL 1.0 
+        \begin{itemize}
+          \item Interface de Programmation Applicative (IPA) pour 
+            la 2D et 3D.
+         \item initialement prévu pour Uni
+         \item vite adopté pour les jeux 3D
+         \end{itemize}
+      \item 1992: Wolfenstein 3D (Id Software)
+        \begin{itemize}
+          \item un des premiers FPS (jeux de tir en vue subjective)
+            \href{https://classicreload.com/wolfenstein-3d.html}{\beamergotobutton{Jouer}}
+         \end{itemize}
+      \item 1993: naissance de Nvidia
+      \item 1995: Microsoft promeut son IPA Direct3D 
+    \end{itemize} 
+    \column{5cm}
+\begin{figure}[htbp]
+  \includegraphics[width=0.7\linewidth]{fig/opengl.png}
+ \end{figure}
+\begin{figure}[htbp]
+  \includegraphics[width=0.8\linewidth]{fig/wolf2.png}
+    \end{figure}
+  \end{columns}
+\end{frame}
+
+%****************************************************************
+% Apaimenak
 %****************************************************************
 \begin{frame}{Références}
 \begin{itemize}[<+->]
