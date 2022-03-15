@@ -1,5 +1,6 @@
 using CUDA
 using BenchmarkTools
+using Printf 
 
 function jacobi_gpu!(ap, a)
     i = threadIdx().x + (blockIdx().x - 1) * blockDim().x
@@ -40,8 +41,8 @@ function chrono_gpu!(a, ap)
   end
 end
 
-@benchmark chrono_gpu!($a, $ap)
-
+t1 = @benchmark chrono_gpu!($a, $ap)
+println(@sprintf "gpu naive %3.3e μs" mean(t1.times))
 const BLOCK_X = 32
 const BLOCK_Y = 16
 
@@ -97,4 +98,5 @@ function chrono_shared!(a, ap)
   end
 end
 
-@benchmark chrono_shared!($a, $ap)
+t2 = @benchmark chrono_shared!($a, $ap)
+println(@sprintf "gpu shared %3.3e μs" mean(t2.times))
