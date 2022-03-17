@@ -2,6 +2,9 @@ using CUDA
 using BenchmarkTools
 using Printf 
 
+const BLOCK_X = 32
+const BLOCK_Y = 16
+
 function jacobi_gpu!(ap, a)
     i = threadIdx().x + (blockIdx().x - 1) * blockDim().x
     j = threadIdx().y + (blockIdx().y - 1) * blockDim().y
@@ -24,27 +27,26 @@ N = 4096
 a = CuArray{Float32}(undef, N, N)
 ap = similar(a);
 
-function chrono_gpu!(a, ap)
+function chrono_gpu!(a, ap, aff)
   init_sol!(a);
   init_sol!(ap);
-  nThreads = 32
   for i = 1:100
-     @cuda threads=(nThreads,nThreads) blocks=(cld(N,nThreads), cld(N, nThreads)) jacobi_gpu!(ap,a)
-     error = maximum(abs.(ap-a))   
-     #if (i % 10) == 0
-     #     println("i =", i, " error = ",error)
-     #end 
+     @cuda threads=(BLOCK_X,BLOCK_Y) blocks=(cld(N,BLOCK_X), cld(N, BLOCK_Y)) jacobi_gpu!(ap,a)
+     error = reduce(max,abs.(ap-a))   
+     if (aff != 0) && (i % aff) == 0
+          println("i =", i, " error = ", error)
+     end 
      if (error<=1e-3) 
        break
      end 
-     a[:,:] = ap[:,:]
+     copyto!(a, ap)
   end
 end
 
-t1 = @benchmark chrono_gpu!($a, $ap)
-println(@sprintf "gpu naive %3.3e μs" mean(t1.times))
-const BLOCK_X = 32
-const BLOCK_Y = 16
+#t1 = @benchmark chrono_gpu!($a, $ap, 0)
+#println(@sprintf "gpu naive %3.3f ms" mean(t1.times)/10^6)
+t1 = @elapsed chrono_gpu!(a, ap, 0)
+println(@sprintf "gpu naive %3.3f ms" t1)
 
 function jacobi_gpu_shared!(a, ap)
     tile = @cuStaticSharedMem(Float32, (BLOCK_X+2, BLOCK_Y+2))  
@@ -58,13 +60,13 @@ function jacobi_gpu_shared!(a, ap)
     if ( i > 1 && j > 1) 
       tile[is, js] = a[i-1, j-1]
     end    
-    if ( i > 1 && j < ny && js >= BLOCK_Y-2)  
+    if ( i > 1 && j < ny && js > BLOCK_Y-2)  
       tile[is,  js+2] = a[i-1, j+1]
     end 
-    if ( j > 1 && i < nx && is >= BLOCK_X-2) 
+    if ( j > 1 && i < nx && is > BLOCK_X-2) 
       tile[is+2,  js] = a[i+1, j-1]
     end    
-    if ( i < nx && j < ny && is >= BLOCK_X-2 && js >= BLOCK_Y - 2) 
+    if ( i < nx && j < ny && is > BLOCK_X-2 && js > BLOCK_Y - 2) 
       tile[is+2,js+2] = a[i+1, j+1]
     end
     
@@ -82,21 +84,23 @@ end
 
 
 
-function chrono_shared!(a, ap)
+function chrono_shared!(a, ap, aff)
   init_sol!(a)
   init_sol!(ap)
   for i = 1:100
      @cuda threads=(BLOCK_X,BLOCK_Y) blocks=(cld(N,BLOCK_X), cld(N, BLOCK_Y)) jacobi_gpu_shared!(a,ap)
-     error = maximum(abs.(a-ap))   
-     #if (i % 10) == 0
-     #  println("i =", i, " error = ",error)
-     #end 
+     error = reduce(max, abs.(a-ap))   
+     if (aff != 0) &&  (i % aff) == 0
+       println("i =", i, " error = ",error)
+     end 
      if (error<=1e-3) 
        break
      end 
-       a[:,:] = ap[:,:]
+     copyto!(a, ap)
   end
 end
 
-t2 = @benchmark chrono_shared!($a, $ap)
-println(@sprintf "gpu shared %3.3e μs" mean(t2.times))
+t2 = @elapsed chrono_shared!(a, ap, 0)
+println(@sprintf "gpu shared %3.3f ms" t2)
+#t2 = @benchmark chrono_shared!($a, $ap, 0)
+#println(@sprintf "gpu shared %3.3f ms" mean(t2.times) /10^6)
