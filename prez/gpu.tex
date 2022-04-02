@@ -14,6 +14,7 @@
 \usepackage{listings}
 \usepackage{caption}
 \usepackage{bbold}
+\usepackage{ifthen}
 % kolore batzuk definitu
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -41,12 +42,24 @@
 \captionsetup[figure]{labelformat=empty}
 \newcommand{\geziBikoitz}{\faArrowsH}
 
+% c/fortran aukeratzeko
+\newif\ifC
+\ifthenelse{\equal{\detokenize{c}}{\jobname}}{
+  \Ctrue
+}{
+  \Cfalse
+}
+\ifC
+  \newcommand{\mylang}{C}
+\else
+  \newcommand{\mylang}{fortran}
+\fi
 % listings CUDA lengoaia kudeatzeko
 \lstset{ %
   numbers=left,
   numbersep=1pt,
   numberstyle=\relsize{-5}\ttfamily,
-  language=C,                % the language of the code
+  language=\mylang,                % the language of the code
   framerule=1pt,
   basicstyle=\relsize{-3}\ttfamily,           % the size of the fonts that are used for the code
                                   % will be numbered
@@ -330,7 +343,11 @@ La mémoire utilisée peut être distribuée ou partagée.
 \pause
 \begin{itemize}[<+->]
   \item[\adibi] soit un programme calculant \texttt{tab[:]} $\leftarrow$ \texttt{tab[:] + 3}
-\lstinputlisting{code/increment.c}
+\ifC
+  \lstinputlisting{code/increment.c}
+\else
+  \lstinputlisting{code/increment.f90}
+\fi
 \item[\galde] on souhaite paralléliser la boucle en ligne 6 à l'aide de CUDA
 \end{itemize}
 \end{frame}
@@ -553,7 +570,11 @@ La mémoire utilisée peut être distribuée ou partagée.
   \begin{itemize}[<+->]
     \item[\argi] type CUDA pour gérer les dimensions de grille et de bloc
     \begin{itemize}
+\ifC
       \item \alert{dim3} est une structure avec 3 champs entiers \texttt{\_.x,\_.y et \_.z}
+\else
+      \item \alert{dim3} est un type dérivé avec 3 champs entiers \texttt{\_\%x,\_\%y et \_\%z}
+\fi
       \item soit \texttt{dg} un descripteur de grille et \texttt{db} un descripteur de bloc
     \end{itemize}
   \item[\argi] Limites de bloc 3D
@@ -571,7 +592,11 @@ La mémoire utilisée peut être distribuée ou partagée.
      \item problèmes 1D \gezi\  \texttt{dg.z} = \texttt{dg.y} = 1
   \end{itemize}
 \item[\adibi] exemple avec données 2D mais une grille 1D
+\ifC
   \lstinputlisting[language=C]{code/grille.c}
+\else
+  \lstinputlisting[language=fortran]{code/grille.f90}
+\fi
  \end{itemize}
 \end{frame}
 

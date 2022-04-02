@@ -6,18 +6,19 @@
 TEX = pdflatex 
 BIBMAKE = bibtex
 # name of Pdf File 
+all:: c.pdf fortran.pdf
 
-
-gpu.pdf : gpu.tex 
-	$(TEX) $<	
+c.pdf : gpu.tex 
+	$(TEX) -jobname=c $<	
+fortran.pdf : gpu.tex
+	$(TEX) -jobname=fortran $<	
 
 # Clean the directory
 clean::clean_pdf clean_aux
 
-
 clean_pdf: 
 	@echo Cleaning pdf File... 
-	@rm -f gpu.pdf
+	@rm -f c.pdf fortran.pdf
 clean_aux:
 	@echo Cleaning Auxiliary files... 
 	@rm -f core *.nav *.vrb *.loa *.bbl gpu.out  

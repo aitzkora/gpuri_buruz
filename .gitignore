@@ -1,2 +1,13 @@
+*.tags
+*.aux
+*.toc
+*-eps-converted-to.pdf
 *.out
 *.x
+*.log
+*.nav
+*.snm
+beamerguide.pdf
+beamer_tuto.pdf
+c.pdf
+fortran.pdf
