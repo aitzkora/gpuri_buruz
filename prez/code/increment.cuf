@@ -1,0 +1,27 @@
+module incr
+contains
+  attributes(global) subroutine increment(u, val) 
+    integer, intent(inout) :: u(:)
+    integer, value, intent(in) :: val
+    integer :: i
+    i = threadIdx%x
+    u(i) = u(i) + val
+  end subroutine  increment
+end module incr
+program incr_test
+  use incr
+  implicit none
+  integer, parameter :: N =  256
+  integer, allocatable  :: tab(:)
+  integer, allocatable, device  :: tab_d(:)
+
+  allocate(tab(N), tab_d(N))
+  tab = 1
+  tab_d = tab
+  call increment<<<1,N>>>(tab_d, 3)
+  tab = tab_d
+  if (any(tab /= 4)) stop "**** program failed *****"
+  print *,  "success" 
+  deallocate(tab, tab_d)
+end program incr_test
+

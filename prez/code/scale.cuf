@@ -1,0 +1,5 @@
+attributes(global) subroutine scale(vec, k)
+  integer :: i
+  i = blockDim%x * (blockIdx%x - 1) + threadIdx%x
+  vec(i) = vec(i) * k
+end subroutine scale

@@ -1,0 +1,26 @@
+module m_xor
+contains
+ attributes(global) subroutine kernelXOR(a)
+   integer, intent(inout) :: a(:)
+   integer :: currentIndex 
+
+   currentIndex = threadIdx%x + blockDim%x * (blockIdx%x - 1)
+   if (currentIndex <= size(a, 1)) a(currentIndex) = ieor(a(currentIndex), z'FF')
+
+ end subroutine kernelXOR
+end module m_xor
+program space_sheriff
+  use m_xor
+  implicit none
+  integer, parameter ::  N = 713 , BLOCK_SIZE = 256
+  integer, allocatable, device :: tabGPU(:)
+  integer, allocatable :: tab(:)
+  allocate (tab(N), tabGPU(N))
+  tab = 1 
+  tabGPU = tab
+  call kernelXOR<<<(N-1)/BLOCK_SIZE + 1, BLOCK_SIZE>>>(tabGPU)
+  tab = tabGPU
+  if  (any (tab /= z'FE')) stop "***** program failed ******"
+  print *, "success"
+  deallocate(tabGPU, tab)
+end program space_sheriff

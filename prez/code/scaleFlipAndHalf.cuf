@@ -1,0 +1,8 @@
+attributes(global) subroutine scaleFlipAndHalf(vec,  k)
+  integer, intent(inout) :: vec(:)
+  integer, intent(in) :: k
+  integer :: i 
+  i = blockDim%x * (blockIdx%x - 1) + threadIdx%x
+  if ( mod(i, 2) == 1) i = size(vec, 1) - i
+  vec(i) = vec(i) * k
+end subroutine scaleFlipAndHalf

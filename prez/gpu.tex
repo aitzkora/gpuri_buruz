@@ -51,9 +51,18 @@
 }
 \ifC
   \newcommand{\mylang}{C}
+  \newcommand{\extlang}{c}
+  \newcommand{\extcu}{cu}
+  \newcommand{\lstemphcu}{__global__, __shared__, __device__, __host__, __syncthreads, threadIdx, blockIdx, blockDim, gridDim}
 \else
   \newcommand{\mylang}{fortran}
+  \newcommand{\extlang}{f90}
+  \newcommand{\extcu}{cuf}
+  \newcommand{\lstemphccu}{global, shared, device, host, syncthreads, attributes, threadIdx, blockIdx, blockDim, gridDim}
 \fi
+\newcommand{\includeSrc}[1]{\lstinputlisting[language=\mylang]{#1.\extlang}}
+\newcommand{\includeSrcCu}[1]{\lstinputlisting{#1.\extcu}}
+
 % listings CUDA lengoaia kudeatzeko
 \lstset{ %
   numbers=left,
@@ -74,11 +83,10 @@
   breaklines=true,                % sets automatic line breaking
   breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
   lineskip=-1pt,
+  emph={\lstemphcu},
   keywordstyle=\color{bleuSympa}\textbf,          % keyword style
   commentstyle=\color{bleuSympa},       % comment style
   stringstyle=\color{mauve},
-  emph={ __global__, __shared__, __device__, __host__,
-        __syncthreads, threadIdx, blockIdx, blockDim, gridDim},
   emphstyle=\color{arrosa},
   moredelim=[s][\color{arrosa}\ttfamily]{<<<}{>>>},
   morecomment=[s][\color{mauve}]{cudaMemcpyHostToDevice}{\ },
@@ -105,7 +113,7 @@
 \begin{center}
 \includegraphics[width=0.5\linewidth]{fig/gpu.jpg}
 \end{center}
-\begin{center}
+ \begin{center}
 {\large Marc Fuentes - INRIA Pau\\ }
 \end{center}
 \end{frame}
@@ -222,7 +230,7 @@ La mémoire utilisée peut être distribuée ou partagée.
    \end{itemize}
  \item[\faBicycle] grain fin : chaque processeur traite une «donnée élémentaire»
    \begin{itemize}
-     \item[\hand] nécessite un grand nombre de threads
+     \item[\hand] nécessite un grand nombre de «threads»
      \item[\hand] le changement de contexte doit être négligeable
      \item[\argi] trés grand nombre de tâches $\geqslant 10000$
    \end{itemize}
@@ -304,12 +312,12 @@ La mémoire utilisée peut être distribuée ou partagée.
   \item[\argi] un code localisant ses accès dans le cache minimise les défauts de cache et tourne plus vite
   \item[\adibi] double boucle en C sur les lignes (resp. colonnes en Fortran)
 \begin{minipage}[c]{0.49\linewidth}
-  \lstinputlisting[language=C]{code/loop_col.c}
+  \includeSrc{code/loop_col}
 \end{minipage}
 \begin{minipage}[r]{0.49\linewidth}
     \begin{tabular}{|c|c|}
     \hline
-     boucle ext. & tps(s)  \\
+     boucle ext en C & tps(s)  \\
     \hline
       i (lignes) & 2.7s \\
       j (cols)  & 3.4s \\
@@ -343,12 +351,12 @@ La mémoire utilisée peut être distribuée ou partagée.
 \pause
 \begin{itemize}[<+->]
   \item[\adibi] soit un programme calculant \texttt{tab[:]} $\leftarrow$ \texttt{tab[:] + 3}
+  \includeSrc{code/increment}
 \ifC
-  \lstinputlisting{code/increment.c}
+   \item[\galde] on souhaite paralléliser la boucle en ligne 6 à l'aide de CUDA
 \else
-  \lstinputlisting{code/increment.f90}
+   \item[\galde] on souhaite paralléliser l'affectation en ligne 6 à l'aide de CUDA
 \fi
-\item[\galde] on souhaite paralléliser la boucle en ligne 6 à l'aide de CUDA
 \end{itemize}
 \end{frame}
 
@@ -359,7 +367,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \pause
 \begin{itemize}[<+->]
   \item[\adibi] on peut écrire le programme suivant
-\lstinputlisting{code/incrementGPU.cu}
+\includeSrcCu{code/increment}
 \item[\pozik] plus de boucle
 \item[\argi] nouveaux mot-clefs : \texttt{\_\_global\_\_, threadIdx}
 \item[\argi] appel du noyau \texttt{increment<<<1,N>>>}
@@ -373,9 +381,14 @@ La mémoire utilisée peut être distribuée ou partagée.
 \begin{frame}{Exemple d'introduction}{explication}
 \pause
 \begin{itemize}[<+->]
+\ifC
  \item[\argi] boucle \texttt{for} \gezi\ appel d'un {\bf thread}
+\else
+ \item[\argi] boucle implicite \gezi\ appel d'un {\bf thread}
+\fi
  \item[\argi] exécutant le noyau \texttt{increment}
- \item[\argi] pour chaque indice de boucle indexé par \texttt{threadIdx.x}
+ \item[\argi] pour chaque indice de boucle indexé par \ifC \texttt{threadIdx.x} \else 
+   \texttt{threadIdx\%x} \fi
  \item[\argi] sur le tableau \texttt{tab\_d} alloué sur le GPU
  \item[\kontuz] il faut copier \texttt{tab} sur le GPU et le rapatrier après calcul
 \end{itemize}
@@ -586,18 +599,14 @@ La mémoire utilisée peut être distribuée ou partagée.
    \end{itemize}
  \item[\argi] limites de la grille 3D
    \begin{itemize}
-     \item \texttt{dg.x} $\leqslant 2^{31}-1$, \texttt{dg.y} $\leqslant 2^{16} - 1 $, \texttt{dg.z} $\leqslant 2^{16}-1$
-     \item nb total de threads par bloc $\leqslant 1024$
-     \item problèmes 2D \gezi\  \texttt{dg.z} = 1 
-     \item problèmes 1D \gezi\  \texttt{dg.z} = \texttt{dg.y} = 1
+      \item \texttt{dg.x} $\leqslant 2^{31}-1$, \texttt{dg.y} $\leqslant 2^{16} - 1 $, \texttt{dg.z} $\leqslant 2^{16}-1$
+      \item nb total de threads par bloc $\leqslant 1024$
+      \item problèmes 2D \gezi\  \texttt{dg.z} = 1 
+      \item problèmes 1D \gezi\  \texttt{dg.z} = \texttt{dg.y} = 1
+    \end{itemize}
+  \item[\adibi] exemple avec données 2D mais une grille 1D
+    \includeSrc{code/grille}
   \end{itemize}
-\item[\adibi] exemple avec données 2D mais une grille 1D
-\ifC
-  \lstinputlisting[language=C]{code/grille.c}
-\else
-  \lstinputlisting[language=fortran]{code/grille.f90}
-\fi
- \end{itemize}
 \end{frame}
 
 %****************************************************************
@@ -627,7 +636,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \begin{flushright}
 \includegraphics[width=0.1\linewidth]{fig/xor.jpg}
 \end{flushright}
-  \lstinputlisting[language=C]{code/overflow.cu}
+  \includeSrcCu{code/overflow}
 \end{frame}
 
 %****************************************************************
@@ -639,7 +648,7 @@ La mémoire utilisée peut être distribuée ou partagée.
     \item[\argi] un accès mémoire typique $\thicksim$ 4 octets
     \item[\argi] granularité mémorielle : de 32 à 128 octets 
     \item[\harritu] {\em coalescence} : agrégation de plusieurs accès mémoire en un seul lorsqu'il se font dans le même bloc
-    \item[\adibi] exemples avec 4 threads par chaîne et 4 mots par transaction
+    \item[\adibi] exemples avec 4 «threads» par chaîne et 4 mots par transaction
 \begin{center}
 \includegraphics[width=0.6\linewidth]{fig/coalescence.eps}
 \end{center}
@@ -653,7 +662,7 @@ La mémoire utilisée peut être distribuée ou partagée.
   \begin{itemize}[<+->]
     \item[\adibi] soit le code d'homothétie d'un vecteur
 \begin{center}
-\lstinputlisting[language=C]{code/scale.c}
+\includeSrcCu{code/scale}
 \end{center}
     \item[\argi] on a des accès {\em contigus}, ce qui autorise la coalescence
 \begin{center}
@@ -670,7 +679,7 @@ La mémoire utilisée peut être distribuée ou partagée.
   \begin{itemize}[<+->]
     \item[\adibi] on peut y accéder différement, par exemple avec un pas de 2
 \begin{center}
-  \lstinputlisting[language=C]{code/scaleFlipAndHalf.c}
+  \includeSrcCu{code/scaleFlipAndHalf}
 \end{center}
     \item[\kontuz] mais les tranferts mémoires sont non-coalescents !
 \begin{minipage}[c]{0.49\linewidth}
