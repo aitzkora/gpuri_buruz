@@ -54,11 +54,13 @@
   \newcommand{\extlang}{c}
   \newcommand{\extcu}{cu}
   \newcommand{\lstemphcu}{__global__, __shared__, __device__, __host__, __syncthreads, threadIdx, blockIdx, blockDim, gridDim}
+  \newcommand{\spt}{.}
 \else
   \newcommand{\mylang}{fortran}
   \newcommand{\extlang}{f90}
   \newcommand{\extcu}{cuf}
   \newcommand{\lstemphccu}{global, shared, device, host, syncthreads, attributes, threadIdx, blockIdx, blockDim, gridDim}
+  \newcommand{\spt}{\%}
 \fi
 \newcommand{\includeSrc}[1]{\lstinputlisting[language=\mylang]{#1.\extlang}}
 \newcommand{\includeSrcCu}[1]{\lstinputlisting{#1.\extcu}}
@@ -583,26 +585,22 @@ La mémoire utilisée peut être distribuée ou partagée.
   \begin{itemize}[<+->]
     \item[\argi] type CUDA pour gérer les dimensions de grille et de bloc
     \begin{itemize}
-\ifC
-      \item \alert{dim3} est une structure avec 3 champs entiers \texttt{\_.x,\_.y et \_.z}
-\else
-      \item \alert{dim3} est un type dérivé avec 3 champs entiers \texttt{\_\%x,\_\%y et \_\%z}
-\fi
+      \item \alert{dim3} est une structure avec 3 champs entiers \texttt{\_\spt x,\_\spt y et \_\spt z}
       \item soit \texttt{dg} un descripteur de grille et \texttt{db} un descripteur de bloc
     \end{itemize}
   \item[\argi] Limites de bloc 3D
    \begin{itemize}
-     \item \texttt{db.x} $\leqslant 1024$, \texttt{db.y} $\leqslant 1024$, \texttt{db.z} $\leqslant 64$ 
+     \item \texttt{db\spt x} $\leqslant 1024$, \texttt{db\spt y} $\leqslant 1024$, \texttt{db\spt z} $\leqslant 64$ 
      \item nb total de threads par bloc $\leqslant 1024$
-     \item problèmes 2D \gezi\  \texttt{db.z} = 1 
-     \item problèmes 1D \gezi\  \texttt{db.z} = \texttt{db.y} = 1
+     \item problèmes 2D \gezi\  \texttt{db\spt z} = 1 
+     \item problèmes 1D \gezi\  \texttt{db\spt z} = \texttt{db\spt y} = 1
    \end{itemize}
  \item[\argi] limites de la grille 3D
    \begin{itemize}
-      \item \texttt{dg.x} $\leqslant 2^{31}-1$, \texttt{dg.y} $\leqslant 2^{16} - 1 $, \texttt{dg.z} $\leqslant 2^{16}-1$
+      \item \texttt{dg\spt x} $\leqslant 2^{31}-1$, \texttt{dg\spt y} $\leqslant 2^{16} - 1 $, \texttt{dg\spt z} $\leqslant 2^{16}-1$
       \item nb total de threads par bloc $\leqslant 1024$
-      \item problèmes 2D \gezi\  \texttt{dg.z} = 1 
-      \item problèmes 1D \gezi\  \texttt{dg.z} = \texttt{dg.y} = 1
+      \item problèmes 2D \gezi\  \texttt{dg\spt z} = 1 
+      \item problèmes 1D \gezi\  \texttt{dg\spt z} = \texttt{dg\spt y} = 1
     \end{itemize}
   \item[\adibi] exemple avec données 2D mais une grille 1D
     \includeSrc{code/grille}
@@ -623,8 +621,12 @@ La mémoire utilisée peut être distribuée ou partagée.
 \begin{center}
 \includegraphics[width=0.7\linewidth]{fig/grille_1D.eps}
 \end{center}
+\ifC
    \item[\egia] \texttt{\small currentIndex = blockDim.x * blockIdx.x + threadIdx.x}
-   \item[\kontuz] penser à vérifier que \texttt{currentIndex} $\leq$ N !
+\else
+   \item[\egia] \texttt{\small currentIndex = blockDim\%x * (blockIdx\%x - 1) + threadIdx\%x}
+\fi
+   \item[\kontuz] penser à vérifier que \texttt{currentIndex} \ifC \lt \else $\leq$ \fi N !
  \end{itemize}
   \end{itemize}
 \end{frame}
@@ -710,11 +712,11 @@ La mémoire utilisée peut être distribuée ou partagée.
     \item[\adibi] On veut écrire un noyau qui translate des particules, vaut il mieux utiliser : 
     \item[\galde] un «tableau de structures»
 \begin{center}
-  \lstinputlisting[language=C]{code/AOS.c}
+  \includeSrc{code/AOS}
 \end{center}
     \item[\galde] ou une «structure de tableaux»
 \begin{center}
-  \lstinputlisting[language=C]{code/SOA.c}
+  \includeSrc{code/SOA}
 \end{center}
   \item[\hand] réponse en TP \pozik
   \end{itemize}

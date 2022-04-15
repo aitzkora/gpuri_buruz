@@ -21,6 +21,6 @@ clean_pdf:
 	@rm -f c.pdf fortran.pdf
 clean_aux:
 	@echo Cleaning Auxiliary files... 
-	@rm -f core *.nav *.vrb *.loa *.bbl gpu.out  
+	@rm -f core *.nav *.vrb *.loa *.bbl c.out fortran.out
 	@rm -f *.aux *.toc *.lof *.log *.snm 
-	@rm fig/*eps-converted-to.pdf 
+	@rm -f fig/*eps-converted-to.pdf 
