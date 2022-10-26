@@ -50,13 +50,15 @@
   \Cfalse
 }
 \ifC
-  \newcommand{\mylang}{C}
+  \newcommand{\mylang}{c}
+  \newcommand{\othlang}{fortran}
   \newcommand{\extlang}{c}
   \newcommand{\extcu}{cu}
   \newcommand{\lstemphcu}{__global__, __shared__, __device__, __host__, __syncthreads, threadIdx, blockIdx, blockDim, gridDim}
   \newcommand{\spt}{.}
 \else
   \newcommand{\mylang}{fortran}
+  \newcommand{\othlang}{c}
   \newcommand{\extlang}{f90}
   \newcommand{\extcu}{cuf}
   \newcommand{\lstemphccu}{global, shared, device, host, syncthreads, attributes, threadIdx, blockIdx, blockDim, gridDim}
@@ -181,7 +183,7 @@
       \begin{minipage}[r]{0.49\linewidth}
         \begin{figure}
         \includegraphics[width=0.6\linewidth]{fig/minetest.jpg}
-          \caption{\tiny Minetest (clone libre) }
+          \caption{\tiny Minetest}
         \end{figure}
       \end{minipage}
     \item[\adibi]  \begin{minipage}[l]{0.49\linewidth}
@@ -226,7 +228,7 @@ La mémoire utilisée peut être distribuée ou partagée.
   \item[\faTruck] gros grain : un processeur parallèle (tâche, threads, processus MPI) traite beaucoup d'éléments 
    \begin{itemize}
      \item décomposition de domaine (maillage, matrice) :  ex. MUMPS
-     \item parallèlisme par tâches (ex : STARPU)
+     \item parallélisme par tâches (ex : STARPU)
      \item[\hand] chaque processeur doit avoir suffisament de mémoire pour traiter une grosse tâche
      \item[\argi] nombre raisonnable de tâches
    \end{itemize}
@@ -234,7 +236,7 @@ La mémoire utilisée peut être distribuée ou partagée.
    \begin{itemize}
      \item[\hand] nécessite un grand nombre de «threads»
      \item[\hand] le changement de contexte doit être négligeable
-     \item[\argi] trés grand nombre de tâches $\geqslant 10000$
+     \item[\argi] très grand nombre de tâches $\geqslant 10000$
    \end{itemize}
 \end{itemize}
 \end{frame}
@@ -262,7 +264,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \end{itemize}
 \end{itemize}
 \pause
-  \hand\  La programmation sur GPU est {\it grosso modo}\  donc un parallèlisme à {\bf grain fin}, à mémoire {\bf partagée} tournant sur
+  \hand\  La programmation sur GPU est {\it grosso modo}\  donc un parallélisme à {\bf grain fin}, à mémoire {\bf partagée} tournant sur
   une architecture {\bf hétérogène}.
 \end{frame}
 
@@ -312,17 +314,22 @@ La mémoire utilisée peut être distribuée ou partagée.
   \item[\pozik] succès (hit) : accès déjà dans la ligne de cache 
   \item[\triste] défaut (miss) : accès hors de la ligne de cache \gezi\ il faut recharger entièrement la ligne de cache!
   \item[\argi] un code localisant ses accès dans le cache minimise les défauts de cache et tourne plus vite
-  \item[\adibi] double boucle en C sur les lignes (resp. colonnes en Fortran)
+  \item[\adibi] double boucle en \mylang\,  sur les lignes (resp. colonnes en \othlang)
 \begin{minipage}[c]{0.49\linewidth}
   \includeSrc{code/loop_col}
 \end{minipage}
 \begin{minipage}[r]{0.49\linewidth}
     \begin{tabular}{|c|c|}
     \hline
-     boucle ext en C & tps(s)  \\
+     boucle ext en \mylang\, & tps(s)  \\
     \hline
+      \ifC
       i (lignes) & 2.7s \\
-      j (cols)  & 3.4s \\
+      j (cols) & 3.4s \\
+      \else
+      j (cols) & 2.7s \\
+      i (lignes) & 3.4s \\
+      \fi
     \hline
     \end{tabular}
 \end{minipage}
@@ -370,8 +377,9 @@ La mémoire utilisée peut être distribuée ou partagée.
 \begin{itemize}[<+->]
   \item[\adibi] on peut écrire le programme suivant
 \includeSrcCu{code/increment}
-\item[\pozik] plus de boucle
-\item[\argi] nouveaux mot-clefs : \texttt{\_\_global\_\_, threadIdx}
+\ifC \item[\pozik] plus de boucle \fi
+\item[\argi] nouveaux mot-clefs : \ifC \texttt{\_\_global\_\_, threadIdx} \else
+\texttt{global, threadIdx} \fi
 \item[\argi] appel du noyau \texttt{increment<<<1,N>>>}
 \item[\argi] gestion de la mémoire : \texttt{\small cudaMemcpy, cudaMalloc, cudaFree}
 \end{itemize}
@@ -626,7 +634,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \else
    \item[\egia] \texttt{\small currentIndex = blockDim\%x * (blockIdx\%x - 1) + threadIdx\%x}
 \fi
-   \item[\kontuz] penser à vérifier que \texttt{currentIndex} \ifC \lt \else $\leq$ \fi N !
+   \item[\kontuz] penser à vérifier que \texttt{currentIndex} \ifC $<$ \else $\leq$ \fi N !
  \end{itemize}
   \end{itemize}
 \end{frame}
