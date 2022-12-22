@@ -337,6 +337,94 @@ La mémoire utilisée peut être distribuée ou partagée.
 \end{itemize}
 \end{frame}
 
+
+\ifC
+\begin{frame}{Rappel : Pointeurs en C}
+  \lstset{basicstyle=\relsize{-1}\ttfamily}
+\begin{itemize}[<+->]
+  \item Un pointeur est une variable contenant l'adresse d'une autre
+  \item déclaration : \lstinline! int * p; // p est pointeur sur des ints !
+  \item allocation  : \lstinline! p = (int *) malloc(4*sizeof(int)); // alloue 4 entiers !
+  \item désallocation : \lstinline! free(p); // libere la memoire !
+  \item déréfencement : \lstinline! *p = 2 ;! ou \lstinline !p[0] = 2;!
+  \item «adresse de» : \lstinline! int t[] = \{1,2,3\} ; p=\&t[0] ; (*p)++;!
+  \item[\argi] \lstinline!*! $\circ$ \lstinline!\&! = $I_{valeurs}$ et \lstinline!\&! $\circ$ \lstinline!*! = $I_{adresses}$
+  \item arithmétique : \lstinline! for(p=\&t[0]; p\!=\&t[0]+3;) (*p)++;!
+  \item[\scout] notation : \lstinline! p[i] ! $\equiv$ \lstinline! *(i+p)! $\equiv$ \lstinline! i[p]!
+  \item utilisation 
+    \begin{itemize}
+      \item passage par adresse des arguments de fonction
+      \item gestion de mémoire
+    \end{itemize}
+\end{itemize}
+  \lstset{basicstyle=\relsize{-3}\ttfamily}
+\end{frame}
+
+\begin{frame}{Passage par valeur et par adresse }
+\begin{columns}[t]
+\column{5cm}
+ passage par valeur
+  \includeSrc{code/valeur}
+  renvoie \lstinline! p=3,x=2!
+  \begin{itemize}
+    \item[\triste] {\tt f} ne peut pas changer {\tt x}
+    \item[\kontuz] dépassement de pile possible !
+   \end{itemize} 
+\column{5cm}
+ passage par adresse
+  \includeSrc{code/adresse}
+  renvoie \lstinline! p=3,x=3!
+  \begin{itemize}
+    \item[\scout] {\tt f} peut changer {\tt x}
+    \item[\argi] économise de la place sur la pile
+   \end{itemize} 
+\end{columns}
+\end{frame}
+\fi % C
+%***************************************************************
+% Allocation de mémoire
+%***************************************************************
+\begin{frame}{Allocation de mémoire}
+La mémoire sur l'hôte (hors registre) est allouée de 3 façons: 
+\begin{itemize}[<+->]
+  \item statique : réservé lors de la compilation (text, data ou bss)
+    \begin{itemize}
+      \item[\pozik] allocation rapide (coût nul) et quasi-illimité
+      \item[\pozik] sûr (pas de fuites de mémoire possibles)
+      \item[\triste] peu flexible
+    \end{itemize}
+  \item automatique : alloué sur la pile (stack) lors de l'appel d'une fonction
+    \begin{itemize}
+      \item[\scout] permet de stocker : 
+      \begin{itemize}
+        \item les variables locales d'une fonction
+        \item l'adresse de retour de l'appel
+        \item les paramètres d'appel de la fonction
+      \end{itemize}
+    \item[\argi] désalloué au retour de la fonction fonction
+      \item[\pozik] allocation/désallocation rapide
+      \item[\kontuz] limité par la taille de la pile
+    \end{itemize}
+  \item dynamique : alloué sur le tas (heap) lors de l'éxecution
+  \begin{itemize}
+      \item[\pozik] très flexible et quasi-illimité
+      \item[\triste] moins favorable au cache
+      \item[\triste] allocation/désallocation lente
+      \item[\kontuz] à la discrétion du codeur \gezi fuites possibles de mémoire
+    \end{itemize}
+\end{itemize}
+\end{frame}
+\ifC
+%***************************************************************
+% Quizz mémoire
+%***************************************************************
+%\begin{frame}{Quizz}
+%\begin{itemize}[<+->]
+%\end{itemize}
+%\end{frame}
+
+
+\fi
 %%****************************************************************
 %% sarrera : 
 %%****************************************************************
