@@ -14,6 +14,8 @@
 \usepackage{listings}
 \usepackage{caption}
 \usepackage{bbold}
+\usepackage{tikz}
+\usepackage[absolute,overlay]{textpos}
 \usepackage{ifthen}
 % kolore batzuk definitu
 \definecolor{dkgreen}{rgb}{0,0.6,0}
@@ -214,7 +216,7 @@ La mémoire utilisée peut être distribuée ou partagée.
     \item mémoire distribuée : chaque processus a une mémoire privée et communique avec les autres par des messages
       \begin{itemize}
         \item[\argi] nécéssaire sur de très grands problèmes (limite mémoire/nœud moins gênante)
-        \item[\triste] envoie de messages peut être couteux
+        \item[\triste] l'envoi de messages peut être couteux
         \item[\argi] cibles : MPI, Multi-GPU
       \end{itemize}
   \end{itemize}
@@ -339,7 +341,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 
 
 \ifC
-\begin{frame}{Rappel : Pointeurs en C}
+\begin{frame}{Interlude sur les Pointeurs}
   \lstset{basicstyle=\relsize{-1}\ttfamily}
 \begin{itemize}[<+->]
   \item Un pointeur est une variable contenant l'adresse d'une autre
@@ -362,6 +364,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 
 \begin{frame}{Passage par valeur et par adresse }
 \begin{columns}[t]
+\pause
 \column{5cm}
  passage par valeur
   \includeSrc{code/valeur}
@@ -370,6 +373,7 @@ La mémoire utilisée peut être distribuée ou partagée.
     \item[\triste] {\tt f} ne peut pas changer {\tt x}
     \item[\kontuz] dépassement de pile possible !
    \end{itemize} 
+\pause
 \column{5cm}
  passage par adresse
   \includeSrc{code/adresse}
@@ -414,15 +418,65 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
     \end{itemize}
 \end{itemize}
 \end{frame}
-\ifC
-%***************************************************************
-% Quizz mémoire
-%***************************************************************
-%\begin{frame}{Quizz}
-%\begin{itemize}[<+->]
-%\end{itemize}
-%\end{frame}
 
+\begin{frame}{Quizz allocation}
+  \lstset{numbers=none}
+  \begin{itemize}
+    \pause
+    \item[\scout] 3 programmes allouent le même tableau de 3 façons différentes
+\begin{columns}[T]
+\pause
+  \begin{column}{4cm}
+  \includeSrc{code/mem1}
+    \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/mem1.out}
+\end{column}
+\pause
+  \vrule{}
+  \begin{column}{4cm}
+  \includeSrc{code/mem2}
+  \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/mem2.out}
+  \end{column}
+\pause
+  \vrule{}
+  \begin{column}{4cm}
+  \includeSrc{code/mem3}
+  \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/mem3.out}
+  \end{column}
+\end{columns}
+    \pause
+    \item[\galde] Quel est le type de chaque allocation ?
+  \end{itemize}
+\begin{textblock}{12}(0.2, 8)
+  \uncover<7-9>{
+	\tikz \node[fill=red, text=white, rounded corners=2mm,
+	inner sep=5mm, rotate=20]{
+	  \large{\textbf{Automatique}}
+	};
+  }
+\end{textblock}
+
+\begin{textblock}{12}(6, 7)
+  \uncover<8-9>{
+	\tikz \node[fill=green, text=white, rounded corners=2mm,
+	inner sep=5mm, rotate=20]{
+	  \large{\textbf{Statique}}
+	};
+  }
+\end{textblock}
+
+\begin{textblock}{12}(11, 8)
+  \uncover<9-9>{
+	\tikz \node[fill=orange, text=white, rounded corners=2mm,
+	inner sep=5mm, rotate=20]{
+	  \large{\textbf{Dynamique}}
+	};
+  }
+\end{textblock}
+
+\end{frame}
+  \lstset{numbers=left}
+\ifC
+\end{document}
 
 \fi
 %%****************************************************************

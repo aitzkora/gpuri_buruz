@@ -1,13 +1,15 @@
-*.tags
+*tags
 *.aux
 *.toc
 *-eps-converted-to.pdf
-*.out
 *.x
 *.log
 *.nav
 *.snm
+prez/fortran.out
+prez/c.out
 beamerguide.pdf
 beamer_tuto.pdf
 c.pdf
 fortran.pdf
+.ipynb_checkpoints/
