@@ -7,7 +7,7 @@
 \usepackage{bbding}
 \usepackage{fontawesome}
 \usepackage[utf8]{inputenc}
-\usepackage[french]{babel}
+\usepackage[french, russian]{babel}
 \usepackage{fancyvrb}
 \usepackage{relsize}
 \usepackage{color}
@@ -114,7 +114,7 @@
 %**************************************************************
 \begin{frame}
 \begin{center}
-  {\Large Une introduction au calcul sur GPU} 
+  {\Large Introduction au calcul sur Accelerateur (GPU)\footnote{ne pas confondre avec le ГПУ!} }
 \end{center}
 \begin{center}
 \includegraphics[width=0.5\linewidth]{fig/gpu.jpg}
@@ -149,6 +149,7 @@
   \item Divers
      \begin{itemize}
        \item Une brève histoire des GPUs
+       \item nouveautés (demi-précision, processeurs tenseurs)
        \item Interfaces de programmation applicatives (IPA)
      \end{itemize}
 \end{itemize}
@@ -166,7 +167,8 @@
 %****************************************************************
 % erabilpenak
 %**************************************************************
-\begin{frame}{Utilisation des GPU}
+% neurona-sare marrazteko
+\begin{frame}[fragile]{Utilisation des GPU}
 \pause
   \begin{itemize}[<+->]
     \item[\adibi]
@@ -191,15 +193,50 @@
     \item[\adibi]  \begin{minipage}[l]{0.49\linewidth}
      apprentissage automatique
       \end{minipage}
-      \begin{minipage}[r]{0.49\linewidth}
+      \begin{minipage}[l]{0.49\linewidth}
+        \newcommand{\sarrera}{3} 
+        \newcommand{\ezkututa}{5}  
+        \newcommand{\irteera}{2} 
         \begin{figure}
-        \includegraphics[width=0.6\linewidth]{fig/neural.png}
-          \caption{\tiny véhicule autonome(projet inutile \faMehO)}
+          \begin{tikzpicture}[scale=0.4]
+            % sarrera-geruza
+            \foreach \i in {1,...,\sarrera} {
+              \node[circle, fill=orange!30] (Sarrera-\i) at (0,-\i) {};
+            }
+            % geruza ezkututa
+            \foreach \i in {1,...,\ezkututa} {
+              \node[circle, fill=teal!50, yshift=(\ezkututa-\sarrera)*2mm ] (Ezkututa-\i) at (2.5,-\i) {};
+            }
+            % irtee-geruza
+            \foreach \i in {1,...,\irteera} {
+              \node[circle, fill=purple!50, yshift=(\irteera-\sarrera)*2mm  ] (Irteera-\i) at (5,-\i) {};
+            }
+            % Sarreratik Ezkutura geziak marraztu
+            \foreach \i in {1,...,\sarrera} {
+              \foreach \j in {1,...,\ezkututa} {
+                \draw[->, shorten >=1pt] (Sarrera-\i) -- (Ezkututa-\j);
+              }
+            }
+            % Ezkututik Irteerera geziak marraztu
+            \foreach \i in {1,...,\ezkututa} {
+              \foreach \j in {1,...,\irteera} {
+                \draw[->, shorten >=1pt] (Ezkututa-\i) -- (Irteera-\j);
+              }
+            }
+            % Sarrerak 
+            \foreach \i in {1,...,\sarrera} {
+              \draw[<-, shorten <=1pt] (Sarrera-\i) -- ++(-1,0) node[left]{$x_{\i}$}; 
+            }
+            % Irteerak
+            \foreach \i in {1,...,\irteera} {
+              \draw[->, shorten <=1pt] (Irteera-\i) -- ++(1,0) node[right]{$y_{\i}$};
+            }
+          \end{tikzpicture}
+          \caption{\tiny TALN}
         \end{figure}
       \end{minipage}
   \end{itemize}
 \end{frame}
-
 %****************************************************************
 % Paralelismo : partekatu edo banatu
 %****************************************************************
@@ -418,8 +455,8 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
     \end{itemize}
 \end{itemize}
 \end{frame}
-
-\begin{frame}{Quizz allocation}
+\ifC
+\begin{frame}{Quizz allocation sur hôte}
   \lstset{numbers=none}
   \begin{itemize}
     \pause
@@ -475,28 +512,44 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
 
 \end{frame}
   \lstset{numbers=left}
-\ifC
-\end{document}
-
 \fi
-%%****************************************************************
-%% sarrera : 
-%%****************************************************************
-%%%\begin{frame}{Passage à l'échelle}
-%%%\begin{itemize}[<+->]
-%%%  \item fort (strong scalability)
-%%%    \begin{itemize} 
-%%%       \item loi d'Amdhal (pessimiste)
-%%%    \end{itemize}
-%%%  \item faible (weak scalability)
-%%%    \begin{itemize}
-%%%      \item loi
-%%%    \end{itemize}
-%%%\end{itemize}
-%%%\end{frame}
+%****************************************************************
+%  Passage a l'echelle (fort) 
+%****************************************************************
+\begin{frame}{Passage à l'échelle fort}
+\begin{itemize}[<+->]
+  \item[\egia] taille de problème fixe
+  \item[\scout] temps de calcul décroit lorsque \# procs augmente
+  \item[\argi] gain maximum (loi d'Amdhal)
+\begin{equation*}
+G = \frac{1}{(1-P)+ \frac{P}{N}}
+\end{equation*}
+où $P$ est la fraction de code //isable et $N$ est le \# procs
+ \item[\scout] «passage à l'echelle» linéaire fort \geziBikoitz  $G = N$
+ \item[\adibi] $P = 0.75$ \gezi $G = 4$ \triste
+ \item[\hand] il faut parallèliser la plus grande partie du code possible
+ \item[\kontuz] sur GPU, la plus grande partie du code doit tourner sur l'accelerateur
+\end{itemize}
+\end{frame}
+
+%****************************************************************
+%  Passage a l'echelle (faible) 
+%****************************************************************
+\begin{frame}{Passage à l'échelle faible}
+\begin{itemize}[<+->]
+  \item[\egia] taille de problème par processeur {\bf fixé}
+  \item[\scout] le problème passe à l'échelle lorsque \# procs augmente (taille réelle augmente)
+  \item[\argi] le gain est donnée par la loi de Gustafson
+\begin{equation*}
+G = (1-P) + N\cdot P
+\end{equation*}
+ \item[\scout] pas de limite théorique
+ \item[\kontuz] le temps de calcul n'est pas diminué
+\end{itemize}
+\end{frame}
 
 %%****************************************************************
-%% Exemple introductif (séquentielle)
+%% Exemple introductif (verse séquentielle)
 %%****************************************************************
 \begin{frame}{Exemple d'introduction}{version séquentielle}
 \pause
@@ -566,10 +619,23 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
  \item libérer la mémoire sur le GPU \lstinline!cudaFree!
  \item visualiser les résultats
 \end{enumerate}
-\item[\geldi] Avant de poursuivre, nous avons besoin de comprendre le modèle d'exécution sur GPU
+\item[\geldi] Avant de poursuivre, nous avons besoin le fonctionnement d'un GPU
 \end{itemize}
 \end{frame}
-
+\begin{frame}{Architecture GPU}
+\begin{itemize}[<+->]
+  \item[\scout] un GPU comprend 
+   \begin{itemize} 
+     \item des multiprocesseurs de flux (SM)
+     \item de la mémoire globale (DRAM)
+   \end{itemize} 
+  \item que l'on peut schematiser comme suit
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{fig/archi_gpu.eps}
+  \end{center}
+  \item[\kontuz] ne pas confondre la mémoire globale de l'hôte et celle de l'accelérateur!
+\end{itemize}
+\end{frame}
 %****************************************************************
 % Modèle d'execution GPU I
 %****************************************************************
@@ -661,14 +727,13 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
 %****************************************************************
 % Modèle d'execution GPU IV
 %****************************************************************
-\begin{frame}{modèle d'exécution du GPU}{exemple avec un K40M}
-\begin{minipage}[c]{0.59\linewidth}
+\begin{frame}{modèle d'exécution du GPU}{exemple avec un T4}
+\begin{minipage}[c]{0.69\linewidth}
   \begin{itemize}[<+->]
-    \item GPU = ensemble de multiprocesseurs de flux (SM) partageant une mémoire globale (DRAM)
-    \item Tesla K40M : 
+    \item Tesla T4 : 
       \begin{itemize}
-        \item 15 SM, 192 SP / SM $\Rightarrow$ 2880 SP
-        \item 2048 threads max / SM $\Rightarrow$ 30.720 threads
+        \item 40 SM, 64 SP / SM $\Rightarrow$ 2560 SP
+        \item 1024 threads max / SM $\Rightarrow$ 40960 threads
       \end{itemize}
     \item threads «spéciaux»
       \begin{itemize}
@@ -676,9 +741,9 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
       \end{itemize}
   \end{itemize}
 \end{minipage}
-\begin{minipage}[c]{0.39\linewidth}
+\begin{minipage}[c]{0.29\linewidth}
 \begin{center}
-  \rotatebox{90}{\includegraphics[width=0.9\linewidth]{fig/kepler.jpg}}
+  \rotatebox{90}{\includegraphics[width=0.9\linewidth]{fig/104.jpg}}
 \end{center}
 \end{minipage}
 \end{frame}
@@ -844,11 +909,11 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
       \hline
       noyau & tps($\mu$s)  \\
       \hline
-      contigu & 100 \\
-      non-contigu  & 170 \\
+      contigu & 155 \\
+      non-contigu  & 243 \\
       \hline
     \end{tabular}
-    \caption{K40M: $N = 2^{20}$}
+    \caption{Tesla T4: $N = 2^{22}$}
   \end{figure}
 \end{minipage}
   \end{itemize}
@@ -951,7 +1016,7 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
 %****************************************************************
 \begin{frame}
   \begin{center}
-    {\Huge Seconde partie : Optimization}
+    {\Huge Seconde partie : Optimisation}
   \end{center}
 \end{frame}
 
@@ -1016,7 +1081,7 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
     \item BP réelle d'un noyau : $$ BW_{\mbox{ker}} = \frac{\# R_{\ker} + \# W_{\ker}}{10^9 t_{\ker}} $$
       \begin{itemize}
         \item $\# R_{\ker}$ : nb de lectures du noyau (octets)
-        \item $\# W_{\ker}$ : nb d'ecritures du noyau (octets)
+        \item $\# W_{\ker}$ : nb d'écritures du noyau (octets)
         \item $t_{\ker}$ : tps moyen d'exécution du noyau
       \end{itemize}
   \end{itemize}
@@ -1033,17 +1098,17 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
        \item si (CC)  $\nearrow$ , le nombre de GFlops\; $\nearrow$ aussi \pozik
   \end{itemize}
 \pause
- \begin{tabular}{|l|r|r|r|r|r|r|}
+ \begin{tabular}{|l|r|r|r|r|r|r|r|}
     \hline
-      modèle         & C1060   & C2070 &  K40   &  M40    &  P100  & V100  \\
+      modèle            & C1060   & C2070 &  K40   &  P100  & V100  & T4 \\
     \hline
-      archi          & Tesla   & Fermi & Kepler & Maxwell & Pascal & Volta \\
-      CC             & 1.3     & 2.0   & 3.5    & 5.2     & 6.0    &   7.0 \\
-      Freq(Mhz)      & 1296    & 1150  &  745   &  1114   &  1329  &  1380 \\
-      SM             & 30      & 14    &  15    &  24     &   56   &   80  \\
-      SP (32)        & 240     & 448   &  2880  &  3072   &  3584  &  5120 \\
-      Flops (G/s)    & 622     & 1030  &  4291  &  6844  & 9526   &  14131\\
-      BP$_{max}$ (Go/s) & 102     & 150   &  288   &  288    & 732    &  790 \\
+      architecture      & Tesla   & Fermi & Kepler & Pascal & Volta & Turing \\
+      CC                & 1.3     & 2.0   & 3.5    &   6.0  &   7.0 & 7.5  \\
+      Fréquence(Mhz)    & 1296    & 1150  &  745   &  1329  &  1380 & 1590 \\
+      \# SM             & 30      & 14    &  15    &    56  &   80  & 40  \\
+      \# SP (float)     & 240     & 448   &  2880  &  3584  &  5120 & 2560  \\
+      Flops (G/s)       & 622     & 1030  &  4291  &  9526  &  14131 & 8141\footnote{65130 en demi-précision} \\
+      BP$_{max}$ (Go/s) & 102     & 150   &  288   &   732  &  897   & 320 \\
     \hline
 \end{tabular}
 \end{frame}
