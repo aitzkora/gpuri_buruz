@@ -1,4 +1,3 @@
-#include <vector>
 #include <cassert>
 #define N 713
 #define BLOCK_SIZE 256
@@ -12,12 +11,13 @@ __global__ void kernelXOR(int * a)
 
 int main()
 {
-  std::vector<int> tab(N, 1);
+  int tab[N];
   int * tabGPU;
+  for(int i = 0; i < N; i++) tab[i] = 1;
   cudaMalloc(&tabGPU, N * sizeof(int));
-  cudaMemcpy(tabGPU, tab.data(), N * sizeof(int), cudaMemcpyHostToDevice );
+  cudaMemcpy(tabGPU, tab, N * sizeof(int), cudaMemcpyHostToDevice );
   kernelXOR<<<(N-1)/BLOCK_SIZE + 1, BLOCK_SIZE>>>(tabGPU);
-  cudaMemcpy(tab.data(), tabGPU, N * sizeof(int), cudaMemcpyDeviceToHost );
+  cudaMemcpy(tab, tabGPU, N * sizeof(int), cudaMemcpyDeviceToHost );
   cudaFree(tabGPU);
   for(int i=0; i < N; ++i) 
     assert (tab[i] == 0xFE) ;
