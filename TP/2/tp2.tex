@@ -15,6 +15,7 @@
 \usepackage{caption}
 \usepackage{bbold}
 \usepackage{tikz}
+\usepackage{hyperref}
 \usepackage[absolute,overlay]{textpos}
 \usepackage{ifthen}
 % kolore batzuk definitu
@@ -63,7 +64,6 @@
   \newcommand{\othlang}{c}
   \newcommand{\extlang}{f90}
   \newcommand{\extcu}{cuf}
-  \newcommand{\lstemphccu}{global, shared, device, host, syncthreads, attributes, threadIdx, blockIdx, blockDim, gridDim}
   \newcommand{\spt}{\%}
 \fi
 \newcommand{\includeSrc}[1]{\lstinputlisting[language=\mylang]{#1.\extlang}}
@@ -89,11 +89,11 @@
   breaklines=true,                % sets automatic line breaking
   breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
   lineskip=-1pt,
-  emph={\lstemphcu},
+  emph={global, shared, device, host, syncthreads, attributes, threadIdx, blockIdx, blockDim, gridDim},
   keywordstyle=\color{bleuSympa}\textbf,          % keyword style
   commentstyle=\color{bleuSympa},       % comment style
   stringstyle=\color{mauve},
-  emphstyle=\color{arrosa},
+  emphstyle=\color{dkgreen},
   moredelim=[s][\color{arrosa}\ttfamily]{<<<}{>>>},
   morecomment=[s][\color{mauve}]{cudaMemcpyHostToDevice}{\ },
   morecomment=[s][\color{mauve}]{cudaMemcpyDeviceToHost}{\ }
@@ -108,39 +108,24 @@
 \usefonttheme{structurebold}
 
 \begin{document}
-\begin{frame}{Charger l'environnement}
-\begin{itemize}
-  \item copier le fichier de config dans votre répertoire : \lstinline$cp ~marko/load\_env* .$ 
-  \item charger le fichier de config : \lstinline$. ~/load\_env\_21.7$ 
-  \item vérifier le chemin vers le compilateur \lstinline$which nvcc$
-\lstinputlisting{code/chemin_nvcc}
-  \item lancer nvaccelinfo (ou nvidia-smi)
-\lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-4}\ttfamily]{code/nvaccel}
-  \item trouver les infos suivantes
-  \begin{itemize}
-    \item nombre d'accelerateurs
-    \item nombre de SM
-    \item nombre max de «threads» par bloc
-  \end{itemize}
-\end{itemize}
-\end{frame}
-\begin{frame}{Premier programme}
-\begin{itemize}
-  \item écrire un programme "bonjour, monde"
-\lstinputlisting{code/bonjour.c}
-  \item le compiler et l'executer \lstinline$nvc++ -cuda -gpu=cc75 bonjour.c && ./a.out $
-\lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-4}\ttfamily]{code/bonjourOut}
-\end{itemize}
-\end{frame}
-% programme increment
-\begin{frame}{noyau homothétie}
+% homothetie
+\begin{frame}{Noyau homothéthie}
 \begin{itemize}[<+->]
-  \item Soit le code CPU d'homothétie suivante
-\lstinputlisting{code/homothetie.c}
-  \item implanter une version GPU
-  \item implanter une version avec saut `scaleFlipAndHalf` comme dans le cours
-  \item utiliser les evenements pour chronometrer les temps d'execution des noyaux
+  \item[\scout] récuperer le squelette {\relsize{-3}\ttfamily \url{ https://raw.githubusercontent.com/aitzkora/cuda\_expe\_ikasle/main/decouverte/scale.cu}}
+  \item[\adibi] coder le noyau d'homothéthie \texttt{scale} 
+  \item[\adibi] coder sa variante retournée et sa variante retournée avec un pas de deux
+  \item[\adibi] utiliser \texttt{ nvprof } pour le chronométrage
+  \item[\adibi] réaliser un chronometrage avec les événements
 \end{itemize}
 \end{frame}
 
+% structures
+\begin{frame}{tableau de structures ou structures de tableau \harritu }
+\begin{itemize}[<+->]
+  \item[\adibi] coder une version du noyau de translation de points en utilisant un tableau de structures
+  \item[\adibi] coder une version du noyau de translation de points en utilisant un structures de tableau
+  \item[\adibi] comparer les perfs (nvprof ou evenements)
+  \item[\hand] conclure
+\end{itemize}
+\end{frame}
 \end{document}

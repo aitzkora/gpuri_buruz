@@ -56,14 +56,12 @@
   \newcommand{\othlang}{fortran}
   \newcommand{\extlang}{c}
   \newcommand{\extcu}{cu}
-  \newcommand{\lstemphcu}{__global__, __shared__, __device__, __host__, __syncthreads, threadIdx, blockIdx, blockDim, gridDim}
   \newcommand{\spt}{.}
 \else
   \newcommand{\mylang}{fortran}
   \newcommand{\othlang}{c}
   \newcommand{\extlang}{f90}
   \newcommand{\extcu}{cuf}
-  \newcommand{\lstemphccu}{global, shared, device, host, syncthreads, attributes, threadIdx, blockIdx, blockDim, gridDim}
   \newcommand{\spt}{\%}
 \fi
 \newcommand{\includeSrc}[1]{\lstinputlisting[language=\mylang]{#1.\extlang}}
@@ -89,11 +87,15 @@
   breaklines=true,                % sets automatic line breaking
   breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
   lineskip=-1pt,
-  emph={\lstemphcu},
+%\ifC
+  emph={__global__, __shared__, __device__, __host__, __syncthreads, threadIdx, blockIdx, blockDim, gridDim},
+%\else
+%  emph={global, shared, device, host, syncthreads, attributes, threadIdx, blockIdx, blockDim, gridDim},
+%\fi
   keywordstyle=\color{bleuSympa}\textbf,          % keyword style
   commentstyle=\color{bleuSympa},       % comment style
   stringstyle=\color{mauve},
-  emphstyle=\color{arrosa},
+  emphstyle=\color{dkgreen},
   moredelim=[s][\color{arrosa}\ttfamily]{<<<}{>>>},
   morecomment=[s][\color{mauve}]{cudaMemcpyHostToDevice}{\ },
   morecomment=[s][\color{mauve}]{cudaMemcpyDeviceToHost}{\ }
@@ -246,7 +248,7 @@ La mémoire utilisée peut être distribuée ou partagée.
   \begin{itemize}[<+->]
     \item mémoire partagée : on a des threads (fils d'exécution) ou tâches qui accèdent à une mémoire commune. 
       \begin{itemize}
-        \item[\pozik] rapidité d'accés en lecture/écriture
+        \item[\pozik] rapidité d'accès en lecture/écriture
         \item[\kontuz] accés concurrents : utilisation de verrous ou d'opérations atomiques
         \item[\argi] cibles : Threads Posix, OpenMP, CUDA
       \end{itemize}
@@ -702,19 +704,15 @@ G = (1-P) + N\cdot P
 \begin{frame}{modèle d'exécution du GPU}{warps et demi-warps}
 \begin{minipage}[c]{0.59\linewidth}
 \begin{itemize}
-  \item les {\bf threads} sont implicitement groupés en {\bf warps}
+  \item {\bf fils d'exécution}(threads} sont implicitement groupés en {\bf chaîne}(warp)
     \begin{itemize}
-      \item un {\bf warp} (chaîne) = 32 threads 
+      \item un chaîne = 32 threads 
       \item tous les threads d'une même chaîne exécutent la même instruction au même cycle logique
         \begin{itemize}
           \item[\kontuz] \alert{pas de divergence!}
         \end{itemize}
     \end{itemize}
-  \item charger des données depuis la mémoire globale est coûteux
-    \begin{itemize}
-      \item plus de 4 threads nécessaires / SP
-      \item 128 permettent de recouvrir la latence mémoire
-    \end{itemize}
+  \item chargement depuis la DRAM coûteux : ratio latence(DRAM) / instruction = 128 \gezi 128 threads pour recouvrir la latence !
 \end{itemize}
 \end{minipage}
 \begin{minipage}[c]{0.39\linewidth}
@@ -723,7 +721,6 @@ G = (1-P) + N\cdot P
 \end{center}
 \end{minipage}
 \end{frame}
-
 %****************************************************************
 % Modèle d'execution GPU IV
 %****************************************************************
@@ -755,8 +752,8 @@ G = (1-P) + N\cdot P
  \pause
  \begin{minipage}[c]{0.59\linewidth}
   \begin{itemize}[<+->]
-    \item[\argi] K40M $\approx$ 30K threads 
-    \item[\galde] Que faire si $N \geq 30K$ ?
+    \item[\argi] Tesla T4 $\approx$ 41K threads 
+    \item[\galde] Que faire si $N \geq 41K$ ?
     \item[\scout] on découpe les données en blocs
     \item[\argi] threads organisés en {\em blocs} qui tournent chacun sur 1 SM
     \item[\argi] une {\bf grille} répartie les blocs sur tous les SMs
