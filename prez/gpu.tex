@@ -390,7 +390,7 @@ La mémoire utilisée peut être distribuée ou partagée.
   \item déréfencement : \lstinline! *p = 2 ;! ou \lstinline !p[0] = 2;!
   \item «adresse de» : \lstinline! int t[] = \{1,2,3\} ; p=\&t[0] ; (*p)++;!
   \item[\argi] \lstinline!*! $\circ$ \lstinline!\&! = $I_{valeurs}$ et \lstinline!\&! $\circ$ \lstinline!*! = $I_{adresses}$
-  \item arithmétique : \lstinline! for(p=\&t[0]; p\!=\&t[0]+3;) (*p)++;!
+  \item arithmétique : \lstinline! for(p=\&t[0]; p\!=\&t[0]+3;) (*(p++))++; !
   \item[\scout] notation : \lstinline! p[i] ! $\equiv$ \lstinline! *(i+p)! $\equiv$ \lstinline! i[p]!
   \item utilisation 
     \begin{itemize}
@@ -702,9 +702,9 @@ G = (1-P) + N\cdot P
 % Modèle d'execution GPU III
 %****************************************************************
 \begin{frame}{modèle d'exécution du GPU}{warps et demi-warps}
-\begin{minipage}[c]{0.59\linewidth}
+\begin{minipage}[c]{0.69\linewidth}
 \begin{itemize}
-  \item {\bf fils d'exécution}(threads} sont implicitement groupés en {\bf chaîne}(warp)
+  \item {\bf fils d'exécution}(threads) sont implicitement groupés en {\bf chaîne}(warp)
     \begin{itemize}
       \item un chaîne = 32 threads 
       \item tous les threads d'une même chaîne exécutent la même instruction au même cycle logique
@@ -715,7 +715,7 @@ G = (1-P) + N\cdot P
   \item chargement depuis la DRAM coûteux : ratio latence(DRAM) / instruction = 128 \gezi 128 threads pour recouvrir la latence !
 \end{itemize}
 \end{minipage}
-\begin{minipage}[c]{0.39\linewidth}
+\begin{minipage}[c]{0.29\linewidth}
 \begin{center}
   \includegraphics[width=0.95\linewidth]{fig/GPUArchi8ThreadDiv.eps}
 \end{center}
