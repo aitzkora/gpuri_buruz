@@ -1,0 +1,11 @@
+.visible .entry _Z1kPfii( .param .u64 _Z1kPfii_param_0, .param .u32 _Z1kPfii_param_1, .param .u32 _Z1kPfii_param_2)
+{
+	.local .align 8 .b8 	__local_depot0[8];
+    (...)
+	mov.u32 	%r7, 1065353216;
+	st.local.u32 	[%rd6], %r7;
+    (...)
+	ld.local.f32 	%f1, [%rd8];
+    (...) 
+	ret;
+}

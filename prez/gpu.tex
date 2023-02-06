@@ -401,7 +401,7 @@ La mémoire utilisée peut être distribuée ou partagée.
   \lstset{basicstyle=\relsize{-3}\ttfamily}
 \end{frame}
 
-\begin{frame}{Passage par valeur et par adresse }
+\begin{frame}{Passage par valeur et par adresse}
 \begin{columns}[t]
 \pause
 \column{5cm}
@@ -921,7 +921,7 @@ G = (1-P) + N\cdot P
 %****************************************************************
 \begin{frame}{Quizz}{Tableau de Structures ou Structure de Tableaux}
   \begin{itemize}[<+->]
-    \item[\adibi] On veut écrire un noyau qui translate des particules, vaut il mieux utiliser : 
+    \item[\adibi] On veut écrire un noyau qui translate des particules , {\em i.e. }  $x[i] = x[i] + dx[i]$
     \item[\galde] un «tableau de structures»
 \begin{center}
   \includeSrc{code/AOS}
@@ -1025,19 +1025,23 @@ G = (1-P) + N\cdot P
     \item soit le noyau \texttt{base} en 3 versions
       \lstinputlisting[language=C]{code/pratique.c}
     \item on chronomètre l'execution (en $\mu$s) avec $N=8Mo$ sur un K40M
+    \begin{minipage}[l]{0.49\linewidth}
       \begin{center}
-        \begin{tabular}{|l|r|r|r|}
+        \begin{tabular}{|l |l|r|r|r|}
           \hline
-          modèle    & base    & memory & math  \\ 
+          GPU & modèle    & base    & memory & math  \\ 
           \hline
-          normal    &  618    &  390   &  473\\ 
-          fastmath  &  546    &  390   &  385 \\ 
+          K40 &normal    &  468    &  390   &  236\\ 
+              &fastmath  &  405    &  390   &  162 \\ 
+          \hline
+          T4 & normal    &  361    &  320   &  187\\ 
+             & fastmath  &  326    &  321   &  148 \\ 
           \hline
         \end{tabular}
       \end{center}
+    \end{minipage}
   \end{itemize}
 \end{frame}
-
 %****************************************************************
 % mugatzaileak
 %****************************************************************
@@ -1070,16 +1074,16 @@ G = (1-P) + N\cdot P
 \begin{frame}{Bande Passante(BP)}
   \begin{itemize}[<+->]
     \item débit de données en Go/s sur le bus mémoire du GPU 
-    \item BP max théorique : $$BW_{\mbox{max}} = 2 \cdot \frac{F_{\mbox{max}} * N_{\mbox{bus}}}{10^6} $$
+    \item BP max théorique : $$BP_{\mbox{max}} = 2 \cdot \frac{F_{\mbox{max}} * N_{\mbox{bus}}}{10^6} $$
       \begin{itemize}
         \item $F_{max}$ : fréquence mémoire maximale (KHz) : \texttt{memoryClockRate}
         \item $N_{bus}$ : largeur de bus (octets) : \texttt{memoryBusWidth}/8
       \end{itemize}
-    \item BP réelle d'un noyau : $$ BW_{\mbox{ker}} = \frac{\# R_{\ker} + \# W_{\ker}}{10^9 t_{\ker}} $$
+    \item BP réelle d'un noyau : $$ BP_{\mbox{ker}} = \frac{\# R_{\ker} + \# W_{\ker}}{10^9 t_{\ker}} $$
       \begin{itemize}
         \item $\# R_{\ker}$ : nb de lectures du noyau (octets)
         \item $\# W_{\ker}$ : nb d'écritures du noyau (octets)
-        \item $t_{\ker}$ : tps moyen d'exécution du noyau
+        \item $t_{\ker}$ : tps moyen d'exécution du noyau (s)
       \end{itemize}
   \end{itemize}
 \end{frame}
@@ -1114,20 +1118,20 @@ G = (1-P) + N\cdot P
 % facteur limitants
 %****************************************************************
 \begin{frame}{Facteur limitants}{bande passante}
-  \begin{itemize}[<+->]
-    \item en revenant a l'exemple précedents ( tps \gezi\ BP)
+    En revenant à l'exemple précédent : temps(s) \gezi \ BP (Go/s)
       \begin{center}
-        \begin{tabular}{|l|r|r|r|}
+        \begin{tabular}{|l |l|r|r|r|r|}
           \hline
-          modèle  & base   & memory & math  \\ 
+          GPU & modèle    & base    & memory & math & $BP_{max}$ \\ 
           \hline
-          normal  &  108    &  172   &  141 \\ 
-          fastmath  &  122    &  172   &  174 \\ 
+          K40 &normal    &  468    &  390   &  254 & 288\\ 
+              &fastmath  &  405    &  390   &  162 & 288 \\ 
+          \hline
+          T4 & normal    &  185    &  209   &  179 & 320 \\ 
+             & fastmath  &  205    &  209   &  226 & 320 \\ 
           \hline
         \end{tabular}
       \end{center}
-     \item à comparer avec la valeur max théorique de 288 Go/s!
-  \end{itemize}
 \end{frame}
 
 %****************************************************************
@@ -1227,11 +1231,32 @@ G = (1-P) + N\cdot P
 \end{tabular}
   \item[\kontuz] différentes caractéristiques \gezi\ différents usages
     \begin{itemize} 
-     \item la mémoire constante permet de «cacher» des données constantes durant l'execution du noyau, mais ses
-       accès doivent être constants par thread 
+     \item mémoire locale est interne à un fils d'execution
+     \item mémoire de texture : moins sensible aux accès avec pas
+     \item mémoire constante permet de stocker des données constantes durant l'execution du noyau
      \item la mémoire partagée permet d'avoir un cache local pour un bloc de threads
   \end{itemize}
   \end{itemize}
+\end{frame}
+\begin{frame}{Mémoire locale}
+  \begin{itemize}[<+->]
+    \item[\scout] mémoire privée du fil d'execution hors registre (locale)
+    \item[\argi] située en DRAM sur le GPU
+    \item[\kontuz] facteur de contention : quantité et/ou en cache
+    \item[\adibi] soit le noyau suivant compilé avec \texttt{nvcc -arch=sm\_75 --ptxas-options=-v -ptx  localMem.cu}
+\lstinputlisting{code/localMem.cu}
+     \item[\hand] on obtient
+\lstinputlisting{code/localMem.ptx}
+   \end{itemize}
+\end{frame}
+
+\begin{frame}{Mémoire constante et de texture}
+  \begin{itemize}[<+->]
+    \item[\argi] on peut y écrire depuis l'hôte (constante et de texture)
+    \item[\scout] mémoire constante limitée à 64KB. 
+    \item[\kontuz] un seul port de lecture \gezi les threads d'une même chaîne doivent accéder à la même adresse!
+    \item[\scout] texture : parfois intéressants pour des accès non-contigues
+   \end{itemize}
 \end{frame}
 
 %****************************************************************
