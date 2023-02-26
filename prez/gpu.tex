@@ -88,7 +88,7 @@
   breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
   lineskip=-1pt,
 %\ifC
-  emph={__global__, __shared__, __device__, __host__, __syncthreads, threadIdx, blockIdx, blockDim, gridDim},
+  emph={__global__, __shared__, __device__, __host__, __syncthreads, threadIdx, blockIdx, blockDim, gridDim, warpSize},
 %\else
 %  emph={global, shared, device, host, syncthreads, attributes, threadIdx, blockIdx, blockDim, gridDim},
 %\fi
@@ -1356,15 +1356,15 @@ G = (1-P) + N\cdot P
  \begin{itemize}[<+->]
    \item[\argi] On souhaite approcher $\pi$ par le calcul d'aire suivant
      \begin{columns}
-       \column{6cm}
+       \column{5cm}
 \begin{center}
   \includegraphics[width=0.5\linewidth]{fig/monteCarlo.eps}
 \end{center}
-       \column{4cm}
+       \column{5cm}
   $$A = \int_{A} dx \thicksim \frac{1}{N}\sum_{i=1}^N \mathbb{1}_{A}(x_i)$$
+ où $x_i$ est pris au hasard dans $[0,1]^2$
      \end{columns}
- où les $x_i$ sont pris au hasard dans le carré $[0,1] \times [0,1]$
-  \item[\faBomb] méthodes dite «de Monte-Carlo» en réference à l'algorithme de Metropolis-Ulam \gezi\ pendant info. de l'aiguille de Buffon
+  \item[\faBomb] méthodes dite «de Monte-Carlo» en réference à l'algorithme de Metropolis-Ulam
   \item[\triste] convergence lente en $O(\frac{1}{\sqrt{N}})$
   \item[\pozik] massivement parallélisable si on a un générateur pseudo-aléatoire parallèle (\texttt{curandGenerateUniform})
   \end{itemize}
@@ -1377,7 +1377,7 @@ G = (1-P) + N\cdot P
 \begin{frame}{Réduction}{Principe}
  \begin{itemize}[<+->]
    \item[\argi] générer en // des couples aléatoires $(x_i,y_i) \in K = [0,1]^2$
-   \item[\argi] sommer en // ceux qui sont dans $A = \{ (x,y) \in K \;|\; x^2+y^2 \geqslant 1 \}$
+   \item[\argi] sommer en // ceux qui sont dans $A = \{ (x,y) \in K \;|\; x^2+y^2 \leqslant 1 \}$
    \item[\galde] comment calculer une somme en parallèle sur un GPU ?
    \item[\kontuz] il faut faire travailler un max de threads \harritu
    \item[\scout] par exemple, en utilisant une réduction en arbre 
@@ -1458,10 +1458,24 @@ G = (1-P) + N\cdot P
     \item chaque thread traite $\lfloor \frac{N}{\mbox{{\tt gridDim.x * blockDim.x}}}\rfloor $ données
     \item synchro multiple
     \item {\tt psum} : tableau partagé de taille {\tt BLOCK\_SIZE }
-    \item[\faClockO] N = 524288, 0.045ms (conv.), 0.058ms (div.) 0.074ms (dummy)
   \end{itemize}
 \end{frame}
 
+\begin{frame}{Réduction}{Comparaison des performances}
+  \begin{itemize}[<+->]
+    \item[\faClockO] pour N = 524288, les temps sont en ms
+      \begin{tabular}{|l|c|c|c|}
+    \hline
+      GPU & 1 fils & div. & nodiv.   \\
+    \hline
+    k40M  & 0.074  & 0.058 & \textcolor{green}{0.045} \\
+    V100  & \textcolor{red}{0.0068} & 0.011 & 0.0072 \\
+    T4    & 0.0302 & 0.0407& \textcolor{green}{0.0274} \\
+    \hline
+    \end{tabular}
+  \end{itemize}
+\end{frame}
+\end{document}
 %****************************************************************
 % hirurgarren partea : denetarik
 %****************************************************************
