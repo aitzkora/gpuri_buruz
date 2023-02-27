@@ -151,7 +151,6 @@
   \item Divers
      \begin{itemize}
        \item Une brève histoire des GPUs
-       \item nouveautés (demi-précision, processeurs tenseurs)
        \item Interfaces de programmation applicatives (IPA)
      \end{itemize}
 \end{itemize}
@@ -250,7 +249,7 @@ La mémoire utilisée peut être distribuée ou partagée.
       \begin{itemize}
         \item[\pozik] rapidité d'accès en lecture/écriture
         \item[\kontuz] accés concurrents : utilisation de verrous ou d'opérations atomiques
-        \item[\argi] cibles : Threads Posix, OpenMP, CUDA
+        \item[\argi] cibles : Threads Posix, OpenMP, CUDA (Compute Unified Device Architecture)
       \end{itemize}
     \item mémoire distribuée : chaque processus a une mémoire privée et communique avec les autres par des messages
       \begin{itemize}
@@ -1450,32 +1449,42 @@ G = (1-P) + N\cdot P
 %****************************************************************
 % Divergence de thread
 %****************************************************************
+\begin{frame}{Réduction}{noyau «finalSum»}
+\pause
+  \lstinputlisting[language=C]{code/finalSum.c}
+\pause
+  \begin{itemize}[<+->]
+    \item synchronisation multiple
+    \item {\tt psum} : tableau partagé alloué dynamiquement de taille {\tt BLOCK\_SIZE }
+  \end{itemize}
+\end{frame}
+
 \begin{frame}{Réduction}{noyau «partialSum»}
 \pause
   \lstinputlisting[language=C]{code/partialSum.c}
 \pause
   \begin{itemize}[<+->]
-    \item chaque thread traite $\lfloor \frac{N}{\mbox{{\tt gridDim.x * blockDim.x}}}\rfloor $ données
-    \item synchro multiple
-    \item {\tt psum} : tableau partagé de taille {\tt BLOCK\_SIZE }
+    \item chaque fil traite $\displaystyle \left\lfloor \frac{N}{\mbox{{\tt gridDim.x * blockDim.x}}}\right\rfloor $ entrées afin de gérer
+    des données qui ne tiennent pas forcemment en mémoire.
   \end{itemize}
 \end{frame}
 
 \begin{frame}{Réduction}{Comparaison des performances}
   \begin{itemize}[<+->]
-    \item[\faClockO] pour N = 524288, les temps sont en ms
+    \item[\faClockO] pour $N = 4*256*512$ , on compare différents GPU, avec des temps en ms
+   \begin{center}
       \begin{tabular}{|l|c|c|c|}
     \hline
-      GPU & 1 fils & div. & nodiv.   \\
+      GPU & 1 fil & div. & nodiv.   \\
     \hline
     k40M  & 0.074  & 0.058 & \textcolor{green}{0.045} \\
     V100  & \textcolor{red}{0.0068} & 0.011 & 0.0072 \\
     T4    & 0.0302 & 0.0407& \textcolor{green}{0.0274} \\
     \hline
     \end{tabular}
+    \end{center}
   \end{itemize}
 \end{frame}
-\end{document}
 %****************************************************************
 % hirurgarren partea : denetarik
 %****************************************************************
@@ -1716,7 +1725,7 @@ G = (1-P) + N\cdot P
       \caption{\tiny Tesla C1060}
  \end{figure}
 \begin{figure}[htbp]
-  \includegraphics[height=4cm, width=0.9\linewidth]{fig/archis.eps}
+  \includegraphics[height=4cm, width=0.9\linewidth]{fig/nb_coeurs_gpu.eps}
  \end{figure}
   \end{columns}
 \end{frame}
@@ -1726,7 +1735,7 @@ G = (1-P) + N\cdot P
 %****************************************************************
 \begin{frame}{Une brève histoire des GPUs}{les dernières améliorations}
   \begin{columns}[t]
-    \column{6cm}
+    \column{7cm}
     \begin{itemize}[<+->]
       \item Pascal :
         \begin{itemize}
@@ -1740,13 +1749,17 @@ G = (1-P) + N\cdot P
           \item cœurs Tenseurs : 
         \begin{itemize}
           \item opération FMA sur des matrices 4x4
-          \item $D = A \times B + C$
-          \item application aux réseaux de neurones
+          \item $D = A \times B + C$ \gezi réseaux de neurones
          \end{itemize}
         \end{itemize}
+       \item Turing :
+         \begin{itemize}
+          \item mémoire GDDR6 : 5001Mhz!
+          \item meilleure prise en charge des cœurs tenseurs
+         \end{itemize}
     \end{itemize} 
 \pause
-    \column{5cm}
+    \column{4cm}
     \begin{figure}[htbp]
   \includegraphics[width=0.7\linewidth]{fig/tensorCore.png}
  \end{figure}
