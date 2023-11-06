@@ -15,6 +15,7 @@
 \usepackage{caption}
 \usepackage{bbold}
 \usepackage{tikz}
+\usepackage{pgfplots}
 \usepackage[absolute,overlay]{textpos}
 \usepackage{ifthen}
 % kolore batzuk definitu
@@ -399,7 +400,7 @@ La mémoire utilisée peut être distribuée ou partagée.
 \end{itemize}
   \lstset{basicstyle=\relsize{-3}\ttfamily}
 \end{frame}
-
+\fi
 \begin{frame}{Passage par valeur et par adresse}
 \begin{columns}[t]
 \pause
@@ -421,8 +422,8 @@ La mémoire utilisée peut être distribuée ou partagée.
     \item[\argi] économise de la place sur la pile
    \end{itemize} 
 \end{columns}
+\ifC C passe par valeur \else Fortran passe par adresse \fi par défaut !
 \end{frame}
-\fi % C
 %***************************************************************
 % Allocation de mémoire
 %***************************************************************
@@ -452,11 +453,10 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
       \item[\pozik] très flexible et quasi-illimité
       \item[\triste] moins favorable au cache
       \item[\triste] allocation/désallocation lente
-      \item[\kontuz] à la discrétion du codeur \gezi fuites possibles de mémoire
+      \ifC \item[\kontuz] à la discrétion du codeur \gezi fuites possibles de mémoire \else \fi
     \end{itemize}
 \end{itemize}
 \end{frame}
-\ifC
 \begin{frame}{Quizz allocation sur hôte}
   \lstset{numbers=none}
   \begin{itemize}
@@ -466,19 +466,31 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
 \pause
   \begin{column}{4cm}
   \includeSrc{code/mem1}
-    \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/mem1.out}
+     \ifC
+     \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/mem1.out}
+     \else
+     \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/mem1f.out}
+     \fi
 \end{column}
 \pause
   \vrule{}
   \begin{column}{4cm}
   \includeSrc{code/mem2}
+  \ifC
   \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/mem2.out}
+  \else
+  \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/mem2f.out}
+  \fi
   \end{column}
 \pause
   \vrule{}
   \begin{column}{4cm}
   \includeSrc{code/mem3}
-  \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/mem3.out}
+  \ifC
+    \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/mem3.out}
+  \else
+    \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/mem3f.out}
+  \fi
   \end{column}
 \end{columns}
     \pause
@@ -513,7 +525,6 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
 
 \end{frame}
   \lstset{numbers=left}
-\fi
 %****************************************************************
 %  Passage a l'echelle (fort) 
 %****************************************************************
@@ -557,11 +568,7 @@ G = (1-P) + N\cdot P
 \begin{itemize}[<+->]
   \item[\adibi] soit un programme calculant \texttt{tab[:]} $\leftarrow$ \texttt{tab[:] + 3}
   \includeSrc{code/increment}
-\ifC
-   \item[\galde] on souhaite paralléliser la boucle en ligne 6 à l'aide de CUDA
-\else
-   \item[\galde] on souhaite paralléliser l'affectation en ligne 6 à l'aide de CUDA
-\fi
+   \item[\galde] on souhaite paralléliser la boucle en ligne \ifC 6 \else 15 \fi à l'aide de CUDA
 \end{itemize}
 \end{frame}
 
@@ -577,7 +584,9 @@ G = (1-P) + N\cdot P
 \item[\argi] nouveaux mot-clefs : \ifC \texttt{\_\_global\_\_, threadIdx} \else
 \texttt{global, threadIdx} \fi
 \item[\argi] appel du noyau \texttt{increment<<<1,N>>>}
+\ifC
 \item[\argi] gestion de la mémoire : \texttt{\small cudaMemcpy, cudaMalloc, cudaFree}
+\fi
 \end{itemize}
 \end{frame}
 
@@ -587,14 +596,9 @@ G = (1-P) + N\cdot P
 \begin{frame}{Exemple d'introduction}{explication}
 \pause
 \begin{itemize}[<+->]
-\ifC
- \item[\argi] boucle \texttt{for} \gezi\ appel d'un {\bf thread}
-\else
- \item[\argi] boucle implicite \gezi\ appel d'un {\bf thread}
-\fi
+ \item[\argi] boucle \ifC \texttt{for} \else \texttt{do} \fi  \gezi\ appel d'un {\bf thread}
  \item[\argi] exécutant le noyau \texttt{increment}
- \item[\argi] pour chaque indice de boucle indexé par \ifC \texttt{threadIdx.x} \else 
-   \texttt{threadIdx\%x} \fi
+ \item[\argi] pour chaque indice de boucle indexé par \texttt{threadIdx\spt x} 
  \item[\argi] sur le tableau \texttt{tab\_d} alloué sur le GPU
  \item[\kontuz] il faut copier \texttt{tab} sur le GPU et le rapatrier après calcul
 \end{itemize}
@@ -613,11 +617,12 @@ G = (1-P) + N\cdot P
   \begin{itemize}[<+->]
     \item[\argi] un programme CUDA suit généralement les étapes suivantes 
 \begin{enumerate}[<+->]
- \item allouer la mémoire sur le GPU : \lstinline!cudaMalloc!
- \item copier depuis la mémoire globale vers le GPU : \lstinline!cudaMemCpy( ... ,cudaMemcpyHostToDevice)!
- \item exécuter le noyau sur l'accélerateur : \lstinline!myKernel<<<...,...>>>(...)!
- \item rapatrier les résultats en mémoire globale \lstinline!cudaMemCpy(...,cudaMemcpyDeviceToHost)!
- \item libérer la mémoire sur le GPU \lstinline!cudaFree!
+ \item \ifC \else (optionel) \fi allouer la mémoire sur le GPU : \lstinline!cudaMalloc!
+ \item \ifC \else (optionel) \fi copier depuis la mémoire globale vers le GPU : \lstinline!cudaMemCpy( ... ,cudaMemcpyHostToDevice)!
+ \item exécuter le noyau sur l'accélerateur : \ifC \lstinline!myKernel<<<...,...>>>(...)! 
+ \else \lstinline!call myKernel<<<...,...>>>(...)! \fi
+ \item \ifC \else (optionel) \fi rapatrier les résultats en mémoire globale \lstinline!cudaMemCpy(...,cudaMemcpyDeviceToHost)!
+ \item \ifC \else (optionel) \fi libérer la mémoire sur le GPU \lstinline!cudaFree!
  \item visualiser les résultats
 \end{enumerate}
 \item[\geldi] Avant de poursuivre, nous avons besoin le fonctionnement d'un GPU
@@ -1023,7 +1028,7 @@ G = (1-P) + N\cdot P
   \begin{itemize}[<+->]
     \item soit le noyau \texttt{base} en 3 versions
       \lstinputlisting[language=C]{code/pratique.c}
-    \item on chronomètre l'execution (en $\mu$s) avec $N=8Mo$ sur un K40M
+    \item on chronomètre l'exécution (en $\mu$s) avec $N=8Mo$ 
     \begin{minipage}[l]{0.49\linewidth}
       \begin{center}
         \begin{tabular}{|l |l|r|r|r|}
@@ -1056,23 +1061,18 @@ G = (1-P) + N\cdot P
       \end{itemize}
     \item limitation par la {\bf latence} : utilisation faible de la mémoire et des calculs
       \begin{itemize}
-        \item possibilité d'une {\bf occupation} faible 
-          $$ \mbox{Occupation} = \frac{\mbox{nb de chaînes(warps) actives par SM}}{\mbox{nb max de chaînes par SM}} $$
-      \begin{itemize}
-        \item théorique : {\tt cudaOccupancyMaxActiveBlocksPerMultiprocessor }
-        \item réelle : {\tt nvprof --metrics achieved\_occupancy }
-      \end{itemize}
+        \item {\bf occupation} faible 
         \item calage des threads (dépendance d'executions, synchronisation, chargement d'instruction)
       \end{itemize}
 \end{itemize}
 \end{frame}
-
+«»
 %****************************************************************
 % facteur limitants
 %****************************************************************
 \begin{frame}{Bande Passante(BP)}
   \begin{itemize}[<+->]
-    \item débit de données en Go/s sur le bus mémoire du GPU 
+    \item débit de données en Go/s sur le bus mémoire du GPU (throughput)
     \item BP max théorique : $$BP_{\mbox{max}} = 2 \cdot \frac{F_{\mbox{max}} * N_{\mbox{bus}}}{10^6} $$
       \begin{itemize}
         \item $F_{max}$ : fréquence mémoire maximale (KHz) : \texttt{memoryClockRate}
@@ -1123,8 +1123,8 @@ G = (1-P) + N\cdot P
           \hline
           GPU & modèle    & base    & memory & math & $BP_{max}$ \\ 
           \hline
-          K40 &normal    &  468    &  390   &  254 & 288\\ 
-              &fastmath  &  405    &  390   &  162 & 288 \\ 
+          K40 & normal    &  468    &  390   &  254 & 288\\ 
+              & fastmath  &  405    &  390   &  162 & 288 \\ 
           \hline
           T4 & normal    &  185    &  209   &  179 & 320 \\ 
              & fastmath  &  205    &  209   &  226 & 320 \\ 
@@ -1133,6 +1133,65 @@ G = (1-P) + N\cdot P
       \end{center}
 \end{frame}
 
+%****************************************************************
+% facteur limitants
+%****************************************************************
+\begin{frame}{Facteur limitants}{Occupation}
+  \begin{itemize} 
+    \item définition 
+      $$ \mbox{Occupation} = \frac{\mbox{nb de chaînes(warps) actives par SM}}{\mbox{nb max de chaînes par SM}} $$
+    \item calcul 
+      \begin{itemize}
+        \item estimation : {\tt cudaOccupancyMaxActiveBlocksPerMultiprocessor }
+        \item réelle : {\tt nvprof --metrics achieved\_occupancy }
+      \end{itemize}
+    \item limité par l'allocation de la mémoire partagée
+    \item influence le parallélisme au niveau des threads
+  \end{itemize}
+\end{frame}
+
+%****************************************************************
+% Modèle théorique
+%****************************************************************
+\pgfplotsset{%every axis/.append style={
+axis x line=middle,
+axis y line=middle,
+%ylabel style={rotate=-90}
+axis line style={->},
+xlabel={occupation},
+ylabel=\small{BP},
+ticks=none,
+xtick=\empty,
+ytick=\empty
+}
+\begin{frame}[fragile]{Modèle en ligne brisée}
+\begin{minipage}[c]{0.53\linewidth}
+  
+  \begin{itemize}
+  \item la BP est fonction affine par morceaux de l'occupation (V. Volkov)
+  \item analogue d'un modèle Roof-line (BP vs Intensité Arithmétique) pour CPU
+   \end{itemize}
+\end{minipage}%
+\begin{minipage}[c]{0.45\linewidth}
+\begin{tikzpicture}[scale=0.8, domain=0:130]
+\begin{axis}[
+        xmin = 0., xmax = 130,
+        ymin = 0., ymax = 40]
+        \addplot[
+                domain = 0:130,
+                samples =400
+        ] {min(x,30)};
+        \node[above] at (axis cs:63,29.5){\small{limite de bande passante}};
+        \addplot[line width=2pt,
+                domain = 0:130,
+                samples =400
+        ] {30*(1-exp(-(x-1.)/30.)))};
+        \node[rotate=70] at (axis cs:15,20) {\small{limite de latence}};
+\end{axis}
+\end{tikzpicture}
+\end{minipage}
+ \end{frame}
+%
 %****************************************************************
 % transferentziak
 %****************************************************************
@@ -1795,6 +1854,7 @@ G = (1-P) + N\cdot P
     \item prise en charge des archi NVidia
     \item mais aussi d'AMD 
   \end{itemize} 
+    \item ACC / OpenMP
   \end{itemize} 
 \end{frame}
 
