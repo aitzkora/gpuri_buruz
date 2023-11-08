@@ -7,7 +7,7 @@
 \usepackage{bbding}
 \usepackage{fontawesome}
 \usepackage[utf8]{inputenc}
-\usepackage[french, russian]{babel}
+\usepackage[french]{babel}
 \usepackage{fancyvrb}
 \usepackage{relsize}
 \usepackage{color}
@@ -117,7 +117,7 @@
 %**************************************************************
 \begin{frame}
 \begin{center}
-  {\Large Introduction au calcul sur Accelerateur (GPU)\footnote{ne pas confondre avec le ГПУ!} }
+  {\Large Introduction au calcul sur GPU }
 \end{center}
 \begin{center}
 \includegraphics[width=0.5\linewidth]{fig/gpu.jpg}
@@ -401,7 +401,7 @@ La mémoire utilisée peut être distribuée ou partagée.
   \lstset{basicstyle=\relsize{-3}\ttfamily}
 \end{frame}
 \fi
-\begin{frame}{Passage par valeur et par adresse}
+\begin{frame}{Mode de passage des arguments}
 \begin{columns}[t]
 \pause
 \column{5cm}
@@ -422,21 +422,23 @@ La mémoire utilisée peut être distribuée ou partagée.
     \item[\argi] économise de la place sur la pile
    \end{itemize} 
 \end{columns}
-\ifC C passe par valeur \else Fortran passe par adresse \fi par défaut !
-\end{frame}
+  \begin{center}
+\ifC le C passe les arguments par valeur \else Fortran passe les arguments par adresse \fi par défaut !
+  \end{center} 
+-(\end{frame}
 %***************************************************************
 % Allocation de mémoire
 %***************************************************************
 \begin{frame}{Allocation de mémoire}
 La mémoire sur l'hôte (hors registre) est allouée de 3 façons: 
 \begin{itemize}[<+->]
-  \item statique : réservé lors de la compilation (text, data ou bss)
+  \item statique : réservé lors de la compilation ({\tt text, data ou bss})
     \begin{itemize}
       \item[\pozik] allocation rapide (coût nul) et quasi-illimité
       \item[\pozik] sûr (pas de fuites de mémoire possibles)
       \item[\triste] peu flexible
     \end{itemize}
-  \item automatique : alloué sur la pile (stack) lors de l'appel d'une fonction
+  \item automatique : alloué sur la pile (\og{}stack\fg{}) lors de l'appel d'une fonction
     \begin{itemize}
       \item[\scout] permet de stocker : 
       \begin{itemize}
@@ -448,7 +450,7 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
       \item[\pozik] allocation/désallocation rapide
       \item[\kontuz] limité par la taille de la pile
     \end{itemize}
-  \item dynamique : alloué sur le tas (heap) lors de l'éxecution
+  \item dynamique : alloué sur le tas (\og{}heap\fg{}) lors de l'exécution
   \begin{itemize}
       \item[\pozik] très flexible et quasi-illimité
       \item[\triste] moins favorable au cache
@@ -540,7 +542,7 @@ où $P$ est la fraction de code //isable et $N$ est le \# procs
  \item[\scout] «passage à l'echelle» linéaire fort \geziBikoitz  $G = N$
  \item[\adibi] $P = 0.75$ \gezi $G = 4$ \triste
  \item[\hand] il faut parallèliser la plus grande partie du code possible
- \item[\kontuz] sur GPU, la plus grande partie du code doit tourner sur l'accelerateur
+ \item[\kontuz] sur GPU, la plus grande partie du code doit tourner sur l'accélérateur
 \end{itemize}
 \end{frame}
 
@@ -947,21 +949,13 @@ G = (1-P) + N\cdot P
 \begin{center}
   \lstinputlisting[language=C]{code/retour.c}
 \end{center}
-    \item[\argi] tous les fonctions de l'API CUDA renvoient une \texttt{cudaError\_t}
-    \item[\scout] on instrumente le code en mode «DEBUG» grâce à une macro
+    \item[\argi] les fonctions de l'API CUDA renvoient tout un \texttt{cudaError\_t}
+    \item[\scout] on peut utiliser la macro \lstinline!checkCudaError! du fichier \texttt{helper\_cuda}
+      pour capturer les erreurs renvoyées à l'exécution
 \begin{center}
-  \lstinputlisting[language=C]{code/exErr.c}
+  \lstinputlisting{code/check.c}
 \end{center}
   \end{itemize}
-\end{frame}
-
-%****************************************************************
-% Déverminage
-%****************************************************************
-\begin{frame}{Déverminage}{fonctions de l'API}
-\begin{center}
-  \lstinputlisting[language=C]{code/common.h}
-\end{center}
 \end{frame}
 
 %****************************************************************
@@ -1123,8 +1117,8 @@ G = (1-P) + N\cdot P
           \hline
           GPU & modèle    & base    & memory & math & $BP_{max}$ \\ 
           \hline
-          K40 & normal    &  468    &  390   &  254 & 288\\ 
-              & fastmath  &  405    &  390   &  162 & 288 \\ 
+          K40 & normal    &  468    &  172   &  142 & 288\\ 
+              & fastmath  &  405    &  172   &  207 & 288 \\ 
           \hline
           T4 & normal    &  185    &  209   &  179 & 320 \\ 
              & fastmath  &  205    &  209   &  226 & 320 \\ 
@@ -1143,7 +1137,7 @@ G = (1-P) + N\cdot P
     \item calcul 
       \begin{itemize}
         \item estimation : {\tt cudaOccupancyMaxActiveBlocksPerMultiprocessor }
-        \item réelle : {\tt nvprof --metrics achieved\_occupancy }
+        \item réelle : {\tt nvprof --metrics achieved\_occupancy } ou {\tt ncu --metrics  sm\_\_warps\_active.avg.pct\_of\_peak\_sustained\_active}
       \end{itemize}
     \item limité par l'allocation de la mémoire partagée
     \item influence le parallélisme au niveau des threads
@@ -1153,28 +1147,25 @@ G = (1-P) + N\cdot P
 %****************************************************************
 % Modèle théorique
 %****************************************************************
-\pgfplotsset{%every axis/.append style={
-axis x line=middle,
-axis y line=middle,
-%ylabel style={rotate=-90}
-axis line style={->},
-xlabel={occupation},
-ylabel=\small{BP},
-ticks=none,
-xtick=\empty,
-ytick=\empty
-}
-\begin{frame}[fragile]{Modèle en ligne brisée}
+\begin{frame}[fragile]{BP vs occupation}
 \begin{minipage}[c]{0.53\linewidth}
   
   \begin{itemize}
-  \item la BP est fonction affine par morceaux de l'occupation (V. Volkov)
-  \item analogue d'un modèle Roof-line (BP vs Intensité Arithmétique) pour CPU
+    \item[\argi] On peut borner la BP par une fonction affine par morceaux de l'occupation 
+    \item[\scout] analogue d'un modèle \og{}roofline\fg{} pour CPU,
    \end{itemize}
 \end{minipage}%
 \begin{minipage}[c]{0.45\linewidth}
 \begin{tikzpicture}[scale=0.8, domain=0:130]
 \begin{axis}[
+        axis x line=middle,
+        axis y line=middle,
+        xlabel={occupation},
+        ylabel=\small{BP},
+        ticks=none,
+        xtick=\empty,
+        ytick=\empty,
+        axis line style={->},
         xmin = 0., xmax = 130,
         ymin = 0., ymax = 40]
         \addplot[
@@ -1190,8 +1181,44 @@ ytick=\empty
 \end{axis}
 \end{tikzpicture}
 \end{minipage}
+  \begin{itemize}
+    \item[\kontuz] $$ \mbox{Occupation}  \neq \mbox{Intensité Arithmetique} $$
+  \end{itemize} 
  \end{frame}
-%
+    
+%%****************************************************************
+%%  Parallèlisme d'instruction
+%%****************************************************************
+\begin{frame}{Parallelisme d'instruction}
+\pause
+\begin{itemize}[<+->]
+	\item[\kontuz] une occupation elevée n'est pas le seul moyen de masquer la latence \harritu
+    \item[\adibi] soit le noyau de copie suivant
+	\lstinputlisting[language=C, firstline=9, lastline=15]{code/occupancy-copy.c}
+    \item[\argi] on peut augmenter sa BP en parallélisant des instructions
+	\lstinputlisting[language=C, firstline=17, lastline=27]{code/occupancy-copy.c}
+\end{itemize}
+\end{frame}
+%%****************************************************************
+%%  Graphiques
+%%****************************************************************
+\begin{frame}{Comparaisons des noyaux}
+\begin{figure}[h!]
+  \begin{center}
+    \begin{tikzpicture}
+      \begin{axis}[ grid=major, legend entries={copy, copy\_ilp}, xlabel=occupation(Go/s), ylabel=BP ]
+        \addplot 
+        table[x=occ1,y=bp1,col sep=comma] {fig/occupancy.csv}; 
+		\addplot 
+        table[x=occ2,y=bp2,col sep=comma] {fig/occupancy.csv}; 
+      \end{axis}
+    \end{tikzpicture}
+    \caption{Performances des noyaux de copie}
+  \end{center}
+\end{figure}
+\end{frame}
+ \end{document}
+
 %****************************************************************
 % transferentziak
 %****************************************************************
@@ -1270,7 +1297,7 @@ ytick=\empty
 \end{frame}
 
 %****************************************************************
-% Mémoires de l'accelerateur
+% Mémoires de l'accélérateur
 %****************************************************************
 \begin{frame}{Mémoires sur l'accélérateur}{Vue générale}
   \begin{itemize}[<+->]
