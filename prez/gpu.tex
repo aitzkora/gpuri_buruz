@@ -1206,12 +1206,13 @@ G = (1-P) + N\cdot P
 \begin{figure}[h!]
   \begin{center}
     \begin{tikzpicture}
-      \begin{axis}[ grid=major, legend entries={copy, copy\_ilp}, xlabel=occupation, ylabel=BP(Go/s) ]
+      \begin{axis}[grid=major, legend entries={copy, copy\_ilp}, xlabel=occupation(\%), ylabel=BP(Go/s) ]
         \addplot 
-        table[x=occ1,y=bp1,col sep=comma] {fig/occupancy.csv}; 
+        table[x=occ1,y=bp1,col sep=comma] {fig/val_mes.csv}; 
 		\addplot 
-        table[x=occ2,y=bp2,col sep=comma] {fig/occupancy.csv}; 
-      \end{axis}
+        table[x=occ2,y=bp2,col sep=comma] {fig/val_mes.csv}; 
+        %\draw[red] (axis cs:\pgfkeysvalueof{/pgfplots/xmin},160) -- (axis cs:\pgfkeysvalueof{/pgfplots/xmax}, 160);
+       \end{axis}
     \end{tikzpicture}
     \caption{Performances des noyaux de copie}
   \end{center}
