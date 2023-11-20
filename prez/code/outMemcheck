@@ -1,0 +1,17 @@
+[fuentes@sirocco06 async]$ cuda-memcheck ./exAsync.x
+========= CUDA-MEMCHECK
+========= Invalid __global__ read of size 4
+=========     at 0x00000210 in /home/fuentes/cuda_expe/async/exAsync.cu:13:kernel(float*, int)
+=========     by thread (255,0,0) in block (16383,0,0)
+=========     Address 0x23051e0000 is out of bounds
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========     Host Frame:/lib64/libcuda.so.1 [0x20d6ea]
+=========     Host Frame:./exAsync.x [0x11079]
+=========     Host Frame:./exAsync.x [0x11107]
+=========     Host Frame:./exAsync.x [0x47465]
+=========     Host Frame:./exAsync.x [0x41bd]
+=========     Host Frame:./exAsync.x [0x403a]
+=========     Host Frame:./exAsync.x [0x405c]
+=========     Host Frame:./exAsync.x [0x3a5f]
+=========     Host Frame:/lib64/libc.so.6 (__libc_start_main + 0xf5) [0x223d5]
+=========     Host Frame:./exAsync.x [0x3259]

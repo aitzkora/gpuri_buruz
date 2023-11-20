@@ -25,6 +25,13 @@
 \definecolor{bleuSympa}{rgb}{0.,0.19,0.607}
 \definecolor{arrosa}{rgb}{0.7,0.15,0.15}
 
+% eskol-zaharreko estiloa 
+\setbeamercolor{frametitle}{fg=green}
+\setbeamercolor{background canvas}{bg=black}
+\setbeamercolor{normal text}{fg=green}
+\setbeamercolor*{structure}{bg=black,fg=yellow}
+
+
 % bidexka erabilgarriak fontawesome erabiltzen
 \renewcommand{\thefootnote}{$\dagger$}
 \newcommand{\scout}{\faAngellist}
@@ -78,12 +85,12 @@
   basicstyle=\relsize{-3}\ttfamily,           % the size of the fonts that are used for the code
                                   % will be numbered
   %numbersep=5pt,                  % how far the line-numbers are from the code
-  backgroundcolor=\color{black!20},      % choose the background color. You must add \usepackage{color}
+  backgroundcolor=\color{black},      % choose the background color. You must add \usepackage{color}
   showspaces=false,               % show spaces adding particular underscores
   showstringspaces=false,         % underline spaces within strings
   showtabs=false,                 % show tabs within strings adding particular underscores
   %frame=single,                   % adds a frame around the code
-  rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+  rulecolor=\color{white},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
   %tabsize=2,                      % sets default tabsize to 2 spaces
   breaklines=true,                % sets automatic line breaking
   breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
@@ -93,8 +100,8 @@
 %\else
 %  emph={global, shared, device, host, syncthreads, attributes, threadIdx, blockIdx, blockDim, gridDim},
 %\fi
-  keywordstyle=\color{bleuSympa}\textbf,          % keyword style
-  commentstyle=\color{bleuSympa},       % comment style
+  keywordstyle=\color{yellow}\textbf,          % keyword style
+  commentstyle=\color{yellow},       % comment style
   stringstyle=\color{mauve},
   emphstyle=\color{dkgreen},
   moredelim=[s][\color{arrosa}\ttfamily]{<<<}{>>>},
@@ -134,7 +141,7 @@
 \begin{itemize}[<+->]
    \item Découverte
      \begin{itemize}
-       \item Exemple d'applications 
+       \item Exemples d'applications 
        \item Prolégomènes (parallèlisme, mémoire, cache)
        \item Exemple d'introduction
        \item Modèle d'exécution d'un GPU
@@ -179,7 +186,7 @@
       \end{minipage}
       \begin{minipage}[c]{0.49\linewidth}
         \begin{figure}
-        \includegraphics[width=0.6\linewidth]{fig/titan.jpg}
+         \includegraphics[width=0.6\linewidth]{fig/titan.jpg}
           \caption{\tiny Supercalculateur Titan : $\thicksim$ 18000 GPU}
         \end{figure}
       \end{minipage}
@@ -317,7 +324,7 @@ La mémoire utilisée peut être distribuée ou partagée.
   \item La rapidité d'exécution d'un calcul dépend aussi de la «proximité» avec le CPU de l'élément de mémoire à traiter 
   \item[\gezi] les concepteurs de CPU ont créé des {\bf caches} pour stocker les valeurs mémoires les plus utilisées
   \begin{center}
-    \includegraphics[width=0.7\linewidth]{fig/cpu_classique.eps}
+    \colorbox{white}{\includegraphics[width=0.7\linewidth]{fig/cpu_classique.eps}}
   \end{center}
 \end{itemize}
 \end{frame}
@@ -606,7 +613,7 @@ G = (1-P) + N\cdot P
 \end{itemize}
 \pause
 \begin{center}
-\includegraphics[width=0.9\linewidth]{fig/parallel.eps}
+  \colorbox{white}{\includegraphics[width=0.9\linewidth]{fig/parallel.eps}}
 \end{center}
 \end{frame}
 
@@ -639,7 +646,7 @@ G = (1-P) + N\cdot P
    \end{itemize} 
   \item que l'on peut schematiser comme suit
   \begin{center}
-    \includegraphics[width=0.8\linewidth]{fig/archi_gpu.eps}
+    \colorbox{white}{\includegraphics[width=0.8\linewidth]{fig/archi_gpu.eps}}
   \end{center}
   \item[\kontuz] ne pas confondre la mémoire globale de l'hôte et celle de l'accelérateur!
 \end{itemize}
@@ -870,7 +877,7 @@ G = (1-P) + N\cdot P
     \item[\harritu] {\em coalescence} : agrégation de plusieurs accès mémoire en un seul lorsqu'il se font dans le même bloc
     \item[\adibi] exemples avec 4 «threads» par chaîne et 4 mots par transaction
 \begin{center}
-\includegraphics[width=0.6\linewidth]{fig/coalescence.eps}
+  \colorbox{white}{\includegraphics[width=0.6\linewidth]{fig/coalescence.eps}}
 \end{center}
   \end{itemize}
 \end{frame}
@@ -943,15 +950,14 @@ G = (1-P) + N\cdot P
 %****************************************************************
 % Déverminage
 %****************************************************************
-\begin{frame}{Déverminage}{fonctions de l'API}
+\begin{frame}{Déverminage : fonctions de l'API CUDA}
   \begin{itemize}[<+->]
-    \item[\adibi] en C, on {\bf doit} vérifier les retours de fonction 
+    \item[\kontuz] toujours vérifier les retours de fonction 
 \begin{center}
   \lstinputlisting[language=C]{code/retour.c}
 \end{center}
-    \item[\argi] les fonctions de l'API CUDA renvoient tout un \texttt{cudaError\_t}
-    \item[\scout] on peut utiliser la macro \lstinline!checkCudaError! du fichier \texttt{helper\_cuda}
-      pour capturer les erreurs renvoyées à l'exécution
+    \item[\argi] chaque fonction de l'API renvoie un \texttt{cudaError\_t}
+    \item[\scout] la macro \texttt{checkCudaError} récupère les erreurs CUDA
 \begin{center}
   \lstinputlisting{code/check.c}
 \end{center}
@@ -961,43 +967,51 @@ G = (1-P) + N\cdot P
 %****************************************************************
 % Déverminage : outils I
 %****************************************************************
-\begin{frame}{Déverminage}{cuda-gdb}
+\begin{frame}{Déverminage}
   \begin{itemize}[<+->]
-        \item on compile avec les bonnes options \texttt{nvcc -g -G monProg.cu -o myProg}
+        \item[\scout] si $CC \geqslant 2.x$, \texttt{printf} fonctionne depuis un noyau 
+        \item[\argi] inclusion des symboles \texttt{nvcc -g -G monProg.cu -o myProg}
    \end{itemize}
 \pause
-  \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/outGDB}
+  \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt, lastline=11]{code/outGDB}
+  \begin{itemize}[<+->]
+    \item[\argi] commandes classiques : \texttt{run}, \texttt{break}, \texttt{cont}, 
+    \item[\argi] commandes cuda : \texttt{info cuda threads}, \texttt{break}, \texttt{cont}, 
+   \end{itemize}
 \end{frame}
 
 %****************************************************************
 % Déverminage : outils I
 %****************************************************************
-\begin{frame}{Déverminage}{outils}
-  \begin{itemize}[<+->]
-    \item outil de vérification de mémoire à la «valgrind» : \texttt{cuda-memcheck ./myProg}
-    \item[\scout] sinon, pour GPU avec une «capacité de calcul» $\geqslant 2.x$, un bon vieux \texttt{printf} des familles fonctionne aussi
-    à l'intérieur d'un noyau \harritu
-  \end{itemize} 
+\begin{frame}{Déverminage mémoire (CUDA 10)}{cuda-memcheck}
+  \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/outMemcheck}
+\end{frame}
+
+%****************************************************************
+% Déverminage : outils I
+%****************************************************************
+\begin{frame}{Déverminage mémoire (CUDA 11)}{\texttt{compute-sanitizer}}
+  \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/outComputeSanitizer}
 \end{frame}
 
 %****************************************************************
 % Profilage : 
 %****************************************************************
-\begin{frame}{Profilage}{API}
+\begin{frame}{Profilage par évènements}
   \begin{itemize}[<+->]
-    \item[\argi] les évenements CUDA fournissent un moyen simple de mesurer le temps d'execution des noyaux
+    \item[\argi] un \og{}évenement\fg{} CUDA permet de mesurer le temps d'exécution d'un noyau
 \begin{center}
   \lstinputlisting[language=C]{code/exProfile.c}
 \end{center}
    \item[\kontuz] \texttt{cudaEventElapsedTime} renvoie un temps en milliseconds
-   \item[\pozik] on peut scripter {\em en C} des experiences de profilage.
+   \item[\pozik] on peut automatiser des mesures de profilage.
   \end{itemize}
 \end{frame}
 
 %****************************************************************
 % Profilatzea
 %****************************************************************
-\begin{frame}{Profilage}{nvprof}
+\begin{frame}{Profilage : \texttt{nvprof} (CUDA 10)}
   \begin{itemize}[<+->]
     \item[\pozik] beaucoup plus de métriques et de compteurs disponibles
     \item[\triste] extraction automatique de résultats plus compliquée (merci \texttt{grep})
@@ -1005,6 +1019,17 @@ G = (1-P) + N\cdot P
   \end{itemize}
 \pause\lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/outProfile}
 \end{frame}
+
+%****************************************************************
+% Profilatzea
+%****************************************************************
+\begin{frame}{Profilage : \texttt{ncu} (CUDA 11)}
+  \begin{itemize}[<+->]
+    \item[\pozik] beaucoup plus de métriques et de compteurs disponibles
+  \end{itemize}
+\pause\lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/outProfile}
+\end{frame}
+
 
 %****************************************************************
 % Optimizazio
