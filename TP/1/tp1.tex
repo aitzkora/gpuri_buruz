@@ -21,8 +21,18 @@
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
-\definecolor{bleuSympa}{rgb}{0.,0.19,0.607}
+\definecolor{bleusympa}{rgb}{0.,0.19,0.607}
 \definecolor{arrosa}{rgb}{0.7,0.15,0.15}
+\definecolor{testcolor}{rgb}{0.8,0,0.9}
+\definecolor{moncyan}{rgb}{0.01,0.89,1}
+
+% eskol-zaharreko estiloa 
+\setbeamercolor{frametitle}{fg=green}
+\setbeamercolor{background canvas}{bg=black}
+\setbeamercolor{normal text}{fg=green}
+\setbeamercolor*{structure}{bg=black,fg=yellow}
+
+
 
 % bidexka erabilgarriak fontawesome erabiltzen
 \renewcommand{\thefootnote}{$\dagger$}
@@ -71,29 +81,33 @@
 
 % listings CUDA lengoaia kudeatzeko
 \lstset{ %
-  numbers=none,
+  numbers=left,
   numbersep=1pt,
   numberstyle=\relsize{-5}\ttfamily,
   language=\mylang,                % the language of the code
   framerule=1pt,
-  basicstyle=\relsize{-3}\ttfamily,           % the size of the fonts that are used for the code
+  basicstyle=\relsize{-5}\ttfamily,           % the size of the fonts that are used for the code
                                   % will be numbered
   %numbersep=5pt,                  % how far the line-numbers are from the code
-  backgroundcolor=\color{black!20},      % choose the background color. You must add \usepackage{color}
+  backgroundcolor=\color{black},      % choose the background color. You must add \usepackage{color}
   showspaces=false,               % show spaces adding particular underscores
   showstringspaces=false,         % underline spaces within strings
   showtabs=false,                 % show tabs within strings adding particular underscores
   %frame=single,                   % adds a frame around the code
-  rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+  rulecolor=\color{white},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
   %tabsize=2,                      % sets default tabsize to 2 spaces
   breaklines=true,                % sets automatic line breaking
   breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
   lineskip=-1pt,
-  emph={\lstemphcu},
-  keywordstyle=\color{bleuSympa}\textbf,          % keyword style
-  commentstyle=\color{bleuSympa},       % comment style
+%\ifC
+  emph={__global__, __shared__, __device__, __host__, __syncthreads, threadIdx, blockIdx, blockDim, gridDim, warpSize},
+%\else
+%  emph={global, shared, device, host, syncthreads, attributes, threadIdx, blockIdx, blockDim, gridDim},
+%\fi
+  keywordstyle=\color{yellow}\textbf,          % keyword style
+  commentstyle=\color{moncyan},       % comment style
   stringstyle=\color{mauve},
-  emphstyle=\color{arrosa},
+  emphstyle=\color{testcolor},
   moredelim=[s][\color{arrosa}\ttfamily]{<<<}{>>>},
   morecomment=[s][\color{mauve}]{cudaMemcpyHostToDevice}{\ },
   morecomment=[s][\color{mauve}]{cudaMemcpyDeviceToHost}{\ }
@@ -108,7 +122,7 @@
 \usefonttheme{structurebold}
 
 \begin{document}
-\begin{frame}{Présentation du materiel}
+\begin{frame}{Présentation du matériel}
   \begin{itemize}[<+->]
     \item GPU dispos : k40m
     \item hôte : machine accessible en ssh au travers de l'ordonnanceur SLURM
@@ -123,13 +137,32 @@
       \end{itemize}
   \end{itemize}
 \end{frame}
+
+\begin{frame}{Compilation des programmes}
+  \begin{itemize}[<+->]
+    \item on peut compiler sur la frontale
+    \item charger CUDA-10.2 : {\tt module load compiler/cuda/10.2 }
+    \item compiler : {\tt nvcc -arch=sm\_35 -o fichier.x fichier.cu}
+    \item avec le Makefile
+      \lstinputlisting[language=bash]{code/Makefile}
+    \item {\tt make fichier.x }
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Soumissions par lots}
+  \begin{itemize}[<+->]
+    \item script d'encapsulation
+  \end{itemize}
+      \lstinputlisting[language=bash]{code/launch_on_gpu.sh}
+  \begin{itemize}[<+->]
+    \item {\tt ./launch\_on\_gpu fichier.x args\_optionnels}
+  \end{itemize}
+\end{frame}
+
 \begin{frame}{Charger l'environnement}
 \begin{itemize}
-  \item copier le fichier de config dans votre répertoire : \lstinline$cp ~fuentes/load\_env* .$ 
-  \item charger le fichier de config : 
-  \item vérifier le chemin vers le compilateur \lstinline$which nvcc$
-\lstinputlisting{code/chemin_nvcc}
-  \item lancer nvaccelinfo (ou nvidia-smi)
+  \item copier le lanceur dans votre répertoire : \lstinline$cp ~fuentes/launch_on_gpu.sh ~$
+  \item copier le Makefile dans votre répertoire : \lstinline$cp ~fuentes/Makefile ~$
 \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-4}\ttfamily]{code/nvaccel}
   \item trouver les infos suivantes
   \begin{itemize}
@@ -143,7 +176,7 @@
 \begin{itemize}
   \item écrire un programme "bonjour, monde"
 \lstinputlisting{code/bonjour.c}
-  \item le compiler et l'executer \lstinline$nvcc -cuda -gpu=cc75 bonjour.c && ./a.out $
+  \item le compiler et l'exécuter
 \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-4}\ttfamily]{code/bonjourOut}
 \end{itemize}
 \end{frame}
@@ -154,6 +187,7 @@
 \lstinputlisting{code/homothetie.c}
   \item implanter une version GPU
   \item implanter une version avec saut `scaleFlipAndHalf` comme dans le cours
+  \item mesurer les temps d'execution avec {\tt nvprof }
   \item utiliser les evenements pour chronometrer les temps d'execution des noyaux
 \end{itemize}
 \end{frame}
