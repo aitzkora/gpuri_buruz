@@ -1,0 +1,28 @@
+========= COMPUTE-SANITIZER
+========= Invalid __global__ read of size 4 bytes
+=========     at 0xb0 in kernel(float *, int, int)
+=========     by thread (7,31,0) in block (127,7,0)
+=========     Address 0x7fb0b7b00000 is out of bounds
+=========     and is 1 bytes after the nearest allocation at 0x7fb0b7a00000 of size 1.048.576 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========     Host Frame: [0x334660]
+=========                in /usr/lib/libcuda.so.1
+=========     Host Frame:__cudart808 [0x10cab]
+=========                in /home/fux/iturriak/cuda_expe/async/./exAsync2D.x
+=========     Host Frame:cudaLaunchKernel [0x6dc9b]
+=========                in /home/fux/iturriak/cuda_expe/async/./exAsync2D.x
+=========     Host Frame:/opt/nvidia/hpc_sdk/Linux_x86_64/23.7/cuda/12.2/include/cuda_runtime.h:216:cudaError cudaLaunchKernel<char>(char const*, dim3, dim3, void**, unsigned long, CUstream_st*) [0xba21]
+=========                in /home/fux/iturriak/cuda_expe/async/./exAsync2D.x
+=========     Host Frame:/tmp/tmpxft_0014905e_00000000-6_exAsync2D.cudafe1.stub.c:13:__device_stub__Z6kernelPfii(float*, int, int) [0xb884]
+=========                in /home/fux/iturriak/cuda_expe/async/./exAsync2D.x
+=========     Host Frame:/home/fux/iturriak/cuda_expe/async/exAsync2D.cu:11:kernel(float*, int, int) [0xb8c4]
+=========                in /home/fux/iturriak/cuda_expe/async/./exAsync2D.x
+=========     Host Frame:/home/fux/iturriak/cuda_expe/async/exAsync2D.cu:50:main [0xb1cc]
+=========                in /home/fux/iturriak/cuda_expe/async/./exAsync2D.x
+=========     Host Frame: [0x27cd0]
+=========                in /usr/lib/libc.so.6
+=========     Host Frame:__libc_start_main [0x27d8a]
+=========                in /usr/lib/libc.so.6
+=========     Host Frame:_start [0xaae5]
+=========                in /home/fux/iturriak/cuda_expe/async/./exAsync2D.x
+=

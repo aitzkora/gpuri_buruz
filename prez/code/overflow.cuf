@@ -4,10 +4,13 @@ contains
    integer, intent(inout) :: a(:)
    integer :: currentIndex 
 
-   currentIndex = threadIdx%x + blockDim%x * (blockIdx%x - 1)
-   if (currentIndex <= size(a, 1)) a(currentIndex) = ieor(a(currentIndex), z'FF')
+   currentIndex = threadIdx%x + & 
+                  blockDim%x * (blockIdx%x - 1)
+   if (currentIndex <= size(a, 1)) & 
+     a(currentIndex) = ieor(a(currentIndex), z'FF')
 
  end subroutine kernelXOR
+
 end module m_xor
 program space_sheriff
   use m_xor

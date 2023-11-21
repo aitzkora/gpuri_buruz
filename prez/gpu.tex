@@ -24,6 +24,8 @@
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 \definecolor{bleuSympa}{rgb}{0.,0.19,0.607}
 \definecolor{arrosa}{rgb}{0.7,0.15,0.15}
+\definecolor{testcolor}{rgb}{0.8,0,0.9}
+\definecolor{moncyan}{rgb}{0.01,0.89,1}
 
 % eskol-zaharreko estiloa 
 \setbeamercolor{frametitle}{fg=green}
@@ -101,9 +103,9 @@
 %  emph={global, shared, device, host, syncthreads, attributes, threadIdx, blockIdx, blockDim, gridDim},
 %\fi
   keywordstyle=\color{yellow}\textbf,          % keyword style
-  commentstyle=\color{yellow},       % comment style
+  commentstyle=\color{moncyan},       % comment style
   stringstyle=\color{mauve},
-  emphstyle=\color{dkgreen},
+  emphstyle=\color{testcolor},
   moredelim=[s][\color{arrosa}\ttfamily]{<<<}{>>>},
   morecomment=[s][\color{mauve}]{cudaMemcpyHostToDevice}{\ },
   morecomment=[s][\color{mauve}]{cudaMemcpyDeviceToHost}{\ }
@@ -430,9 +432,9 @@ La mémoire utilisée peut être distribuée ou partagée.
    \end{itemize} 
 \end{columns}
   \begin{center}
-\ifC le C passe les arguments par valeur \else Fortran passe les arguments par adresse \fi par défaut !
+    \ifC le C passe les arguments par {\bf valeur } \else Fortran passe les arguments par {\bf adresse } \fi par défaut
   \end{center} 
--(\end{frame}
+\end{frame}
 %***************************************************************
 % Allocation de mémoire
 %***************************************************************
@@ -534,6 +536,7 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
 
 \end{frame}
   \lstset{numbers=left}
+\end{document}
 %****************************************************************
 %  Passage a l'echelle (fort) 
 %****************************************************************
@@ -747,7 +750,7 @@ G = (1-P) + N\cdot P
       \end{itemize}
     \item threads «spéciaux»
       \begin{itemize}
-        \item parallélisme de données respectant des motifs d'accès réguliers
+        \item parallélisme de données respectant des motifs d'accès régulier
       \end{itemize}
   \end{itemize}
 \end{minipage}
@@ -779,7 +782,7 @@ G = (1-P) + N\cdot P
 \end{minipage}
 \begin{minipage}[c]{0.39\linewidth}
 \begin{center}
-  \includegraphics[width=0.8\linewidth]{fig/grille_et_blocs.eps}
+  \colorbox{white}{\includegraphics[width=0.8\linewidth]{fig/grille_et_blocs.eps}}
 \end{center}
 \end{minipage}
 \end{frame}
@@ -798,7 +801,7 @@ G = (1-P) + N\cdot P
 \end{minipage}
 \begin{minipage}[c]{0.39\linewidth}
 \begin{center}
-  \includegraphics[width=0.95\linewidth]{fig/bloc_ordonanceur.eps}
+  \colorbox{white}{\includegraphics[width=0.95\linewidth]{fig/bloc_ordonanceur.eps}}
 \end{center}
 \end{minipage}
 \end{frame}
@@ -844,7 +847,7 @@ G = (1-P) + N\cdot P
   \begin{itemize}
     \item[\egia] on choisit \texttt{GRID\_SIZE} = (N-1) / \texttt{BLOCK\_SIZE} + 1
 \begin{center}
-\includegraphics[width=0.7\linewidth]{fig/grille_1D.eps}
+  \colorbox{white}{\includegraphics[width=0.7\linewidth]{fig/grille_1D.eps}}
 \end{center}
 \ifC
    \item[\egia] \texttt{\small currentIndex = blockDim.x * blockIdx.x + threadIdx.x}
@@ -894,7 +897,7 @@ G = (1-P) + N\cdot P
     \item[\argi] on a des accès {\em contigus}, ce qui autorise la coalescence
 \begin{center}
   \vspace{0.5cm}
-\includegraphics[width=0.8\linewidth]{fig/coalScale.eps}
+  \colorbox{white}{\includegraphics[width=0.8\linewidth]{fig/coalScale.eps}}
 \end{center}
   \end{itemize}
 \end{frame}
@@ -910,7 +913,7 @@ G = (1-P) + N\cdot P
 \end{center}
     \item[\kontuz] mais les tranferts mémoires sont non-coalescents !
 \begin{minipage}[c]{0.49\linewidth}
-  \includegraphics[width=0.9\linewidth]{fig/coalScaleHalf.eps}
+  \colorbox{white}{\includegraphics[width=0.9\linewidth]{fig/coalScaleHalf.eps}}
 \end{minipage}
 \begin{minipage}[r]{0.49\linewidth}
   \vspace{1cm}
@@ -1243,7 +1246,6 @@ G = (1-P) + N\cdot P
   \end{center}
 \end{figure}
 \end{frame}
- \end{document}
 
 %****************************************************************
 % transferentziak
@@ -1276,7 +1278,7 @@ G = (1-P) + N\cdot P
   \end{itemize}
 \pause
   \begin{center}
-  \includegraphics[width=0.6\linewidth]{fig/pinned_memory.eps}
+    \colorbox{white}{\includegraphics[width=0.6\linewidth]{fig/pinned_memory.eps}}
   \end{center}
 \end{frame}
 %****************************************************************
@@ -1298,11 +1300,11 @@ G = (1-P) + N\cdot P
   \begin{itemize}[<+->]
     \item[\kontuz] les transferts classiques (ex {\tt cudaMemcpy}) sont {\bf bloquants} \harritu
 \begin{center}
-  \includegraphics[width=0.6\linewidth]{fig/seq.png}
+  \colorbox{white}{\includegraphics[width=0.6\linewidth]{fig/seq.png}}
 \end{center}
     \item[\scout] utiliser des transferts {\bf asynchrones } pour recouvrir les transferts par des calculs
 \begin{center}
-  \includegraphics[width=0.95\linewidth]{fig/async.png}
+  \colorbox{white}{\includegraphics[width=0.95\linewidth]{fig/async.png}}
 \end{center}
     \item[\argi] répartir les données sur des {\bf flux} («streams») différents
     \item[\kontuz] la mémoire sur l'hôte doit être vérouillée
@@ -1396,7 +1398,7 @@ G = (1-P) + N\cdot P
   \lstinputlisting[language=C]{code/transposeNaive.c}
     \item[\triste] écriture avec un saut de longueur {\tt n.x }\gezi\ non coalescent \harritu
 \begin{center}
-  \includegraphics[width=0.7\linewidth]{fig/transpose1.eps}
+  \colorbox{white}{\includegraphics[width=0.7\linewidth]{fig/transpose1.eps}}
 \end{center}
    \end{itemize}
 \end{frame}
@@ -1409,7 +1411,7 @@ G = (1-P) + N\cdot P
     \item[\argi] on utilise un cache local \gezi\ lecture coalescente \pozik
   \lstinputlisting[language=C]{code/transposeShared1.c}
 \begin{center}
-  \includegraphics[width=0.60\linewidth]{fig/transpose2.eps}
+  \colorbox{white}{\includegraphics[width=0.60\linewidth]{fig/transpose2.eps}}
 \end{center}
    \item[\faMagic] tester {\tt \_\_shared\_\_ float tile[TILE\_DIM][TILE\_DIM+1]} 
    \end{itemize}
