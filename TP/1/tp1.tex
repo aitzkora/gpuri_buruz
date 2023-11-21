@@ -108,10 +108,25 @@
 \usefonttheme{structurebold}
 
 \begin{document}
+\begin{frame}{Présentation du materiel}
+  \begin{itemize}[<+->]
+    \item GPU dispos : k40m
+    \item hôte : machine accessible en ssh au travers de l'ordonnanceur SLURM
+\pause
+ \begin{center}
+   \colorbox{white}{\includegraphics[width=0.7\linewidth]{fig/schema_slurm.eps}}
+ \end{center}
+    \item 2 modes pour utiliser les GPUs
+      \begin{itemize}
+        \item interactif : {\tt salloc -N 1 -q cytech --time 0:5:0 } puis {\tt ssh nom\_hôte}
+        \item par lot : {\tt sbatch mon\_fichier.sl }
+      \end{itemize}
+  \end{itemize}
+\end{frame}
 \begin{frame}{Charger l'environnement}
 \begin{itemize}
-  \item copier le fichier de config dans votre répertoire : \lstinline$cp ~marko/load\_env* .$ 
-  \item charger le fichier de config : \lstinline$. ~/load\_env\_21.7$ 
+  \item copier le fichier de config dans votre répertoire : \lstinline$cp ~fuentes/load\_env* .$ 
+  \item charger le fichier de config : 
   \item vérifier le chemin vers le compilateur \lstinline$which nvcc$
 \lstinputlisting{code/chemin_nvcc}
   \item lancer nvaccelinfo (ou nvidia-smi)
@@ -128,7 +143,7 @@
 \begin{itemize}
   \item écrire un programme "bonjour, monde"
 \lstinputlisting{code/bonjour.c}
-  \item le compiler et l'executer \lstinline$nvc++ -cuda -gpu=cc75 bonjour.c && ./a.out $
+  \item le compiler et l'executer \lstinline$nvcc -cuda -gpu=cc75 bonjour.c && ./a.out $
 \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-4}\ttfamily]{code/bonjourOut}
 \end{itemize}
 \end{frame}
