@@ -54,6 +54,7 @@
 \captionsetup[figure]{labelformat=empty}
 \newcommand{\geziBikoitz}{\faArrowsH}
 
+\newcommand{\petiteFont}{\relsize{-5}\ttfamily}
 % c/fortran aukeratzeko
 \newif\ifC
 \ifthenelse{\equal{\detokenize{c}}{\jobname}}{
@@ -84,7 +85,7 @@
   numberstyle=\relsize{-5}\ttfamily,
   language=\mylang,                % the language of the code
   framerule=1pt,
-  basicstyle=\relsize{-3}\ttfamily,           % the size of the fonts that are used for the code
+  basicstyle=\relsize{-5}\ttfamily,           % the size of the fonts that are used for the code
                                   % will be numbered
   %numbersep=5pt,                  % how far the line-numbers are from the code
   backgroundcolor=\color{black},      % choose the background color. You must add \usepackage{color}
@@ -326,7 +327,7 @@ La mémoire utilisée peut être distribuée ou partagée.
   \item La rapidité d'exécution d'un calcul dépend aussi de la «proximité» avec le CPU de l'élément de mémoire à traiter 
   \item[\gezi] les concepteurs de CPU ont créé des {\bf caches} pour stocker les valeurs mémoires les plus utilisées
   \begin{center}
-    \colorbox{white}{\includegraphics[width=0.7\linewidth]{fig/cpu_classique.eps}}
+    \colorbox{white}{\includegraphics[width=0.5\linewidth]{fig/cpu_shared.eps}}
   \end{center}
 \end{itemize}
 \end{frame}
@@ -407,7 +408,7 @@ La mémoire utilisée peut être distribuée ou partagée.
       \item gestion de mémoire
     \end{itemize}
 \end{itemize}
-  \lstset{basicstyle=\relsize{-3}\ttfamily}
+  \lstset{basicstyle=\petiteFont}
 \end{frame}
 \fi
 \begin{frame}{Mode de passage des arguments}
@@ -468,6 +469,7 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
     \end{itemize}
 \end{itemize}
 \end{frame}
+
 \begin{frame}{Quizz allocation sur hôte}
   \lstset{numbers=none}
   \begin{itemize}
@@ -478,9 +480,9 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
   \begin{column}{4cm}
   \includeSrc{code/mem1}
      \ifC
-     \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/mem1.out}
+     \lstinputlisting[numbers=none,language=bash,basicstyle=\petiteFont,lineskip=2pt]{code/mem1.out}
      \else
-     \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/mem1f.out}
+     \lstinputlisting[numbers=none,language=bash,basicstyle=\petiteFont,lineskip=2pt]{code/mem1f.out}
      \fi
 \end{column}
 \pause
@@ -488,9 +490,9 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
   \begin{column}{4cm}
   \includeSrc{code/mem2}
   \ifC
-  \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/mem2.out}
+  \lstinputlisting[numbers=none,language=bash,basicstyle=\petiteFont,lineskip=2pt]{code/mem2.out}
   \else
-  \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/mem2f.out}
+  \lstinputlisting[numbers=none,language=bash,basicstyle=\petiteFont,lineskip=2pt]{code/mem2f.out}
   \fi
   \end{column}
 \pause
@@ -498,9 +500,9 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
   \begin{column}{4cm}
   \includeSrc{code/mem3}
   \ifC
-    \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/mem3.out}
+    \lstinputlisting[numbers=none,language=bash,basicstyle=\petiteFont,lineskip=2pt]{code/mem3.out}
   \else
-    \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/mem3f.out}
+    \lstinputlisting[numbers=none,language=bash,basicstyle=\petiteFont,lineskip=2pt]{code/mem3f.out}
   \fi
   \end{column}
 \end{columns}
@@ -535,8 +537,7 @@ La mémoire sur l'hôte (hors registre) est allouée de 3 façons:
 \end{textblock}
 
 \end{frame}
-  \lstset{numbers=left}
-\end{document}
+ \lstset{numbers=left}
 %****************************************************************
 %  Passage a l'echelle (fort) 
 %****************************************************************
@@ -949,969 +950,990 @@ G = (1-P) + N\cdot P
   \item[\hand] réponse en TP \pozik
   \end{itemize}
 \end{frame}
-
-%****************************************************************
-% Déverminage
-%****************************************************************
-\begin{frame}{Déverminage : fonctions de l'API CUDA}
-  \begin{itemize}[<+->]
-    \item[\kontuz] toujours vérifier les retours de fonction 
-\begin{center}
-  \lstinputlisting[language=C]{code/retour.c}
-\end{center}
-    \item[\argi] chaque fonction de l'API renvoie un \texttt{cudaError\_t}
-    \item[\scout] la macro \texttt{checkCudaError} récupère les erreurs CUDA
-\begin{center}
-  \lstinputlisting{code/check.c}
-\end{center}
-  \end{itemize}
-\end{frame}
-
-%****************************************************************
-% Déverminage : outils I
-%****************************************************************
-\begin{frame}{Déverminage}
-  \begin{itemize}[<+->]
-        \item[\scout] si $CC \geqslant 2.x$, \texttt{printf} fonctionne depuis un noyau 
-        \item[\argi] inclusion des symboles \texttt{nvcc -g -G monProg.cu -o myProg}
-   \end{itemize}
-\pause
-  \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt, lastline=11]{code/outGDB}
-  \begin{itemize}[<+->]
-    \item[\argi] commandes classiques : \texttt{run}, \texttt{break}, \texttt{cont}, 
-    \item[\argi] commandes cuda : \texttt{info cuda threads}, \texttt{break}, \texttt{cont}, 
-   \end{itemize}
-\end{frame}
-
-%****************************************************************
-% Déverminage : outils I
-%****************************************************************
-\begin{frame}{Déverminage mémoire (CUDA 10)}{cuda-memcheck}
-  \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/outMemcheck}
-\end{frame}
-
-%****************************************************************
-% Déverminage : outils I
-%****************************************************************
-\begin{frame}{Déverminage mémoire (CUDA 11)}{\texttt{compute-sanitizer}}
-  \lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/outComputeSanitizer}
-\end{frame}
-
-%****************************************************************
-% Profilage : 
-%****************************************************************
-\begin{frame}{Profilage par évènements}
-  \begin{itemize}[<+->]
-    \item[\argi] un \og{}évenement\fg{} CUDA permet de mesurer le temps d'exécution d'un noyau
-\begin{center}
-  \lstinputlisting[language=C]{code/exProfile.c}
-\end{center}
-   \item[\kontuz] \texttt{cudaEventElapsedTime} renvoie un temps en milliseconds
-   \item[\pozik] on peut automatiser des mesures de profilage.
-  \end{itemize}
-\end{frame}
-
-%****************************************************************
-% Profilatzea
-%****************************************************************
-\begin{frame}{Profilage : \texttt{nvprof} (CUDA 10)}
-  \begin{itemize}[<+->]
-    \item[\pozik] beaucoup plus de métriques et de compteurs disponibles
-    \item[\triste] extraction automatique de résultats plus compliquée (merci \texttt{grep})
-    \item[\argi] afficher une trace {\tt --print-gpu-trace }
-  \end{itemize}
-\pause\lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/outProfile}
-\end{frame}
-
-%****************************************************************
-% Profilatzea
-%****************************************************************
-\begin{frame}{Profilage : \texttt{ncu} (CUDA 11)}
-  \begin{itemize}[<+->]
-    \item[\pozik] beaucoup plus de métriques et de compteurs disponibles
-  \end{itemize}
-\pause\lstinputlisting[numbers=none,language=bash,basicstyle=\relsize{-5}\ttfamily,lineskip=2pt]{code/outProfile}
-\end{frame}
-
-
-%****************************************************************
-% Optimizazio
-%****************************************************************
-\begin{frame}
-  \begin{center}
-    {\Huge Seconde partie : Optimisation}
-  \end{center}
-\end{frame}
-
-%****************************************************************
-% Limites 
-%****************************************************************
-\begin{frame}{Facteur limitants}{Petite experience}
-  \begin{itemize}[<+->]
-    \item soit le noyau \texttt{base} en 3 versions
-      \lstinputlisting[language=C]{code/pratique.c}
-    \item on chronomètre l'exécution (en $\mu$s) avec $N=8Mo$ 
-    \begin{minipage}[l]{0.49\linewidth}
-      \begin{center}
-        \begin{tabular}{|l |l|r|r|r|}
-          \hline
-          GPU & modèle    & base    & memory & math  \\ 
-          \hline
-          K40 &normal    &  468    &  390   &  236\\ 
-              &fastmath  &  405    &  390   &  162 \\ 
-          \hline
-          T4 & normal    &  361    &  320   &  187\\ 
-             & fastmath  &  326    &  321   &  148 \\ 
-          \hline
-        \end{tabular}
-      \end{center}
-    \end{minipage}
-  \end{itemize}
-\end{frame}
-%****************************************************************
-% mugatzaileak
-%****************************************************************
-\begin{frame}{Facteur limitants}{Mémoire, instruction ou latence}
-  \begin{itemize}[<+->]
-    \item limitation par les {\bf instructions} (compute bound) 
-      \begin{itemize}
-        \item sans {\tt fastmath} : utilisation préponderante du calcul
-      \end{itemize}
-    \item limitation par la {\bf mémoire } (memory bound) : 
-      \begin{itemize}
-        \item avec {\tt fasthmath} facteur mémoire préponderant
-      \end{itemize}
-    \item limitation par la {\bf latence} : utilisation faible de la mémoire et des calculs
-      \begin{itemize}
-        \item {\bf occupation} faible 
-        \item calage des threads (dépendance d'executions, synchronisation, chargement d'instruction)
-      \end{itemize}
-\end{itemize}
-\end{frame}
-«»
-%****************************************************************
-% facteur limitants
-%****************************************************************
-\begin{frame}{Bande Passante(BP)}
-  \begin{itemize}[<+->]
-    \item débit de données en Go/s sur le bus mémoire du GPU (throughput)
-    \item BP max théorique : $$BP_{\mbox{max}} = 2 \cdot \frac{F_{\mbox{max}} * N_{\mbox{bus}}}{10^6} $$
-      \begin{itemize}
-        \item $F_{max}$ : fréquence mémoire maximale (KHz) : \texttt{memoryClockRate}
-        \item $N_{bus}$ : largeur de bus (octets) : \texttt{memoryBusWidth}/8
-      \end{itemize}
-    \item BP réelle d'un noyau : $$ BP_{\mbox{ker}} = \frac{\# R_{\ker} + \# W_{\ker}}{10^9 t_{\ker}} $$
-      \begin{itemize}
-        \item $\# R_{\ker}$ : nb de lectures du noyau (octets)
-        \item $\# W_{\ker}$ : nb d'écritures du noyau (octets)
-        \item $t_{\ker}$ : tps moyen d'exécution du noyau (s)
-      \end{itemize}
-  \end{itemize}
-\end{frame}
-
-%****************************************************************
-% Performances 
-%****************************************************************
-\begin{frame}{Quelques performances}
-  \begin{itemize}[<+->]
-    \item la capacité de calcul (CC) dépend de l'architecture
-    \item Flops = $\frac{Flops}{cycle}\times \mbox{\#cœurs} \times \frac{\mbox{cycle}}{\mbox{seconde}} \approx
-         2\footnote{https://en.wikipedia.org/wiki/FLOPS} \times \mbox{\#cœurs} \times \mbox{Freq} $
-       \item si (CC)  $\nearrow$ , le nombre de GFlops\; $\nearrow$ aussi \pozik
-  \end{itemize}
-\pause
- \begin{tabular}{|l|r|r|r|r|r|r|r|}
-    \hline
-      modèle            & C1060   & C2070 &  K40   &  P100  & V100  & T4 \\
-    \hline
-      architecture      & Tesla   & Fermi & Kepler & Pascal & Volta & Turing \\
-      CC                & 1.3     & 2.0   & 3.5    &   6.0  &   7.0 & 7.5  \\
-      Fréquence(Mhz)    & 1296    & 1150  &  745   &  1329  &  1380 & 1590 \\
-      \# SM             & 30      & 14    &  15    &    56  &   80  & 40  \\
-      \# SP (float)     & 240     & 448   &  2880  &  3584  &  5120 & 2560  \\
-      Flops (G/s)       & 622     & 1030  &  4291  &  9526  &  14131 & 8141\footnote{65130 en demi-précision} \\
-      BP$_{max}$ (Go/s) & 102     & 150   &  288   &   732  &  897   & 320 \\
-    \hline
-\end{tabular}
-\end{frame}
-
-%****************************************************************
-% facteur limitants
-%****************************************************************
-\begin{frame}{Facteur limitants}{bande passante}
-    En revenant à l'exemple précédent : temps(s) \gezi \ BP (Go/s)
-      \begin{center}
-        \begin{tabular}{|l |l|r|r|r|r|}
-          \hline
-          GPU & modèle    & base    & memory & math & $BP_{max}$ \\ 
-          \hline
-          K40 & normal    &  468    &  172   &  142 & 288\\ 
-              & fastmath  &  405    &  172   &  207 & 288 \\ 
-          \hline
-          T4 & normal    &  185    &  209   &  179 & 320 \\ 
-             & fastmath  &  205    &  209   &  226 & 320 \\ 
-          \hline
-        \end{tabular}
-      \end{center}
-\end{frame}
-
-%****************************************************************
-% facteur limitants
-%****************************************************************
-\begin{frame}{Facteur limitants}{Occupation}
-  \begin{itemize} 
-    \item définition 
-      $$ \mbox{Occupation} = \frac{\mbox{nb de chaînes(warps) actives par SM}}{\mbox{nb max de chaînes par SM}} $$
-    \item calcul 
-      \begin{itemize}
-        \item estimation : {\tt cudaOccupancyMaxActiveBlocksPerMultiprocessor }
-        \item réelle : {\tt nvprof --metrics achieved\_occupancy } ou {\tt ncu --metrics  sm\_\_warps\_active.avg.pct\_of\_peak\_sustained\_active}
-      \end{itemize}
-    \item limité par l'allocation de la mémoire partagée
-    \item influence le parallélisme au niveau des threads
-  \end{itemize}
-\end{frame}
-
-%****************************************************************
-% Modèle théorique
-%****************************************************************
-\begin{frame}[fragile]{BP vs occupation}
-\begin{minipage}[c]{0.53\linewidth}
-  
-  \begin{itemize}
-    \item[\argi] On peut borner la BP par une fonction affine par morceaux de l'occupation 
-    \item[\scout] analogue d'un modèle \og{}roofline\fg{} pour CPU,
-   \end{itemize}
-\end{minipage}%
-\begin{minipage}[c]{0.45\linewidth}
-\begin{tikzpicture}[scale=0.8, domain=0:130]
-\begin{axis}[
-        axis x line=middle,
-        axis y line=middle,
-        xlabel={occupation},
-        ylabel=\small{BP},
-        ticks=none,
-        xtick=\empty,
-        ytick=\empty,
-        axis line style={->},
-        xmin = 0., xmax = 130,
-        ymin = 0., ymax = 40]
-        \addplot[
-                domain = 0:130,
-                samples =400
-        ] {min(x,30)};
-        \node[above] at (axis cs:63,29.5){\small{limite de bande passante}};
-        \addplot[line width=2pt,
-                domain = 0:130,
-                samples =400
-        ] {30*(1-exp(-(x-1.)/30.)))};
-        \node[rotate=70] at (axis cs:15,20) {\small{limite de latence}};
-\end{axis}
-\end{tikzpicture}
-\end{minipage}
-  \begin{itemize}
-    \item[\kontuz] $$ \mbox{Occupation}  \neq \mbox{Intensité Arithmetique} $$
-  \end{itemize} 
- \end{frame}
-    
+%
 %%****************************************************************
-%%  Parallèlisme d'instruction
+%% Déverminage
 %%****************************************************************
-\begin{frame}{Parallelisme d'instruction}
-\pause
-\begin{itemize}[<+->]
-	\item[\kontuz] une occupation elevée n'est pas le seul moyen de masquer la latence \harritu
-    \item[\adibi] soit le noyau de copie suivant
-	\lstinputlisting[language=C, firstline=9, lastline=15]{code/occupancy-copy.c}
-    \item[\argi] on peut augmenter sa BP en parallélisant des instructions
-	\lstinputlisting[language=C, firstline=17, lastline=27]{code/occupancy-copy.c}
-\end{itemize}
-\end{frame}
+%\begin{frame}{Déverminage : fonctions de l'API CUDA}
+%  \begin{itemize}[<+->]
+%    \item[\kontuz] toujours vérifier les retours de fonction 
+%\begin{center}
+%  \lstinputlisting[language=C]{code/retour.c}
+%\end{center}
+%    \item[\argi] chaque fonction de l'API renvoie un \texttt{cudaError\_t}
+%    \item[\scout] la macro \texttt{checkCudaError} récupère les erreurs CUDA
+%\begin{center}
+%  \lstinputlisting{code/check.c}
+%\end{center}
+%  \end{itemize}
+%\end{frame}
+%
 %%****************************************************************
-%%  Graphiques
+%% Déverminage : outils I
 %%****************************************************************
-\begin{frame}{Comparaisons des noyaux}
-\begin{figure}[h!]
-  \begin{center}
-    \begin{tikzpicture}
-      \begin{axis}[grid=major, legend entries={copy, copy\_ilp}, xlabel=occupation(\%), ylabel=BP(Go/s) ]
-        \addplot 
-        table[x=occ1,y=bp1,col sep=comma] {fig/val_mes.csv}; 
-		\addplot 
-        table[x=occ2,y=bp2,col sep=comma] {fig/val_mes.csv}; 
-        %\draw[red] (axis cs:\pgfkeysvalueof{/pgfplots/xmin},160) -- (axis cs:\pgfkeysvalueof{/pgfplots/xmax}, 160);
-       \end{axis}
-    \end{tikzpicture}
-    \caption{Performances des noyaux de copie}
-  \end{center}
-\end{figure}
-\end{frame}
+%\begin{frame}{Déverminage}
+%  \begin{itemize}[<+->]
+%        \item[\scout] si $CC \geqslant 2.x$, \texttt{printf} fonctionne depuis un noyau 
+%        \item[\argi] inclusion des symboles \texttt{nvcc -g -G monProg.cu -o myProg}
+%   \end{itemize}
+%\pause
+%  \lstinputlisting[numbers=none,language=bash,basicstyle=\petiteFont,lineskip=2pt, lastline=11]{code/outGDB}
+%  \begin{itemize}[<+->]
+%    \item[\argi] commandes classiques : \texttt{run}, \texttt{break}, \texttt{cont}, 
+%    \item[\argi] commandes cuda : \texttt{info cuda threads}, \texttt{break}, \texttt{cont}, 
+%   \end{itemize}
+%\end{frame}
+%
+%%****************************************************************
+%% Déverminage : outils I
+%%****************************************************************
+%\begin{frame}{Déverminage mémoire (CUDA 10)}{cuda-memcheck}
+%  \lstinputlisting[numbers=none,language=bash,basicstyle=\petiteFont,lineskip=2pt]{code/outMemcheck}
+%\end{frame}
+%
+%%****************************************************************
+%% Déverminage : outils I
+%%****************************************************************
+%\begin{frame}{Déverminage mémoire (CUDA 11)}{\texttt{compute-sanitizer}}
+%  \lstinputlisting[numbers=none,language=bash,basicstyle=\petiteFont,lineskip=2pt]{code/outComputeSanitizer}
+%\end{frame}
+%
+%%****************************************************************
+%% Profilage : 
+%%****************************************************************
+%\begin{frame}{Profilage par évènements}
+%  \begin{itemize}[<+->]
+%    \item[\argi] un \og{}évenement\fg{} CUDA permet de mesurer le temps d'exécution d'un noyau
+%\begin{center}
+%  \lstinputlisting[language=C]{code/exProfile.c}
+%\end{center}
+%   \item[\kontuz] \texttt{cudaEventElapsedTime} renvoie un temps en milliseconds
+%   \item[\pozik] on peut automatiser des mesures de profilage.
+%  \end{itemize}
+%\end{frame}
+%
+%%****************************************************************
+%% Profilatzea
+%%****************************************************************
+%\begin{frame}{Profilage : \texttt{nvprof} (CUDA 10)}
+%  \begin{itemize}[<+->]
+%    \item[\pozik] beaucoup plus de métriques et de compteurs disponibles
+%    \item[\triste] extraction automatique de résultats plus compliquée (merci \texttt{grep})
+%    \item[\argi] afficher une trace {\tt --print-gpu-trace }
+%  \end{itemize}
+%\pause\lstinputlisting[numbers=none,language=bash,basicstyle=\petiteFont,lineskip=2pt]{code/outProfile}
+%\end{frame}
+%
+%%****************************************************************
+%% Profilatzea
+%%****************************************************************
+%\begin{frame}{Profilage : \texttt{ncu} (CUDA 11)}
+%  \begin{itemize}[<+->]
+%    \item[\pozik] beaucoup plus de métriques et de compteurs disponibles
+%  \end{itemize}
+%\pause\lstinputlisting[numbers=none,language=bash,basicstyle=\petiteFont,lineskip=2pt]{code/outncu}
+%\end{frame}
+%
+%
+%%****************************************************************
+%% Optimizazio
+%%****************************************************************
+%\begin{frame}
+%  \begin{center}
+%    {\Huge Seconde partie : Optimisation}
+%  \end{center}
+%\end{frame}
+%
+%%****************************************************************
+%% Limites 
+%%****************************************************************
+%\begin{frame}{Facteur limitants}{Petite experience}
+%  \begin{itemize}[<+->]
+%    \item soit le noyau \texttt{base} en 3 versions
+%      \lstinputlisting[language=C]{code/pratique.c}
+%    \item on chronomètre l'exécution (en $\mu$s) avec $N=8Mo$ 
+%    \begin{minipage}[l]{0.49\linewidth}
+%        \begin{tabular}{|l |l|r|r|r|}
+%          \hline
+%          GPU & modèle    & base    & memory & math  \\ 
+%          \hline
+%          K40 &normal    &  468    &  390   &  236\\ 
+%              &fastmath  &  405    &  390   &  162 \\ 
+%          \hline
+%        \end{tabular}
+%    \end{minipage}
+%  \end{itemize}
+%\end{frame}
+%%****************************************************************
+%% mugatzaileak
+%%****************************************************************
+%\begin{frame}{Facteur limitants}{Mémoire, instruction ou latence}
+%  \begin{itemize}[<+->]
+%    \item limitation par les {\bf instructions} (compute bound) 
+%      \begin{itemize}
+%        \item sans {\tt fastmath} : utilisation préponderante du calcul
+%      \end{itemize}
+%    \item limitation par la {\bf mémoire } (memory bound) : 
+%      \begin{itemize}
+%        \item avec {\tt fasthmath} facteur mémoire préponderant
+%      \end{itemize}
+%    \item limitation par la {\bf latence} : utilisation faible de la mémoire et des calculs
+%      \begin{itemize}
+%        \item {\bf occupation} faible 
+%        \item calage des threads (dépendance d'executions, synchronisation, chargement d'instruction)
+%      \end{itemize}
+%\end{itemize}
+%\end{frame}
+%«»
+%%****************************************************************
+%% facteur limitants
+%%****************************************************************
+%\begin{frame}{Bande Passante(BP)}
+%  \begin{itemize}[<+->]
+%    \item débit de données en Go/s sur le bus mémoire du GPU (throughput)
+%    \item BP max théorique : $$BP_{\mbox{max}} = 2 \cdot \frac{F_{\mbox{max}} * N_{\mbox{bus}}}{10^6} $$
+%      \begin{itemize}
+%        \item $F_{max}$ : fréquence mémoire maximale (KHz) : \texttt{memoryClockRate}
+%        \item $N_{bus}$ : largeur de bus (octets) : \texttt{memoryBusWidth}/8
+%      \end{itemize}
+%    \item BP réelle d'un noyau : $$ BP_{\mbox{ker}} = \frac{\# R_{\ker} + \# W_{\ker}}{10^9 t_{\ker}} $$
+%      \begin{itemize}
+%        \item $\# R_{\ker}$ : nb de lectures du noyau (octets)
+%        \item $\# W_{\ker}$ : nb d'écritures du noyau (octets)
+%        \item $t_{\ker}$ : tps moyen d'exécution du noyau (s)
+%      \end{itemize}
+%  \end{itemize}
+%\end{frame}
+%
+%%****************************************************************
+%% Performances 
+%%****************************************************************
+%\begin{frame}{Quelques performances}
+%  \begin{itemize}[<+->]
+%    \item la capacité de calcul (CC) dépend de l'architecture
+%    \item Flops = $\frac{Flops}{cycle}\times \mbox{\#cœurs} \times \frac{\mbox{cycle}}{\mbox{seconde}} \approx
+%         2\footnote{https://en.wikipedia.org/wiki/FLOPS} \times \mbox{\#cœurs} \times \mbox{Freq} $
+%       \item si (CC)  $\nearrow$ , le nombre de GFlops\; $\nearrow$ aussi \pozik
+%  \end{itemize}
+%\pause
+% \begin{tabular}{|l|r|r|r|r|r|r|r|}
+%    \hline
+%      modèle            & C1060   & C2070 &  K40   &  P100  & V100  & T4 \\
+%    \hline
+%      architecture      & Tesla   & Fermi & Kepler & Pascal & Volta & Turing \\
+%      CC                & 1.3     & 2.0   & 3.5    &   6.0  &   7.0 & 7.5  \\
+%      Fréquence(Mhz)    & 1296    & 1150  &  745   &  1329  &  1380 & 1590 \\
+%      \# SM             & 30      & 14    &  15    &    56  &   80  & 40  \\
+%      \# SP (float)     & 240     & 448   &  2880  &  3584  &  5120 & 2560  \\
+%      Flops (G/s)       & 622     & 1030  &  4291  &  9526  &  14131 & 8141\footnote{65130 en demi-précision} \\
+%      BP$_{max}$ (Go/s) & 102     & 150   &  288   &   732  &  897   & 320 \\
+%    \hline
+%\end{tabular}
+%\end{frame}
+%
+%%****************************************************************
+%% facteur limitants
+%%****************************************************************
+%\begin{frame}{Facteur limitants : bande passante}
+%    En revenant à l'exemple précédent : temps(s) \gezi \ BP (Go/s)
+%      \begin{center}
+%        \begin{tabular}{|l |l|r|r|r|r|}
+%          \hline
+%          GPU & modèle    & base    & memory & math & $BP_{max}$ \\ 
+%          \hline
+%          K40 & normal    &  143    &  173   &  142 & 288\\ 
+%              & fastmath  &  165    &  172   &  207 & 288 \\ 
+%          \hline
+%        \end{tabular}
+%      \end{center}
+%\end{frame}
+%
+%%****************************************************************
+%% facteur limitants
+%%****************************************************************
+%\begin{frame}{Facteur limitants : occupation}
+%  \begin{itemize} 
+%    \item définition 
+%      $$ \mbox{Occupation} = \frac{\mbox{nb de chaînes(warps) actives par SM}}{\mbox{nb max de chaînes par SM}} $$
+%    \item calcul 
+%      \begin{itemize}
+%        \item estimation : {\tt cudaOccupancyMaxActiveBlocksPerMultiprocessor }
+%        \item réelle : {\tt nvprof --metrics achieved\_occupancy } ou {\tt ncu --metrics  sm\_\_warps\_active.avg.pct\_of\_peak\_sustained\_active}
+%      \end{itemize}
+%    \item limité par l'allocation de la mémoire partagée
+%    \item influence le parallélisme au niveau des threads
+%  \end{itemize}
+%\end{frame}
+%
+%%****************************************************************
+%% Modèle théorique
+%%****************************************************************
+%\begin{frame}[fragile]{BP vs occupation}
+%\begin{minipage}[c]{0.53\linewidth}
+%  
+%  \begin{itemize}
+%    \item[\argi] On peut borner la BP par une fonction affine par morceaux de l'occupation 
+%    \item[\scout] analogue d'un modèle \og{}roofline\fg{} pour CPU,
+%   \end{itemize}
+%\end{minipage}%
+%\begin{minipage}[c]{0.45\linewidth}
+%\begin{tikzpicture}[scale=0.8, domain=0:130]
+%\begin{axis}[
+%        axis x line=middle,
+%        axis y line=middle,
+%        xlabel={occupation},
+%        ylabel=\small{BP},
+%        ticks=none,
+%        xtick=\empty,
+%        ytick=\empty,
+%        axis line style={->},
+%        xmin = 0., xmax = 130,
+%        ymin = 0., ymax = 40]
+%        \addplot[
+%                domain = 0:130,
+%                samples =400
+%        ] {min(x,30)};
+%        \node[above] at (axis cs:63,29.5){\small{limite de bande passante}};
+%        \addplot[line width=2pt,
+%                domain = 0:130,
+%                samples =400
+%        ] {30*(1-exp(-(x-1.)/30.)))};
+%        \node[rotate=70] at (axis cs:15,20) {\small{limite de latence}};
+%\end{axis}
+%\end{tikzpicture}
+%\end{minipage}
+%  \begin{itemize}
+%    \item[\kontuz] $$ \mbox{Occupation}  \neq \mbox{Intensité Arithmetique} $$
+%  \end{itemize} 
+% \end{frame}
+%    
+%%%****************************************************************
+%%%  Parallèlisme d'instruction
+%%%****************************************************************
+%\begin{frame}{Parallèlisme d'instruction}
+%\pause
+%\begin{itemize}[<+->]
+%	\item[\kontuz] une occupation elevée n'est pas le seul moyen de masquer la latence \harritu
+%    \item[\adibi] soit le noyau de copie suivant
+%	\lstinputlisting[language=C, firstline=9, lastline=15]{code/occupancy-copy.c}
+%    \item[\argi] on peut augmenter sa BP en parallélisant des instructions
+%	\lstinputlisting[language=C, firstline=17, lastline=27]{code/occupancy-copy.c}
+%\end{itemize}
+%\end{frame}
+%%%****************************************************************
+%%%  Graphiques
+%%%****************************************************************
+%\begin{frame}{Comparaisons des noyaux}
+%\begin{figure}[h!]
+%  \begin{center}
+%    \begin{tikzpicture}
+%      \begin{axis}[grid=major, legend entries={copy, copy\_ilp}, xlabel=occupation(\%), ylabel=BP(Go/s) ]
+%        \addplot 
+%        table[x=occ1,y=bp1,col sep=comma] {fig/val_mes.csv}; 
+%		\addplot 
+%        table[x=occ2,y=bp2,col sep=comma] {fig/val_mes.csv}; 
+%        %\draw[red] (axis cs:\pgfkeysvalueof{/pgfplots/xmin},160) -- (axis cs:\pgfkeysvalueof{/pgfplots/xmax}, 160);
+%       \end{axis}
+%    \end{tikzpicture}
+%    \caption{Performances des noyaux de copie}
+%  \end{center}
+%\end{figure}
+%\end{frame}
+%
+%%****************************************************************
+%% transferentziak
+%%****************************************************************
+%\begin{frame}{Transferts Hôte \geziBikoitz\  GPU}{Ordres de grandeur}
+%  \begin{itemize}[<+->]
+%    \item[\argi] BP DRAM GPU \geziBikoitz\ SMs $\thicksim$ 200-300 (Go/s)
+%    \item[\argi] BP Mémoire Globale \geziBikoitz\ DRAM GPU $\thicksim$ 10-20 (Go/s)
+%    \item[\scout] il faut donc optimiser les transferts hôte \geziBikoitz\ GPU
+%      \begin{itemize}
+%        \item mémoire verrouillée
+%        \item transferts asynchrones
+%      \end{itemize}
+%    \item[\kontuz] on a beau avoir le noyau le plus rapide du monde, si le temps de transfert est prohibitif, ça ne sert à rien \harritu
+%  \end{itemize}
+%\end{frame}
+%
+%%****************************************************************
+%% memoria giltzatuta
+%%****************************************************************
+%\begin{frame}{Mémoire vérrouillée}
+%  \begin{itemize}[<+->]
+%    \item[\argi] allocation par défaut \gezi\ mémoire paginable (pouvant utiliser l'espace d'échange)
+%    \item[\argi] transfert \geziBikoitz\  GPU
+%      \begin{itemize}
+%        \item contrôleur DMA choisit : paginable ou verrouillée
+%        \item la mémoire verrouillée interdit l'utilisation du «swap»
+%        \item l'usage de la mémoire paginable nécessite d'abord l'allocation d'un tampon verrouillé, puis une copie vers le GPU
+%      \end{itemize}
+%  \end{itemize}
+%\pause
+%  \begin{center}
+%    \colorbox{white}{\includegraphics[width=0.6\linewidth]{fig/pinned_memory.eps}}
+%  \end{center}
+%\end{frame}
+%%****************************************************************
+%% memoria giltzatuta
+%%****************************************************************
+%\begin{frame}{Mémoire vérrouillée : exemple}
+%  \begin{itemize}[<+->]
+%    \item[\argi] allocation {\tt cudaHostAlloc}, desallocation {\tt cudaFreeHost}
+%    \item[\argi] ou enregistrement de mémoire deja alloué par {\tt malloc} avec {\tt cudaHostRegister}
+%  \lstinputlisting[language=C]{code/pinned.c}
+%\item[\argi] on peut utiliser aussi de la mémoire associée (cudaHostAllocDefault \gezi\ cudaHostAllocMapped) pour éviter la recopie, mais la BP est moins rapide depuis les noyaux
+%\item[\triste] gain faible (ex sur un k40M 8.9Go/s vs 7Go/s pour 32M)
+%  \end{itemize}
+%\end{frame}
+%%****************************************************************
+%% transfert asynchrones
+%%****************************************************************
+%\begin{frame}{Transferts asynchrones : principe}
+%  \begin{itemize}[<+->]
+%    \item[\kontuz] les transferts classiques (ex {\tt cudaMemcpy}) sont {\bf bloquants} \harritu
+%\begin{center}
+%  \colorbox{white}{\includegraphics[width=0.6\linewidth]{fig/seq.png}}
+%\end{center}
+%    \item[\scout] utiliser des transferts {\bf asynchrones } pour recouvrir les transferts par des calculs
+%\begin{center}
+%  \colorbox{white}{\includegraphics[width=0.95\linewidth]{fig/async.png}}
+%\end{center}
+%    \item[\argi] répartir les données sur des {\bf flux} («streams») différents
+%    \item[\kontuz] la mémoire sur l'hôte doit être vérouillée
+%    \item[\pozik] le pipeline de transfert de données permet un recouvrement \\ 
+%      \gezi\ réduction du temps total
+%  \end{itemize}
+%\end{frame}
+%
+%%****************************************************************
+%% transfert asynchrones : exemple
+%%****************************************************************
+%\begin{frame}{Transferts asynchrones : exemple}
+%  \begin{itemize}[<+->]
+%    \item[\adibi] sur d'un noyau 1D 
+%      \lstinputlisting[language=C]{code/asyn.c}
+%    \item[\faClockO] sur K40M, avec N=4Mo et 4 flux \\ \gezi\ 4.71ms (sequentiel) vs 2.67ms (asynchrone) \pozik
+%  \end{itemize}
+%\end{frame}
+%
+%%****************************************************************
+%% Mémoires de l'accélérateur
+%%****************************************************************
+%\begin{frame}{Mémoires sur l'accélérateur : vue générale}
+%  \begin{itemize}[<+->]
+%    \item[\argi] un GPU abrite plusieurs types de mémoire : 
+%\begin{tabular}{|l|l|l|l|l|l|}
+%  \hline
+%  mémoire   & local. & Cachée  & accès     & portée   & durée \\ 
+%  \hline
+%  registre  & puce  &  N/A   & RW & thread & thread \\
+%  locale    & DRAM  & CC$\geqslant$2.0 & RW & thread & thread \\
+%  partagée  & puce  & N/A    & RW & bloc   & bloc \\
+%  globale   & DRAM  & CC$\geqslant$2.0  & RW & GPU et hôte &  appli. \\
+%  constante & DRAM  & Oui    & R  & GPU et hôte &  appli. \\
+%  texture   & DRAM  & Oui    & R  & GPU et hôte &  appli. \\
+%  \hline
+%\end{tabular}
+%  \item[\kontuz] différentes caractéristiques \gezi\ différents usages
+%    \begin{itemize} 
+%     \item mémoire locale est interne à un fil d'exécution
+%     \item mémoire de texture : moins sensible aux accès avec pas
+%     \item mémoire constante permet de stocker des données constantes durant l'execution du noyau
+%     \item la mémoire partagée permet d'avoir un cache local pour un bloc de threads
+%  \end{itemize}
+%  \end{itemize}
+%\end{frame}
+%\begin{frame}{Mémoire locale}
+%  \begin{itemize}[<+->]
+%    \item[\scout] mémoire privée du fil d'exécution hors registre (locale)
+%    \item[\argi] située en DRAM sur le GPU
+%    \item[\kontuz] facteur de contention : quantité et/ou en cache
+%    \item[\adibi] soit le noyau suivant compilé avec \texttt{nvcc -arch=sm\_75 --ptxas-options=-v -ptx  localMem.cu}
+%\lstinputlisting{code/localMem.cu}
+%     \item[\hand] on obtient
+%\lstinputlisting{code/localMem.ptx}
+%   \end{itemize}
+%\end{frame}
+%
+%\begin{frame}{Mémoire constante et de texture}
+%  \begin{itemize}[<+->]
+%    \item[\argi] on peut y écrire depuis l'hôte (constante et de texture)
+%    \item[\scout] mémoire constante limitée à 64KB. 
+%    \item[\kontuz] un seul port de lecture \gezi les threads d'une même chaîne doivent accéder à la même adresse!
+%    \item[\scout] texture : parfois intéressants pour des accès non-contigues
+%   \end{itemize}
+%\end{frame}
+%
+%%****************************************************************
+%% mémoire partagée : 
+%%****************************************************************
+%\begin{frame}{Mémoire partagée}
+%  \begin{itemize}[<+->]
+%    \item[\argi] mémoire partagée entre tous les threads d'un bloc
+%    \item[\kontuz] aux écritures concurrentes \harritu
+%    \item[\scout] synchronisation à l'aide de {\tt \_\_syncthreads } 
+%    \item[\scout] déclaration à l'aide du mot-clef {\tt \_\_shared\_\_}
+%    \item[\scout] allocaton statique...
+%  \lstinputlisting[language=C]{code/sharedStatic.c}
+%\item[\scout] ou dynamique
+%  \lstinputlisting[language=C]{code/shareDynamic.c}
+%   \item[\kontuz] taille limitée à 64kB
+%   \end{itemize}
+%\end{frame}
+%
+%%****************************************************************
+%% mémoire partagée : exemple
+%%****************************************************************
+%\begin{frame}{Mémoire partagée : tranposition}
+%  \begin{itemize}[<+->]
+%    \item[\adibi] on considère un noyau qui transpose une matrice
+%  \lstinputlisting[language=C]{code/transposeNaive.c}
+%    \item[\triste] écriture avec un saut de longueur {\tt n.x }\gezi\ non coalescent \harritu
+%\begin{center}
+%  \colorbox{white}{\includegraphics[width=0.7\linewidth]{fig/transpose1.eps}}
+%\end{center}
+%   \end{itemize}
+%\end{frame}
+%
+%%****************************************************************
+%% mémoire partagée : solution
+%%****************************************************************
+%\begin{frame}{Mémoire partagée : solution}
+%  \begin{itemize}[<+->]
+%    \item[\argi] on utilise un cache local \gezi\ lecture coalescente \pozik
+%  \lstinputlisting[language=C]{code/transposeShared1.c}
+%\begin{center}
+%  \colorbox{white}{\includegraphics[width=0.60\linewidth]{fig/transpose2.eps}}
+%\end{center}
+%   \item[\faMagic] tester {\tt \_\_shared\_\_ float tile[TILE\_DIM][TILE\_DIM+1]} 
+%   \end{itemize}
+%\end{frame}
+%
+%%****************************************************************
+%% mémoire partagée : synchronisation
+%%****************************************************************
+%\begin{frame}{Mémoire partagée}{sur l'importance de la synchonisation}
+% \begin{itemize}[<+->]
+%   \item on veut transposer l'image suivante
+%\begin{center}
+%  \includegraphics[width=0.4\linewidth]{fig/cray.png}
+%\end{center}
+%  \item[\faClockO] image 2976x3808 sur K40M \gezi\ 0.94ms vs 0.75ms 
+%\end{itemize}
+%\pause
+%\begin{columns}[t]
+%\column{5cm}
+% Sans synchronisation 
+%\begin{center}
+%  \includegraphics[width=0.3\linewidth]{fig/crayNoSync.png}
+%\end{center}
+%\column{5cm}
+% Avec synchronisation
+%\begin{center}
+%  \includegraphics[width=0.3\linewidth]{fig/crayTrans.png}
+%\end{center}
+%\end{columns}
+%\end{frame}
+%
+%%****************************************************************
+%% Divergence de thread
+%%****************************************************************
+%\begin{frame}{Divergence de chaînes}
+% \begin{itemize}[<+->]
+%  \item[\kontuz] la divergence de chaîne peut degrader les performances
+%  \item[\adibi] soit le noyau suivant
+%  \lstinputlisting[language=C]{code/warpDiverge.c}
+%  \item[\argi] condition satisfaite par 1 thread d'une chaîne 
+%    \begin{itemize}
+%      \item[\gezi] {\bf tous} les threads de la chaîne executent cette branche
+%      \item[\gezi] les autres branches d'exécution sont serialisées
+%      \item[\gezi] masquage des résultats des threads hors branche
+%    \end{itemize}
+%  \item[\adibi] par contre le noyau suivant ne diverge pas
+%  \lstinputlisting[language=C]{code/warpNoDiverge.c}
+%  \end{itemize}
+%\end{frame}
+%
+%%****************************************************************
+%% Redukzio : Monte-Carloko metodoa
+%%****************************************************************
+%\begin{frame}{Réduction}{Calcul de $\pi$ par une méthode de Monte-Carlo}
+% \begin{itemize}[<+->]
+%   \item[\argi] On souhaite approcher $\pi$ par le calcul d'aire suivant
+%     \begin{columns}
+%       \column{5cm}
+%\begin{center}
+%  \includegraphics[width=0.5\linewidth]{fig/monteCarlo.eps}
+%\end{center}
+%       \column{5cm}
+%  $$A = \int_{A} dx \thicksim \frac{1}{N}\sum_{i=1}^N \mathbb{1}_{A}(x_i)$$
+% où $x_i$ est pris au hasard dans $[0,1]^2$
+%     \end{columns}
+%  \item[\faBomb] méthodes dite «de Monte-Carlo» en réference à l'algorithme de Metropolis-Ulam
+%  \item[\triste] convergence lente en $O(\frac{1}{\sqrt{N}})$
+%  \item[\pozik] massivement parallélisable si on a un générateur pseudo-aléatoire parallèle (\texttt{curandGenerateUniform})
+%  \end{itemize}
+%\end{frame}
+%
+%
+%%****************************************************************
+%% Redukzio : Somme
+%%****************************************************************
+%\begin{frame}{Réduction}{Principe}
+% \begin{itemize}[<+->]
+%   \item[\argi] générer en // des couples aléatoires $(x_i,y_i) \in K = [0,1]^2$
+%   \item[\argi] sommer en // ceux qui sont dans $A = \{ (x,y) \in K \;|\; x^2+y^2 \leqslant 1 \}$
+%   \item[\galde] comment calculer une somme en parallèle sur un GPU ?
+%   \item[\kontuz] il faut faire travailler un max de threads \harritu
+%   \item[\scout] par exemple, en utilisant une réduction en arbre 
+%  \end{itemize}
+%\pause
+%\begin{center}
+%  \includegraphics[width=0.6\linewidth]{fig/zuhaitz.eps}
+%\end{center}
+%\end{frame}
+%
+%%****************************************************************
+%% Redukzio : Somme
+%%****************************************************************
+%\begin{frame}{Réduction}{2 niveaux} 
+% \begin{itemize}[<+->]
+%   \item[\scout] On va écrire 2 noyaux, qu'on appelle en cascade
+% \begin{enumerate}
+%   \item {\tt partialSum} qui dénombre les couples $(x_i,y_i)$ dans $A$ pour chaque bloc. 
+%   \item stockage du résultat en mémoire globale ({\tt partial})
+%   \item {\tt finalSum} calcule la somme des éléments de {\tt partial}
+% \end{enumerate}
+%   \item[\kontuz] information commune par bloc \gezi\ mémoire partagée
+%   \item[\argi] schéma d'appel
+%     \lstinputlisting[language=C]{code/biKernels.c}
+%     \begin{center}  
+%  \includegraphics[width=0.6\linewidth]{fig/biKernels.eps}
+%     \end{center}  
+%   \item[\argi] écriture possible avec un seul noyau \gezi\ opérations {\em atomiques}
+%  \end{itemize}
+% \end{frame}
+%
+%%****************************************************************
+%% Redukzio : somme divergente
+%%****************************************************************
+%\begin{frame}{Réduction}{Première solution}
+% \begin{enumerate}[<+->]
+%   \item On peut ajouter 2 cases mémoire contiguës
+%   \item multiplier le pas par 2
+%   \item et itérer...
+%  \end{enumerate}
+%\pause
+%\begin{center}
+%  \includegraphics[width=0.8\linewidth]{fig/divergent.eps}
+%\end{center}
+%\pause
+%\begin{itemize}
+%  \item[\triste] problème : le schéma est clairement divergent \harritu
+%  \end{itemize}
+%\end{frame}
+%
+%%****************************************************************
+%% Redukzio : somme convergente
+%%****************************************************************
+%\begin{frame}{Réduction}{2$^{\mbox{ème}}$ solution}
+% \begin{enumerate}[<+->]
+%   \item ou alors additioner avec l'element situé a {\tt blockDim.x}
+%   \item et diviser le pas par 2
+%   \item puis itérer...
+%  \end{enumerate}
+%\pause
+%\begin{center}
+%  \includegraphics[width=0.6\linewidth]{fig/convergent.eps}
+%\end{center}
+%\pause
+%\begin{itemize}
+%  \item[\pozik] le schéma ne diverge quasiment plus \harritu
+%  \end{itemize}
+%\end{frame}
+%
+%%****************************************************************
+%% Divergence de thread
+%%****************************************************************
+%\begin{frame}{Réduction}{noyau «finalSum»}
+%\pause
+%  \lstinputlisting[language=C]{code/finalSum.c}
+%\pause
+%  \begin{itemize}[<+->]
+%    \item synchronisation multiple
+%    \item {\tt psum} : tableau partagé alloué dynamiquement de taille {\tt BLOCK\_SIZE }
+%  \end{itemize}
+%\end{frame}
+%
+%\begin{frame}{Réduction}{noyau «partialSum»}
+%\pause
+%  \lstinputlisting[language=C]{code/partialSum.c}
+%\pause
+%  \begin{itemize}[<+->]
+%    \item chaque fil traite $\displaystyle \left\lfloor \frac{N}{\mbox{{\tt gridDim.x * blockDim.x}}}\right\rfloor $ entrées afin de gérer
+%    des données qui ne tiennent pas forcemment en mémoire.
+%  \end{itemize}
+%\end{frame}
+%
+%\begin{frame}{Réduction}{Comparaison des performances}
+%  \begin{itemize}[<+->]
+%    \item[\faClockO] pour $N = 4*256*512$ , on compare différents GPU, avec des temps en ms
+%   \begin{center}
+%      \begin{tabular}{|l|c|c|c|}
+%    \hline
+%      GPU & 1 fil & div. & nodiv.   \\
+%    \hline
+%    k40M  & 0.074  & 0.058 & \textcolor{green}{0.045} \\
+%    V100  & \textcolor{red}{0.0068} & 0.011 & 0.0072 \\
+%    T4    & 0.0302 & 0.0407& \textcolor{green}{0.0274} \\
+%    \hline
+%    \end{tabular}
+%    \end{center}
+%  \end{itemize}
+%\end{frame}
+%%****************************************************************
+%% hirurgarren partea : denetarik
+%%****************************************************************
+%\begin{frame}
+%  \begin{center}
+%    {\Huge $3^{\mbox{ème}}$ partie : Divers }
+%  \end{center}
+%\end{frame}
+%
+%%****************************************************************
+%% gpu-ri buruzko historio motz bat
+%%****************************************************************
+%\begin{frame}{Une brève histoire des GPUs}{Les premiers âges}
+%  \begin{columns}[t]
+%    \column{7cm}
+%    \begin{itemize}[<+->]
+%      \item bonne synthèse sur \href{https://www.techspot.com/article/650-history-of-the-gpu/}{\beamergotobutton{Techspot}}
+%      \item premiers coprocesseurs graphiques évidemment qu'en 2D
+%        \begin{itemize}
+%          \item 1976 : RCA Pixie (résolution 62x128)
+%          \item 1977 : Adaptateur d'interface de Télevision TIA 1A (Atari 2600)
+%          \item 1981 : Motorola MC6845 (IBM PC, Apple II)
+%        \end{itemize}
+%    \end{itemize}
+%    \column{5cm}
+%    \begin{figure}[htbp]
+%  \includegraphics[width=0.8\linewidth]{fig/appleII.jpg}
+%    \caption{\tiny Apple IIe : 560x192 en monochrome, 15 couleurs en 140x192 !}
+%    \end{figure}
+%  \end{columns}
+%\end{frame}
+%
+%
+%%****************************************************************
+%% souvenirs, souvenirs
+%%****************************************************************
+%\begin{frame}{Souvenirs, souvenirs}{Lode Runner sur Apple IIe}
+%  \begin{center}
+%  \includegraphics[width=0.8\linewidth]{fig/lode_runner.png}
+%  \end{center}
+%\end{frame}
+%
+%%****************************************************************
+%% gpu-ri buruzko historio motz bat
+%%****************************************************************
+%\begin{frame}{Une brève histoire des GPUs}{les premiers âges}
+%  \begin{columns}[t]
+%    \column{7cm}
+%    \begin{itemize}[<+->]
+%     \item 1983: Intel iSBX 275 Video Graphics 
+%    Controller Multimode Board
+%    \begin{itemize}
+%      \item 256x256, 8 colors
+%  \item 512x512 monochrome
+%  \item Lignes, rectangles, cercles...
+%  \item zoom \& défilement matériels
+%  \item 32KB, 1000\$ \harritu
+%  \item simulateurs de vol (Armée)
+%    \end{itemize} 
+%    \item 1987: ATI EGA
+%      \begin{itemize}
+%        \item 650x350, 16 couleurs
+%        \item 512x512 monochrome
+%        \item 256KB de DRAM
+%        \item 399\$ \pozik
+%        \item EGA Wonder 800
+%        \begin{itemize}
+%          \item  800x600 VGA
+%          \item  449\$
+%        \end{itemize} 
+%      \end{itemize} 
+%   \end{itemize} 
+%    \column{5cm}
+%    \begin{figure}[htbp]
+%  \includegraphics[width=0.8\linewidth]{fig/sbx2.png}
+%      \caption{\tiny iSBX 275}
+%    \end{figure}
+%\begin{figure}[htbp]
+%  \includegraphics[width=0.8\linewidth]{fig/ati_ega.png}
+%      \caption{\tiny ATI EGA Wonder 800}
+%    \end{figure}
+%  \end{columns}
+%\end{frame}
+%
+%%****************************************************************
+%% gpu-ri buruzko historio motz bat
+%%****************************************************************
+%\begin{frame}{Une brève histoire des GPUs}{les premiers âges}
+%  \begin{columns}[t]
+%    \column{7cm}
+%    \begin{itemize}[<+->]
+%      \item 1992 : SGI publie OpenGL 1.0 
+%        \begin{itemize}
+%          \item Interface de Programmation Applicative (IPA) pour 
+%            la 2D et 3D.
+%         \item initialement prévu pour Uni
+%         \item vite adopté pour les jeux 3D
+%         \end{itemize}
+%      \item 1992: Wolfenstein 3D (Id Software)
+%        \begin{itemize}
+%          \item un des premiers FPS (jeux de tir en vue subjective)
+%            \href{https://classicreload.com/wolfenstein-3d.html}{\beamergotobutton{Jouer}}
+%         \end{itemize}
+%      \item 1993: naissance de Nvidia
+%      \item 1995: Microsoft promeut son IPA Direct3D 
+%    \end{itemize} 
+%    \column{5cm}
+%\begin{figure}[htbp]
+%  \includegraphics[width=0.7\linewidth]{fig/opengl.png}
+% \end{figure}
+%\begin{figure}[htbp]
+%  \includegraphics[width=0.8\linewidth]{fig/wolf2.png}
+%    \end{figure}
+%  \end{columns}
+%\end{frame}
+%
+%%****************************************************************
+%% gpu-ri buruzko historio motz bat
+%%****************************************************************
+%\begin{frame}{Une brève histoire des GPUs}{ou comment la 3dfx Voodoo change la donne}
+%  \begin{columns}[t]
+%    \column{7cm}
+%    \begin{itemize}[<+->]
+%      \item 1995 : IPA Glide publié par 3dfx interactive
+%        \begin{itemize}
+%         \item sous-ensemble de OpenlGL 1.1
+%         \item placage de texture
+%         \end{itemize}
+%      \item 1995 : Nvidia NV1 : premiere puce integrant
+%        \begin{itemize}
+%          \item rendu 3D
+%          \item accélération vidéo
+%         \end{itemize}
+%      \item 1996 : 3dfx voodo Graphics
+%        \begin{itemize}
+%          \item uniquement 3D, IPA Glide
+%          \item application phare : Quake (ID software)
+%        \end{itemize} 
+%    \end{itemize} 
+%    \column{5cm}
+%\begin{figure}[htbp]
+%  \includegraphics[width=0.7\linewidth]{fig/3dfx.jpg}
+% \end{figure}
+%\begin{figure}[htbp]
+%  \includegraphics[width=0.8\linewidth]{fig/quake_3fx.png}
+%    \end{figure}
+%  \end{columns}
+%\end{frame}
+%
+%%****************************************************************
+%% gpu-ri buruzko historio motz bat
+%%****************************************************************
+%\begin{frame}{Une brève histoire des GPUs}{ATI contre NVIDIA}
+%  \begin{columns}[t]
+%    \column{7cm}
+%    \begin{itemize}[<+->]
+%      \item 1999 : Nvidia GeForce 256
+%        \begin{itemize}
+%         \item Premier GPU
+%         \item technologie materielle {\em Transform and Lighting}\/ (T\&L)
+%         \item mémoire 32-64 Mo
+%         \item Fréquence GPU : 120 Mhz
+%         \item Fréquence Mémoire : 166-300Mhz
+%         \end{itemize}
+%      \item 2000 : ATI Radeon 7xxx
+%        \begin{itemize}
+%          \item techno T\&L
+%          \item mémoire 32-64Mo
+%          \item Fréquence GPU : 180-260Mhz
+%          \item Fréquence Mémoire : 360-460Mhz
+%          \item plusieurs cœurs de rendus
+%         \end{itemize}
+%    \end{itemize} 
+%    \column{5cm}
+%\begin{figure}[htbp]
+%  \includegraphics[width=0.7\linewidth]{fig/geforce256.jpg}
+%      \caption{\tiny Nvidia  GeForce 256}
+% \end{figure}
+%\begin{figure}[htbp]
+%  \includegraphics[width=0.8\linewidth]{fig/radeon7500.jpg}
+%      \caption{\tiny ATI Radeon 7500}
+%    \end{figure}
+%  \end{columns}
+%\end{frame}
+%
+%%****************************************************************
+%% gpu-ri buruzko historio motz bat
+%%****************************************************************
+%\begin{frame}{Une brève histoire des GPUs}{l'ère des GPGPUs}
+%  \begin{columns}[t]
+%    \column{6cm}
+%    \begin{itemize}[<+->]
+%      \item 2001 : Nvidia GeForce 3 (NV20)
+%        \begin{itemize}
+%          \item unités programmables (nuanceurs)
+%         \end{itemize}
+%       \item les GPUs deviennent des accélérateurs de calcul génériques (GPGPU)
+%        \begin{itemize}
+%          \item les textures peuvent embarquer n'importe quelle donnée
+%          \item les {\em nuanceurs}\/ (shaders) peuvent pratiquement faire
+%            n'importe quel calcul
+%          \item OpenGL peut dorenavant être utiliser pour faire du calcul scientifique
+%         \end{itemize}
+%    \end{itemize} 
+%    \column{6cm}
+%\begin{figure}[htbp]
+%  \includegraphics[width=0.8\linewidth]{fig/geforce3.jpg}
+%      \caption{\tiny Nvidia GeForce 3}
+% \end{figure}
+%  \end{columns}
+%\end{frame}
+%
+%%****************************************************************
+%% gpu-ri buruzko historio motz bat
+%%****************************************************************
+%\begin{frame}{Une brève histoire des GPUs}{les accélérateurs GPU}
+%  \begin{columns}[t]
+%    \column{6cm}
+%    \begin{itemize}[<+->]
+%      \item 2007 : Nvidia anticipe le marché possible et publie l'IPA CUDA
+%         Compute Unified Device Architecture)
+%      \item Nvidia lance aussi les accélérateurs Tesla
+%        \begin{itemize}
+%          \item sans sortie vidéo \harritu
+%          \item unités double précision
+%          \item code de correction d'erreurs (ECC mode) pour augmenter la robustesse
+%         \end{itemize}
+%       \item AMD (ex. ATI) publie
+%        \begin{itemize}
+%          \item l'IPA «Close to the Metal»
+%          \item le SDK «Stream»
+%        \end{itemize}
+%    \end{itemize} 
+%    \column{5cm}
+%\pause
+%\begin{figure}[htbp]
+%  \includegraphics[width=0.7\linewidth]{fig/C1060.jpg}
+%      \caption{\tiny Tesla C1060}
+% \end{figure}
+%\begin{figure}[htbp]
+%  \includegraphics[height=4cm, width=0.9\linewidth]{fig/nb_coeurs_gpu.eps}
+% \end{figure}
+%  \end{columns}
+%\end{frame}
+%
+%%****************************************************************
+%% gpu-ri buruzko historio motz bat
+%%****************************************************************
+%\begin{frame}{Une brève histoire des GPUs}{les dernières améliorations}
+%  \begin{columns}[t]
+%    \column{7cm}
+%    \begin{itemize}[<+->]
+%      \item Pascal :
+%        \begin{itemize}
+%          \item bus à haute-vitesse NVLink entre GPU et Hôte (jusqu'à 20Go/s)
+%          \item prise en charge de la demi-précision (16 bits)
+%          \item mémoire unifiée
+%         \end{itemize}
+%       \item Volta : 
+%        \begin{itemize}
+%          \item NVlink débit 25 Go/s
+%          \item cœurs Tenseurs : 
+%        \begin{itemize}
+%          \item opération FMA sur des matrices 4x4
+%          \item $D = A \times B + C$ \gezi réseaux de neurones
+%         \end{itemize}
+%        \end{itemize}
+%       \item Turing :
+%         \begin{itemize}
+%          \item mémoire GDDR6 : 5001Mhz!
+%          \item meilleure prise en charge des cœurs tenseurs
+%         \end{itemize}
+%    \end{itemize} 
+%\pause
+%    \column{4cm}
+%    \begin{figure}[htbp]
+%  \includegraphics[width=0.7\linewidth]{fig/tensorCore.png}
+% \end{figure}
+%\begin{figure}[htbp]
+%  \includegraphics[width=0.9\linewidth]{fig/flux2.png}
+% \end{figure}
+%  \end{columns}
+%\end{frame}
+%
+%%****************************************************************
+%% liburutegiak
+%%****************************************************************
+%\begin{frame}{Interfaces de programmation applicatives}
+%  \begin{itemize}[<+->]
+%    \item langages (autre que C/C++) pour interfacer CUDA
+%  \begin{itemize}
+%    \item Fortran (compilateur PGI)
+%    \item Python, Julia et Matlab (avec cadriciels, Pytorch, flux.jl)
+%  \end{itemize} 
+%    \item bibliothèques optimisées pour CUDA
+%  \begin{itemize}
+%    \item Cublas et CuLA (algébre linéaire dense)
+%    \item Curand (génération de nombres aléatoires)
+%    \item CuFFT (transformées de fourier discrètes)
+%    \item CuDNN (apprentissage automatique)
+%    \item Cusparse (algèbre linéaire creuse)
+%    \item Thrust (CUDA à la mode STL)
+%    \item Magma (algébre linéaire sur archis hétérogènes)
+%  \end{itemize} 
+%    \item Standard OpenCL
+%  \begin{itemize}
+%    \item plus générique que CUDA 
+%    \item prise en charge des archi NVidia
+%    \item mais aussi d'AMD 
+%  \end{itemize} 
+%    \item ACC / OpenMP
+%  \end{itemize} 
+%\end{frame}
+%
+%\begin{frame}{Paradigmes de Programmation}
+%  \lstset{numbers=none}
+%    \pause
+%\begin{columns}[T]
+%\pause
+%  \begin{column}{4cm}
+%    {\bf Appels de Bibliothèques}
+%  \includeSrc{code/saxpy_cublas}
+%\end{column}
+%\pause
+%  \vrule{}
+%  \begin{column}{3.6cm}
+%  {\bf Directives}
+%  \includeSrc{code/saxpy_mp}
+%  \end{column}
+%\pause
+%  \vrule{}
+%  \begin{column}{4.2cm}
+%  {\bf Cuda}
+%  \ifC
+%  \includeSrcCu{code/saxpy_cuda}
+%  \else
+%  \includeSrc{code/saxpy_cuda}
+%  \fi
+%  \end{column}
+%\end{columns}
+%\end{frame}
 
-%****************************************************************
-% transferentziak
-%****************************************************************
-\begin{frame}{Transferts Hôte \geziBikoitz\  GPU}{Ordres de grandeur}
-  \begin{itemize}[<+->]
-    \item[\argi] BP DRAM GPU \geziBikoitz\ SMs $\thicksim$ 200-300 (Go/s)
-    \item[\argi] BP Mémoire Globale \geziBikoitz\ DRAM GPU $\thicksim$ 10-20 (Go/s)
-    \item[\scout] il faut donc optimiser les transferts hôte \geziBikoitz\ GPU
-      \begin{itemize}
-        \item mémoire verrouillée
-        \item transferts asynchrones
-      \end{itemize}
-    \item[\kontuz] on a beau avoir le noyau le plus rapide du monde, si le temps de transfert est prohibitif, ça ne sert à rien \harritu
-  \end{itemize}
-\end{frame}
-
-%****************************************************************
-% memoria giltzatuta
-%****************************************************************
-\begin{frame}{Mémoire vérrouillée}
-  \begin{itemize}[<+->]
-    \item[\argi] allocation par défaut \gezi\ mémoire paginable (pouvant utiliser l'espace d'échange)
-    \item[\argi] transfert \geziBikoitz\  GPU
-      \begin{itemize}
-        \item contrôleur DMA choisit : paginable ou verrouillée
-        \item la mémoire verrouillée interdit l'utilisation du «swap»
-        \item l'usage de la mémoire paginable nécessite d'abord l'allocation d'un tampon verrouillé, puis une copie vers le GPU
-      \end{itemize}
-  \end{itemize}
-\pause
-  \begin{center}
-    \colorbox{white}{\includegraphics[width=0.6\linewidth]{fig/pinned_memory.eps}}
-  \end{center}
-\end{frame}
-%****************************************************************
-% memoria giltzatuta
-%****************************************************************
-\begin{frame}{Mémoire vérrouillée}{exemple}
-  \begin{itemize}[<+->]
-    \item[\argi] allocation {\tt cudaHostAlloc}, desallocation {\tt cudaFreeHost}
-    \item[\argi] ou enregistrement de mémoire deja alloué par {\tt malloc} avec {\tt cudaHostRegister}
-  \lstinputlisting[language=C]{code/pinned.c}
-\item[\argi] on peut utiliser aussi de la mémoire associée (cudaHostAllocDefault \gezi\ cudaHostAllocMapped) pour éviter la recopie, mais la BP est moins rapide depuis les noyaux
-\item[\triste] gain faible (ex sur un k40M 8.9Go/s vs 7Go/s pour 32M)
-  \end{itemize}
-\end{frame}
-%****************************************************************
-% transfert asynchrones
-%****************************************************************
-\begin{frame}{Transferts asynchrones}{Principe}
-  \begin{itemize}[<+->]
-    \item[\kontuz] les transferts classiques (ex {\tt cudaMemcpy}) sont {\bf bloquants} \harritu
-\begin{center}
-  \colorbox{white}{\includegraphics[width=0.6\linewidth]{fig/seq.png}}
-\end{center}
-    \item[\scout] utiliser des transferts {\bf asynchrones } pour recouvrir les transferts par des calculs
-\begin{center}
-  \colorbox{white}{\includegraphics[width=0.95\linewidth]{fig/async.png}}
-\end{center}
-    \item[\argi] répartir les données sur des {\bf flux} («streams») différents
-    \item[\kontuz] la mémoire sur l'hôte doit être vérouillée
-    \item[\pozik] le pipeline de transfert de données permet un recouvrement \\ 
-      \gezi\ réduction du temps total
-  \end{itemize}
-\end{frame}
-
-%****************************************************************
-% transfert asynchrones : exemple
-%****************************************************************
-\begin{frame}{Transferts asynchrones}{Exemple}
-  \begin{itemize}[<+->]
-    \item[\adibi] sur d'un noyau 1D 
-      \lstinputlisting[language=C]{code/asyn.c}
-    \item[\faClockO] sur K40M, avec N=4Mo et 4 flux \\ \gezi\ 4.71ms (sequentiel) vs 2.67ms (asynchrone) \pozik
-  \end{itemize}
-\end{frame}
-
-%****************************************************************
-% Mémoires de l'accélérateur
-%****************************************************************
-\begin{frame}{Mémoires sur l'accélérateur}{Vue générale}
-  \begin{itemize}[<+->]
-    \item[\argi] un GPU abrite plusieurs types de mémoire : 
-\begin{tabular}{|l|l|l|l|l|l|}
-  \hline
-  mémoire   & local. & Cachée  & accès     & portée   & durée \\ 
-  \hline
-  registre  & puce  &  N/A   & RW & thread & thread \\
-  locale    & DRAM  & CC$\geqslant$2.0 & RW & thread & thread \\
-  partagée  & puce  & N/A    & RW & bloc   & bloc \\
-  globale   & DRAM  & CC$\geqslant$2.0  & RW & GPU et hôte &  appli. \\
-  constante & DRAM  & Oui    & R  & GPU et hôte &  appli. \\
-  texture   & DRAM  & Oui    & R  & GPU et hôte &  appli. \\
-  \hline
-\end{tabular}
-  \item[\kontuz] différentes caractéristiques \gezi\ différents usages
-    \begin{itemize} 
-     \item mémoire locale est interne à un fils d'execution
-     \item mémoire de texture : moins sensible aux accès avec pas
-     \item mémoire constante permet de stocker des données constantes durant l'execution du noyau
-     \item la mémoire partagée permet d'avoir un cache local pour un bloc de threads
-  \end{itemize}
-  \end{itemize}
-\end{frame}
-\begin{frame}{Mémoire locale}
-  \begin{itemize}[<+->]
-    \item[\scout] mémoire privée du fil d'execution hors registre (locale)
-    \item[\argi] située en DRAM sur le GPU
-    \item[\kontuz] facteur de contention : quantité et/ou en cache
-    \item[\adibi] soit le noyau suivant compilé avec \texttt{nvcc -arch=sm\_75 --ptxas-options=-v -ptx  localMem.cu}
-\lstinputlisting{code/localMem.cu}
-     \item[\hand] on obtient
-\lstinputlisting{code/localMem.ptx}
-   \end{itemize}
-\end{frame}
-
-\begin{frame}{Mémoire constante et de texture}
-  \begin{itemize}[<+->]
-    \item[\argi] on peut y écrire depuis l'hôte (constante et de texture)
-    \item[\scout] mémoire constante limitée à 64KB. 
-    \item[\kontuz] un seul port de lecture \gezi les threads d'une même chaîne doivent accéder à la même adresse!
-    \item[\scout] texture : parfois intéressants pour des accès non-contigues
-   \end{itemize}
-\end{frame}
-
-%****************************************************************
-% mémoire partagée : 
-%****************************************************************
-\begin{frame}{Mémoire partagée}
-  \begin{itemize}[<+->]
-    \item[\argi] mémoire partagée entre tous les threads d'un bloc
-    \item[\kontuz] aux écritures concurrentes \harritu
-    \item[\scout] synchronisation à l'aide de {\tt \_\_syncthreads } 
-    \item[\scout] déclaration à l'aide du mot-clef {\tt \_\_shared\_\_}
-    \item[\scout] allocaton statique...
-  \lstinputlisting[language=C]{code/sharedStatic.c}
-\item[\scout] ou dynamique
-  \lstinputlisting[language=C]{code/shareDynamic.c}
-   \item[\kontuz] taille limitée à 64kB
-   \end{itemize}
-\end{frame}
-
-%****************************************************************
-% mémoire partagée : exemple
-%****************************************************************
-\begin{frame}{Mémoire partagée}{Tranposition}
-  \begin{itemize}[<+->]
-    \item[\adibi] on considère un noyau qui transpose une matrice
-  \lstinputlisting[language=C]{code/transposeNaive.c}
-    \item[\triste] écriture avec un saut de longueur {\tt n.x }\gezi\ non coalescent \harritu
-\begin{center}
-  \colorbox{white}{\includegraphics[width=0.7\linewidth]{fig/transpose1.eps}}
-\end{center}
-   \end{itemize}
-\end{frame}
-
-%****************************************************************
-% mémoire partagée : solution
-%****************************************************************
-\begin{frame}{Mémoire partagée}{solution}
-  \begin{itemize}[<+->]
-    \item[\argi] on utilise un cache local \gezi\ lecture coalescente \pozik
-  \lstinputlisting[language=C]{code/transposeShared1.c}
-\begin{center}
-  \colorbox{white}{\includegraphics[width=0.60\linewidth]{fig/transpose2.eps}}
-\end{center}
-   \item[\faMagic] tester {\tt \_\_shared\_\_ float tile[TILE\_DIM][TILE\_DIM+1]} 
-   \end{itemize}
-\end{frame}
-
-%****************************************************************
-% mémoire partagée : synchronisation
-%****************************************************************
-\begin{frame}{Mémoire partagée}{sur l'importance de la synchonisation}
- \begin{itemize}[<+->]
-   \item on veut transposer l'image suivante
-\begin{center}
-  \includegraphics[width=0.4\linewidth]{fig/cray.png}
-\end{center}
-  \item[\faClockO] image 2976x3808 sur K40M \gezi\ 0.94ms vs 0.75ms 
-\end{itemize}
-\pause
-\begin{columns}[t]
-\column{5cm}
- Sans synchronisation 
-\begin{center}
-  \includegraphics[width=0.3\linewidth]{fig/crayNoSync.png}
-\end{center}
-\column{5cm}
- Avec synchronisation
-\begin{center}
-  \includegraphics[width=0.3\linewidth]{fig/crayTrans.png}
-\end{center}
-\end{columns}
-\end{frame}
-
-%****************************************************************
-% Divergence de thread
-%****************************************************************
-\begin{frame}{Divergence de chaînes}
- \begin{itemize}[<+->]
-  \item[\kontuz] la divergence de chaîne peut degrader les performances
-  \item[\adibi] soit le noyau suivant
-  \lstinputlisting[language=C]{code/warpDiverge.c}
-  \item[\argi] condition satisfaite par 1 thread d'une chaîne 
-    \begin{itemize}
-      \item[\gezi] {\bf tous} les threads de la chaîne executent cette branche
-      \item[\gezi] les autres branches d'exécution sont serialisées
-      \item[\gezi] masquage des résultats des threads hors branche
-    \end{itemize}
-  \item[\adibi] par contre le noyau suivant ne diverge pas
-  \lstinputlisting[language=C]{code/warpNoDiverge.c}
-  \end{itemize}
-\end{frame}
-
-%****************************************************************
-% Redukzio : Monte-Carloko metodoa
-%****************************************************************
-\begin{frame}{Réduction}{Calcul de $\pi$ par une méthode de Monte-Carlo}
- \begin{itemize}[<+->]
-   \item[\argi] On souhaite approcher $\pi$ par le calcul d'aire suivant
-     \begin{columns}
-       \column{5cm}
-\begin{center}
-  \includegraphics[width=0.5\linewidth]{fig/monteCarlo.eps}
-\end{center}
-       \column{5cm}
-  $$A = \int_{A} dx \thicksim \frac{1}{N}\sum_{i=1}^N \mathbb{1}_{A}(x_i)$$
- où $x_i$ est pris au hasard dans $[0,1]^2$
-     \end{columns}
-  \item[\faBomb] méthodes dite «de Monte-Carlo» en réference à l'algorithme de Metropolis-Ulam
-  \item[\triste] convergence lente en $O(\frac{1}{\sqrt{N}})$
-  \item[\pozik] massivement parallélisable si on a un générateur pseudo-aléatoire parallèle (\texttt{curandGenerateUniform})
-  \end{itemize}
-\end{frame}
-
-
-%****************************************************************
-% Redukzio : Somme
-%****************************************************************
-\begin{frame}{Réduction}{Principe}
- \begin{itemize}[<+->]
-   \item[\argi] générer en // des couples aléatoires $(x_i,y_i) \in K = [0,1]^2$
-   \item[\argi] sommer en // ceux qui sont dans $A = \{ (x,y) \in K \;|\; x^2+y^2 \leqslant 1 \}$
-   \item[\galde] comment calculer une somme en parallèle sur un GPU ?
-   \item[\kontuz] il faut faire travailler un max de threads \harritu
-   \item[\scout] par exemple, en utilisant une réduction en arbre 
-  \end{itemize}
-\pause
-\begin{center}
-  \includegraphics[width=0.6\linewidth]{fig/zuhaitz.eps}
-\end{center}
-\end{frame}
-
-%****************************************************************
-% Redukzio : Somme
-%****************************************************************
-\begin{frame}{Réduction}{2 niveaux} 
- \begin{itemize}[<+->]
-   \item[\scout] On va écrire 2 noyaux, qu'on appelle en cascade
- \begin{enumerate}
-   \item {\tt partialSum} qui dénombre les couples $(x_i,y_i)$ dans $A$ pour chaque bloc. 
-   \item stockage du résultat en mémoire globale ({\tt partial})
-   \item {\tt finalSum} calcule la somme des éléments de {\tt partial}
- \end{enumerate}
-   \item[\kontuz] information commune par bloc \gezi\ mémoire partagée
-   \item[\argi] schéma d'appel
-     \lstinputlisting[language=C]{code/biKernels.c}
-     \begin{center}  
-  \includegraphics[width=0.6\linewidth]{fig/biKernels.eps}
-     \end{center}  
-   \item[\argi] écriture possible avec un seul noyau \gezi\ opérations {\em atomiques}
-  \end{itemize}
- \end{frame}
-
-%****************************************************************
-% Redukzio : somme divergente
-%****************************************************************
-\begin{frame}{Réduction}{Première solution}
- \begin{enumerate}[<+->]
-   \item On peut ajouter 2 cases mémoire contiguës
-   \item multiplier le pas par 2
-   \item et itérer...
-  \end{enumerate}
-\pause
-\begin{center}
-  \includegraphics[width=0.8\linewidth]{fig/divergent.eps}
-\end{center}
-\pause
-\begin{itemize}
-  \item[\triste] problème : le schéma est clairement divergent \harritu
-  \end{itemize}
-\end{frame}
-
-%****************************************************************
-% Redukzio : somme convergente
-%****************************************************************
-\begin{frame}{Réduction}{2$^{\mbox{ème}}$ solution}
- \begin{enumerate}[<+->]
-   \item ou alors additioner avec l'element situé a {\tt blockDim.x}
-   \item et diviser le pas par 2
-   \item puis itérer...
-  \end{enumerate}
-\pause
-\begin{center}
-  \includegraphics[width=0.6\linewidth]{fig/convergent.eps}
-\end{center}
-\pause
-\begin{itemize}
-  \item[\pozik] le schéma ne diverge quasiment plus \harritu
-  \end{itemize}
-\end{frame}
-
-%****************************************************************
-% Divergence de thread
-%****************************************************************
-\begin{frame}{Réduction}{noyau «finalSum»}
-\pause
-  \lstinputlisting[language=C]{code/finalSum.c}
-\pause
-  \begin{itemize}[<+->]
-    \item synchronisation multiple
-    \item {\tt psum} : tableau partagé alloué dynamiquement de taille {\tt BLOCK\_SIZE }
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Réduction}{noyau «partialSum»}
-\pause
-  \lstinputlisting[language=C]{code/partialSum.c}
-\pause
-  \begin{itemize}[<+->]
-    \item chaque fil traite $\displaystyle \left\lfloor \frac{N}{\mbox{{\tt gridDim.x * blockDim.x}}}\right\rfloor $ entrées afin de gérer
-    des données qui ne tiennent pas forcemment en mémoire.
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Réduction}{Comparaison des performances}
-  \begin{itemize}[<+->]
-    \item[\faClockO] pour $N = 4*256*512$ , on compare différents GPU, avec des temps en ms
-   \begin{center}
-      \begin{tabular}{|l|c|c|c|}
-    \hline
-      GPU & 1 fil & div. & nodiv.   \\
-    \hline
-    k40M  & 0.074  & 0.058 & \textcolor{green}{0.045} \\
-    V100  & \textcolor{red}{0.0068} & 0.011 & 0.0072 \\
-    T4    & 0.0302 & 0.0407& \textcolor{green}{0.0274} \\
-    \hline
-    \end{tabular}
-    \end{center}
-  \end{itemize}
-\end{frame}
-%****************************************************************
-% hirurgarren partea : denetarik
-%****************************************************************
-\begin{frame}
-  \begin{center}
-    {\Huge $3^{\mbox{ème}}$ partie : Divers }
-  \end{center}
-\end{frame}
-
-%****************************************************************
-% gpu-ri buruzko historio motz bat
-%****************************************************************
-\begin{frame}{Une brève histoire des GPUs}{Les premiers âges}
-  \begin{columns}[t]
-    \column{7cm}
-    \begin{itemize}[<+->]
-      \item bonne synthèse sur \href{https://www.techspot.com/article/650-history-of-the-gpu/}{\beamergotobutton{Techspot}}
-      \item premiers coprocesseurs graphiques évidemment qu'en 2D
-        \begin{itemize}
-          \item 1976 : RCA Pixie (résolution 62x128)
-          \item 1977 : Adaptateur d'interface de Télevision TIA 1A (Atari 2600)
-          \item 1981 : Motorola MC6845 (IBM PC, Apple II)
-        \end{itemize}
-    \end{itemize}
-    \column{5cm}
-    \begin{figure}[htbp]
-  \includegraphics[width=0.8\linewidth]{fig/appleII.jpg}
-    \caption{\tiny Apple IIe : 560x192 en monochrome, 15 couleurs en 140x192 !}
-    \end{figure}
-  \end{columns}
-\end{frame}
-
-
-%****************************************************************
-% souvenirs, souvenirs
-%****************************************************************
-\begin{frame}{Souvenirs, souvenirs}{Lode Runner sur Apple IIe}
-  \begin{center}
-  \includegraphics[width=0.8\linewidth]{fig/lode_runner.png}
-  \end{center}
-\end{frame}
-
-%****************************************************************
-% gpu-ri buruzko historio motz bat
-%****************************************************************
-\begin{frame}{Une brève histoire des GPUs}{les premiers âges}
-  \begin{columns}[t]
-    \column{7cm}
-    \begin{itemize}[<+->]
-     \item 1983: Intel iSBX 275 Video Graphics 
-    Controller Multimode Board
-    \begin{itemize}
-      \item 256x256, 8 colors
-  \item 512x512 monochrome
-  \item Lignes, rectangles, cercles...
-  \item zoom \& défilement matériels
-  \item 32KB, 1000\$ \harritu
-  \item simulateurs de vol (Armée)
-    \end{itemize} 
-    \item 1987: ATI EGA
-      \begin{itemize}
-        \item 650x350, 16 couleurs
-        \item 512x512 monochrome
-        \item 256KB de DRAM
-        \item 399\$ \pozik
-        \item EGA Wonder 800
-        \begin{itemize}
-          \item  800x600 VGA
-          \item  449\$
-        \end{itemize} 
-      \end{itemize} 
-   \end{itemize} 
-    \column{5cm}
-    \begin{figure}[htbp]
-  \includegraphics[width=0.8\linewidth]{fig/sbx2.png}
-      \caption{\tiny iSBX 275}
-    \end{figure}
-\begin{figure}[htbp]
-  \includegraphics[width=0.8\linewidth]{fig/ati_ega.png}
-      \caption{\tiny ATI EGA Wonder 800}
-    \end{figure}
-  \end{columns}
-\end{frame}
-
-%****************************************************************
-% gpu-ri buruzko historio motz bat
-%****************************************************************
-\begin{frame}{Une brève histoire des GPUs}{les premiers âges}
-  \begin{columns}[t]
-    \column{7cm}
-    \begin{itemize}[<+->]
-      \item 1992 : SGI publie OpenGL 1.0 
-        \begin{itemize}
-          \item Interface de Programmation Applicative (IPA) pour 
-            la 2D et 3D.
-         \item initialement prévu pour Uni
-         \item vite adopté pour les jeux 3D
-         \end{itemize}
-      \item 1992: Wolfenstein 3D (Id Software)
-        \begin{itemize}
-          \item un des premiers FPS (jeux de tir en vue subjective)
-            \href{https://classicreload.com/wolfenstein-3d.html}{\beamergotobutton{Jouer}}
-         \end{itemize}
-      \item 1993: naissance de Nvidia
-      \item 1995: Microsoft promeut son IPA Direct3D 
-    \end{itemize} 
-    \column{5cm}
-\begin{figure}[htbp]
-  \includegraphics[width=0.7\linewidth]{fig/opengl.png}
- \end{figure}
-\begin{figure}[htbp]
-  \includegraphics[width=0.8\linewidth]{fig/wolf2.png}
-    \end{figure}
-  \end{columns}
-\end{frame}
-
-%****************************************************************
-% gpu-ri buruzko historio motz bat
-%****************************************************************
-\begin{frame}{Une brève histoire des GPUs}{ou comment la 3dfx Voodoo change la donne}
-  \begin{columns}[t]
-    \column{7cm}
-    \begin{itemize}[<+->]
-      \item 1995 : IPA Glide publié par 3dfx interactive
-        \begin{itemize}
-         \item sous-ensemble de OpenlGL 1.1
-         \item placage de texture
-         \end{itemize}
-      \item 1995 : Nvidia NV1 : premiere puce integrant
-        \begin{itemize}
-          \item rendu 3D
-          \item accélération vidéo
-         \end{itemize}
-      \item 1996 : 3dfx voodo Graphics
-        \begin{itemize}
-          \item uniquement 3D, IPA Glide
-          \item application phare : Quake (ID software)
-        \end{itemize} 
-    \end{itemize} 
-    \column{5cm}
-\begin{figure}[htbp]
-  \includegraphics[width=0.7\linewidth]{fig/3dfx.jpg}
- \end{figure}
-\begin{figure}[htbp]
-  \includegraphics[width=0.8\linewidth]{fig/quake_3fx.png}
-    \end{figure}
-  \end{columns}
-\end{frame}
-
-%****************************************************************
-% gpu-ri buruzko historio motz bat
-%****************************************************************
-\begin{frame}{Une brève histoire des GPUs}{ATI contre NVIDIA}
-  \begin{columns}[t]
-    \column{7cm}
-    \begin{itemize}[<+->]
-      \item 1999 : Nvidia GeForce 256
-        \begin{itemize}
-         \item Premier GPU
-         \item technologie materielle {\em Transform and Lighting}\/ (T\&L)
-         \item mémoire 32-64 Mo
-         \item Fréquence GPU : 120 Mhz
-         \item Fréquence Mémoire : 166-300Mhz
-         \end{itemize}
-      \item 2000 : ATI Radeon 7xxx
-        \begin{itemize}
-          \item techno T\&L
-          \item mémoire 32-64Mo
-          \item Fréquence GPU : 180-260Mhz
-          \item Fréquence Mémoire : 360-460Mhz
-          \item plusieurs cœurs de rendus
-         \end{itemize}
-    \end{itemize} 
-    \column{5cm}
-\begin{figure}[htbp]
-  \includegraphics[width=0.7\linewidth]{fig/geforce256.jpg}
-      \caption{\tiny Nvidia  GeForce 256}
- \end{figure}
-\begin{figure}[htbp]
-  \includegraphics[width=0.8\linewidth]{fig/radeon7500.jpg}
-      \caption{\tiny ATI Radeon 7500}
-    \end{figure}
-  \end{columns}
-\end{frame}
-
-%****************************************************************
-% gpu-ri buruzko historio motz bat
-%****************************************************************
-\begin{frame}{Une brève histoire des GPUs}{l'ère des GPGPUs}
-  \begin{columns}[t]
-    \column{6cm}
-    \begin{itemize}[<+->]
-      \item 2001 : Nvidia GeForce 3 (NV20)
-        \begin{itemize}
-          \item unités programmables (nuanceurs)
-         \end{itemize}
-       \item les GPUs deviennent des accélérateurs de calcul génériques (GPGPU)
-        \begin{itemize}
-          \item les textures peuvent embarquer n'importe quelle donnée
-          \item les {\em nuanceurs}\/ (shaders) peuvent pratiquement faire
-            n'importe quel calcul
-          \item OpenGL peut dorenavant être utiliser pour faire du calcul scientifique
-         \end{itemize}
-    \end{itemize} 
-    \column{6cm}
-\begin{figure}[htbp]
-  \includegraphics[width=0.8\linewidth]{fig/geforce3.jpg}
-      \caption{\tiny Nvidia GeForce 3}
- \end{figure}
-  \end{columns}
-\end{frame}
-
-%****************************************************************
-% gpu-ri buruzko historio motz bat
-%****************************************************************
-\begin{frame}{Une brève histoire des GPUs}{les accélérateurs GPU}
-  \begin{columns}[t]
-    \column{6cm}
-    \begin{itemize}[<+->]
-      \item 2007 : Nvidia anticipe le marché possible et publie l'IPA CUDA
-         Compute Unified Device Architecture)
-      \item Nvidia lance aussi les accélérateurs Tesla
-        \begin{itemize}
-          \item sans sortie vidéo \harritu
-          \item unités double précision
-          \item code de correction d'erreurs (ECC mode) pour augmenter la robustesse
-         \end{itemize}
-       \item AMD (ex. ATI) publie
-        \begin{itemize}
-          \item l'IPA «Close to the Metal»
-          \item le SDK «Stream»
-        \end{itemize}
-    \end{itemize} 
-    \column{5cm}
-\pause
-\begin{figure}[htbp]
-  \includegraphics[width=0.7\linewidth]{fig/C1060.jpg}
-      \caption{\tiny Tesla C1060}
- \end{figure}
-\begin{figure}[htbp]
-  \includegraphics[height=4cm, width=0.9\linewidth]{fig/nb_coeurs_gpu.eps}
- \end{figure}
-  \end{columns}
-\end{frame}
-
-%****************************************************************
-% gpu-ri buruzko historio motz bat
-%****************************************************************
-\begin{frame}{Une brève histoire des GPUs}{les dernières améliorations}
-  \begin{columns}[t]
-    \column{7cm}
-    \begin{itemize}[<+->]
-      \item Pascal :
-        \begin{itemize}
-          \item bus à haute-vitesse NVLink entre GPU et Hôte (jusqu'à 20Go/s)
-          \item prise en charge de la demi-précision (16 bits)
-          \item mémoire unifiée
-         \end{itemize}
-       \item Volta : 
-        \begin{itemize}
-          \item NVlink débit 25 Go/s
-          \item cœurs Tenseurs : 
-        \begin{itemize}
-          \item opération FMA sur des matrices 4x4
-          \item $D = A \times B + C$ \gezi réseaux de neurones
-         \end{itemize}
-        \end{itemize}
-       \item Turing :
-         \begin{itemize}
-          \item mémoire GDDR6 : 5001Mhz!
-          \item meilleure prise en charge des cœurs tenseurs
-         \end{itemize}
-    \end{itemize} 
-\pause
-    \column{4cm}
-    \begin{figure}[htbp]
-  \includegraphics[width=0.7\linewidth]{fig/tensorCore.png}
- \end{figure}
-\begin{figure}[htbp]
-  \includegraphics[width=0.9\linewidth]{fig/flux2.png}
- \end{figure}
-  \end{columns}
-\end{frame}
-
-%****************************************************************
-% liburutegiak
-%****************************************************************
-\begin{frame}{Interfaces de programmation applicatives}
-  \begin{itemize}[<+->]
-    \item langages (autre que C/C++) pour interfacer CUDA
-  \begin{itemize}
-    \item Fortran (compilateur PGI)
-    \item Python, Julia et Matlab (avec cadriciels, Pytorch, flux.jl)
-  \end{itemize} 
-    \item bibliothèques optimisées pour CUDA
-  \begin{itemize}
-    \item Cublas et CuLA (algébre linéaire dense)
-    \item Curand (génération de nombres aléatoires)
-    \item CuFFT (transformées de fourier discrètes)
-    \item CuDNN (apprentissage automatique)
-    \item Cusparse (algèbre linéaire creuse)
-    \item Thrust (CUDA à la mode STL)
-    \item Magma (algébre linéaire sur archis hétérogènes)
-  \end{itemize} 
-    \item Standard OpenCL
-  \begin{itemize}
-    \item plus générique que CUDA 
-    \item prise en charge des archi NVidia
-    \item mais aussi d'AMD 
-  \end{itemize} 
-    \item ACC / OpenMP
-  \end{itemize} 
-\end{frame}
 
 %****************************************************************
 % Apaimenak
@@ -1919,6 +1941,7 @@ G = (1-P) + N\cdot P
 \begin{frame}{Références}
 \begin{itemize}[<+->]
   \item[\liburu] Cuda Fortran for Scientists and Engineers, G. Ruetsch, M. Fatica
+  \item[\liburu] Programming Your GPU with OpenMP, T Deakin, T. Waston
   \item[\Pdf] Programming GPU Accelerators with OpenCL, R. Namyst, P.-A. Wacrenier \href{https://raymond-namyst.emi.u-bordeaux.fr/ens/pap/PAP-GPU.pdf}{\beamergotobutton{pdf}}
   \item[\Pdf] Performance Optimization Strategies For GPU-Accelerated Applications D. Goodwin \href{https://on-demand.gputechconf.com/gtc/2013/presentations/S3046-Performance-Optimization-Strategies-for-GPU-Accelerated-Apps.pdf}{\beamergotobutton{pdf}}
   \item[\faFilePowerpointO] CUDA Basics, S. Vialle \href{http://www.metz.supelec.fr/metz/personnel/vialle/course/PPS-5A-GPGPU/notes-de-cours-specifiques/PPS-GPU-02-CUDA-Basics-2spp.pdf}{\beamergotobutton{pdf}}
